@@ -35,6 +35,9 @@ class CombinedTransactionItem {
     required this.isIncome,
     required this.rawEntity,
   });
+
+  String get type => isIncome ? 'income' : 'expense';
+  String? get note => subtitle;
 }
 
 final recentTransactionsProvider = Provider<List<CombinedTransactionItem>>((ref) {

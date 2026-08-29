@@ -123,8 +123,7 @@
       "includes": [],
       "queries": [],
       "schema_version": 5,
-      "daos": [],
-      "has_constructor_arg": false
+      "daos": []
     }
   },
   "imports": [

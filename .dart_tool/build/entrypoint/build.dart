@@ -1,30 +1,95 @@
-// @dart=3.6
-// ignore_for_file: type=lint
-// build_runner >=2.4.16
-import 'dart:io' as _io;
-import 'package:build_runner/src/build_plan/builder_factories.dart'
-    as _build_runner;
-import 'package:build_runner/src/bootstrap/processes.dart' as _build_runner;
-import 'package:drift_dev/integrations/build.dart' as _i1;
-import 'package:source_gen/builder.dart' as _i2;
+// ignore_for_file: directives_ordering
+// ignore_for_file: no_leading_underscores_for_library_prefixes
 
-final _builderFactories = _build_runner.BuilderFactories(
-  {
-    'drift_dev:analyzer': [_i1.discover, _i1.analyzer],
-    'drift_dev:drift_dev': [_i1.discover, _i1.analyzer, _i1.driftBuilder],
-    'drift_dev:modular': [_i1.modular],
-    'drift_dev:not_shared': [_i1.driftBuilderNotShared],
-    'drift_dev:preparing_builder': [_i1.preparingBuilder],
-    'source_gen:combining_builder': [_i2.combiningBuilder],
-  },
-  postProcessBuilderFactories: {
-    'drift_dev:cleanup': _i1.driftCleanup,
-    'source_gen:part_cleanup': _i2.partCleanup,
-  },
-);
-void main(List<String> args) async {
-  _io.exitCode = await _build_runner.ChildProcess.run(
+import 'package:build_runner_core/build_runner_core.dart' as _i1;
+import 'package:drift_dev/integrations/build.dart' as _i2;
+import 'package:source_gen/builder.dart' as _i3;
+import 'package:build_resolvers/builder.dart' as _i4;
+import 'dart:isolate' as _i5;
+import 'package:build_runner/build_runner.dart' as _i6;
+import 'dart:io' as _i7;
+
+final _builders = <_i1.BuilderApplication>[
+  _i1.apply(
+    r'drift_dev:preparing_builder',
+    [_i2.preparingBuilder],
+    _i1.toNoneByDefault(),
+    hideOutput: true,
+    appliesBuilders: const [r'drift_dev:cleanup'],
+  ),
+  _i1.apply(
+    r'drift_dev:drift_dev',
+    [
+      _i2.discover,
+      _i2.analyzer,
+      _i2.driftBuilder,
+    ],
+    _i1.toDependentsOf(r'drift_dev'),
+    hideOutput: true,
+    appliesBuilders: const [
+      r'source_gen:combining_builder',
+      r'drift_dev:preparing_builder',
+    ],
+  ),
+  _i1.apply(
+    r'source_gen:combining_builder',
+    [_i3.combiningBuilder],
+    _i1.toNoneByDefault(),
+    hideOutput: false,
+    appliesBuilders: const [r'source_gen:part_cleanup'],
+  ),
+  _i1.apply(
+    r'drift_dev:analyzer',
+    [
+      _i2.discover,
+      _i2.analyzer,
+    ],
+    _i1.toNoneByDefault(),
+    hideOutput: true,
+    appliesBuilders: const [r'drift_dev:preparing_builder'],
+  ),
+  _i1.apply(
+    r'drift_dev:not_shared',
+    [_i2.driftBuilderNotShared],
+    _i1.toNoneByDefault(),
+    hideOutput: false,
+  ),
+  _i1.apply(
+    r'drift_dev:modular',
+    [_i2.modular],
+    _i1.toNoneByDefault(),
+    hideOutput: false,
+    appliesBuilders: const [r'drift_dev:analyzer'],
+  ),
+  _i1.apply(
+    r'build_resolvers:transitive_digests',
+    [_i4.transitiveDigestsBuilder],
+    _i1.toAllPackages(),
+    isOptional: true,
+    hideOutput: true,
+    appliesBuilders: const [r'build_resolvers:transitive_digest_cleanup'],
+  ),
+  _i1.applyPostProcess(
+    r'build_resolvers:transitive_digest_cleanup',
+    _i4.transitiveDigestCleanup,
+  ),
+  _i1.applyPostProcess(
+    r'source_gen:part_cleanup',
+    _i3.partCleanup,
+  ),
+  _i1.applyPostProcess(
+    r'drift_dev:cleanup',
+    _i2.driftCleanup,
+  ),
+];
+void main(
+  List<String> args, [
+  _i5.SendPort? sendPort,
+]) async {
+  var result = await _i6.run(
     args,
-    _builderFactories,
-  )!;
+    _builders,
+  );
+  sendPort?.send(result);
+  _i7.exitCode = result;
 }

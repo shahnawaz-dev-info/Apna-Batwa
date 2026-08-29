@@ -26,6 +26,10 @@ class CurrencyFormatter {
     }
     return value.toStringAsFixed(2);
   }
+
+  static String formatDate(DateTime date) {
+    return DateFormatters.formatDate(date);
+  }
 }
 
 class DateFormatters {

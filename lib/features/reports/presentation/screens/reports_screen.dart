@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/services/pdf_export_service.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../khata/presentation/providers/khata_providers.dart';
@@ -31,6 +32,27 @@ class ReportsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Reports & Analytics'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            tooltip: 'Export PDF Report',
+            onPressed: () async {
+              final summaryData = khataSummary.maybeWhen(
+                data: (d) => d,
+                orElse: () => KhataSummaryData(
+                  totalBorrowedCents: 0,
+                  totalLentCents: 0,
+                ),
+              );
+              await PdfExportService.instance.exportReportsPdf(
+                range: selectedRange,
+                categoryReport: categoryReport,
+                trendPoints: trendPoints,
+                khataSummary: summaryData,
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

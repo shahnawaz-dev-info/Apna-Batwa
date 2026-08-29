@@ -121,7 +121,6 @@
       "existing_data_class": null,
       "table_constraints": [],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "Categories",
       "row_class_name": "CategoryTableData",
@@ -303,7 +302,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "IncomeEntries",
       "row_class_name": "IncomeEntryTableData",
@@ -525,7 +523,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "ExpenseEntries",
       "row_class_name": "ExpenseEntryTableData",
@@ -663,7 +660,6 @@
       "existing_data_class": null,
       "table_constraints": [],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "Persons",
       "row_class_name": "PersonTableData",
@@ -883,7 +879,6 @@
       "existing_data_class": null,
       "table_constraints": [],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "BorrowedRecords",
       "row_class_name": "BorrowedRecordTableData",
@@ -1103,7 +1098,6 @@
       "existing_data_class": null,
       "table_constraints": [],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "LentRecords",
       "row_class_name": "LentRecordTableData",
@@ -1313,7 +1307,6 @@
       "existing_data_class": null,
       "table_constraints": [],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "Repayments",
       "row_class_name": "RepaymentTableData",
@@ -1546,7 +1539,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "WishlistItems",
       "row_class_name": "WishlistItemTableData",
@@ -1770,7 +1762,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "Purchases",
       "row_class_name": "PurchaseTableData",
@@ -1931,7 +1922,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "Budgets",
       "row_class_name": "BudgetTableData",
@@ -2101,7 +2091,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "SavingsGoals",
       "row_class_name": "SavingsGoalTableData",
@@ -2241,7 +2230,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "SavingsContributions",
       "row_class_name": "SavingsContributionTableData",
@@ -2516,7 +2504,6 @@
         }
       ],
       "custom_parent_class": null,
-      "interfaces_for_row_class": [],
       "fixed_entity_info_name": null,
       "base_dart_name": "RecurringTransactions",
       "row_class_name": "RecurringTransactionTableData",

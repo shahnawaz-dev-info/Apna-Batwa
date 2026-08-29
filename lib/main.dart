@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/notification_service.dart';
+import 'features/security/presentation/widgets/app_lock_wrapper.dart';
 import 'main_shell.dart';
 
 void main() async {
@@ -25,7 +26,7 @@ class ApnaBatwaApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.system,
-      home: const MainShell(),
+      home: const AppLockWrapper(child: MainShell()),
     );
   }
 }

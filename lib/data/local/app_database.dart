@@ -371,5 +371,84 @@ class AppDatabase extends _$AppDatabase {
       update(recurringTransactions).replace(entry);
   Future<int> deleteRecurringTransaction(String id) =>
       (delete(recurringTransactions)..where((t) => t.id.equals(id))).go();
+
+  // Backup & Restore Helper Operations
+  Future<List<BorrowedRecordTableData>> getAllBorrowedRecords() => select(borrowedRecords).get();
+  Future<List<LentRecordTableData>> getAllLentRecords() => select(lentRecords).get();
+  Future<List<BudgetTableData>> getAllBudgets() => select(budgets).get();
+
+  Future<void> restoreAllData({
+    required List<CategoryTableData> categoriesList,
+    required List<IncomeEntryTableData> incomeList,
+    required List<ExpenseEntryTableData> expenseList,
+    required List<PersonTableData> personsList,
+    required List<BorrowedRecordTableData> borrowedList,
+    required List<LentRecordTableData> lentList,
+    required List<RepaymentTableData> repaymentsList,
+    required List<WishlistItemTableData> wishlistList,
+    required List<PurchaseTableData> purchasesList,
+    required List<BudgetTableData> budgetsList,
+    required List<SavingsGoalTableData> savingsGoalsList,
+    required List<SavingsContributionTableData> savingsContributionsList,
+    required List<RecurringTransactionTableData> recurringList,
+  }) async {
+    await transaction(() async {
+      // 1. Clear existing data in reverse dependency order
+      await delete(repayments).go();
+      await delete(purchases).go();
+      await delete(savingsContributions).go();
+      await delete(borrowedRecords).go();
+      await delete(lentRecords).go();
+      await delete(persons).go();
+      await delete(expenseEntries).go();
+      await delete(incomeEntries).go();
+      await delete(wishlistItems).go();
+      await delete(budgets).go();
+      await delete(savingsGoals).go();
+      await delete(recurringTransactions).go();
+      await delete(categories).go();
+
+      // 2. Re-insert all restored records
+      for (final item in categoriesList) {
+        await into(categories).insert(item);
+      }
+      for (final item in incomeList) {
+        await into(incomeEntries).insert(item);
+      }
+      for (final item in expenseList) {
+        await into(expenseEntries).insert(item);
+      }
+      for (final item in personsList) {
+        await into(persons).insert(item);
+      }
+      for (final item in borrowedList) {
+        await into(borrowedRecords).insert(item);
+      }
+      for (final item in lentList) {
+        await into(lentRecords).insert(item);
+      }
+      for (final item in repaymentsList) {
+        await into(repayments).insert(item);
+      }
+      for (final item in wishlistList) {
+        await into(wishlistItems).insert(item);
+      }
+      for (final item in purchasesList) {
+        await into(purchases).insert(item);
+      }
+      for (final item in budgetsList) {
+        await into(budgets).insert(item);
+      }
+      for (final item in savingsGoalsList) {
+        await into(savingsGoals).insert(item);
+      }
+      for (final item in savingsContributionsList) {
+        await into(savingsContributions).insert(item);
+      }
+      for (final item in recurringList) {
+        await into(recurringTransactions).insert(item);
+      }
+    });
+  }
 }
 

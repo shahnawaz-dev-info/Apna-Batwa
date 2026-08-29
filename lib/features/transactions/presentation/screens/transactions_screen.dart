@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/services/csv_export_service.dart';
+import '../../../../core/services/pdf_export_service.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../income/domain/entities/income_entry.dart';
@@ -39,6 +41,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final filterState = ref.watch(transactionFilterProvider);
     final filterNotifier = ref.read(transactionFilterProvider.notifier);
+    final filteredTransactions = ref.watch(filteredTransactionsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -50,6 +53,45 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
               child: const Icon(Icons.filter_list),
             ),
             onPressed: () => TransactionFilterModal.show(context),
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.ios_share_rounded),
+            tooltip: 'Export Transactions',
+            onSelected: (value) async {
+              final list = filteredTransactions;
+              if (value == 'pdf') {
+                await PdfExportService.instance.exportTransactionsPdf(
+                  transactions: list,
+                  title: 'Filtered List',
+                );
+              } else if (value == 'csv') {
+                await CsvExportService.instance.exportTransactionsCsv(
+                  transactions: list,
+                );
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'pdf',
+                child: Row(
+                  children: [
+                    Icon(Icons.picture_as_pdf_outlined, color: AppColors.expenseRed),
+                    SizedBox(width: 10),
+                    Text('Export as PDF'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'csv',
+                child: Row(
+                  children: [
+                    Icon(Icons.table_chart_outlined, color: AppColors.successGreen),
+                    SizedBox(width: 10),
+                    Text('Export as CSV'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
         bottom: TabBar(

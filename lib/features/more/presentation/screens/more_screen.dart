@@ -4,6 +4,8 @@ import '../../../budgets/presentation/screens/budget_management_screen.dart';
 import '../../../savings/presentation/screens/savings_goals_screen.dart';
 import '../../../reports/presentation/screens/reports_screen.dart';
 import '../../../recurring/presentation/screens/recurring_management_screen.dart';
+import '../../../security/presentation/screens/security_settings_screen.dart';
+import 'backup_restore_screen.dart';
 import 'notification_settings_screen.dart';
 
 class MoreScreen extends StatelessWidget {
@@ -116,17 +118,27 @@ class MoreScreen extends StatelessWidget {
             subtitle: 'Protect your financial data offline',
             color: AppColors.warningAmber,
             isDark: isDark,
-            isDisabled: true,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SecuritySettingsScreen()),
+              );
+            },
           ),
           const SizedBox(height: 10),
           _buildMenuTile(
             context,
             icon: Icons.backup_outlined,
             title: 'Data Backup & Restore',
-            subtitle: 'Export & import encrypted sqlite database',
+            subtitle: 'Export & import offline JSON backup files',
             color: AppColors.primaryBlue,
             isDark: isDark,
-            isDisabled: true,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const BackupRestoreScreen()),
+              );
+            },
           ),
         ],
       ),
