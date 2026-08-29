@@ -1,0 +1,10 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter_riverpod/flutter_riverpod.dart",
+    "package:apnabatwa/features/dashboard/income/presentation/providers/income_providers.dart",
+    "package:apnabatwa/features/dashboard/expenses/presentation/providers/expense_providers.dart",
+    "package:apnabatwa/features/dashboard/income/domain/entities/income_entry.dart",
+    "package:apnabatwa/features/dashboard/expenses/domain/entities/expense_entry.dart"
+  ]
+}

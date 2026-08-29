@@ -1,0 +1,8 @@
+{
+  "elements": {},
+  "imports": [
+    "package:apnabatwa/features/expenses/domain/entities/category.dart",
+    "package:apnabatwa/features/expenses/domain/entities/expense_entry.dart",
+    "package:apnabatwa/features/expenses/domain/repositories/expense_repository.dart"
+  ]
+}

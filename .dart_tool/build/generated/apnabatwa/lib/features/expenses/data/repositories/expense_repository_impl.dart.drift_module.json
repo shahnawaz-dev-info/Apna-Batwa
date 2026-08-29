@@ -1,0 +1,10 @@
+{
+  "elements": {},
+  "imports": [
+    "package:drift/drift.dart",
+    "package:apnabatwa/data/local/app_database.dart",
+    "package:apnabatwa/features/expenses/data/domain/entities/category.dart",
+    "package:apnabatwa/features/expenses/data/domain/entities/expense_entry.dart",
+    "package:apnabatwa/features/expenses/data/domain/repositories/expense_repository.dart"
+  ]
+}

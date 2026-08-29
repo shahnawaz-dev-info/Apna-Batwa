@@ -1,0 +1,7 @@
+{
+  "elements": {},
+  "imports": [
+    "package:intl/intl.dart",
+    "package:apnabatwa/core/constants/app_constants.dart"
+  ]
+}

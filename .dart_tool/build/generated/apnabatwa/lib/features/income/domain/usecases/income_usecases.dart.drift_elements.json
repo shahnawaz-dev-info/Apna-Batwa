@@ -1,0 +1,1 @@
+{"valid_import":true,"imports":[{"uri":"package:apnabatwa/features/income/domain/entities/income_entry.dart","transitive":false},{"uri":"package:apnabatwa/features/income/domain/repositories/income_repository.dart","transitive":false}],"elements":[]}
