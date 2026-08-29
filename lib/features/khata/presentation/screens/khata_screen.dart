@@ -298,34 +298,44 @@ Widget _buildRecordCard(BuildContext context, dynamic record, bool isBorrowed, b
           ),
         ),
       ),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            personName,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              statusLabel,
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor),
-            ),
-          ),
-        ],
+      title: Text(
+        personName,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        overflow: TextOverflow.ellipsis,
       ),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 4),
-        child: Text(
-          'Total: ${CurrencyFormatter.formatCents(totalCents)} • Paid: ${CurrencyFormatter.formatCents(paidCents)}\n${DateFormatters.formatDate(date)}',
-          style: TextStyle(
-            fontSize: 12,
-            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Flexible(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: statusColor.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      statusLabel,
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Total: ${CurrencyFormatter.formatCents(totalCents)} • Paid: ${CurrencyFormatter.formatCents(paidCents)}\n${DateFormatters.formatDate(date)}',
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              ),
+            ),
+          ],
         ),
       ),
       trailing: Column(

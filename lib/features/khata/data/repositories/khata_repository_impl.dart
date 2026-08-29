@@ -150,7 +150,8 @@ class KhataRepositoryImpl implements KhataRepository {
       _db.watchAllBorrowedRecordsWithPerson(),
       _db.watchAllRepayments(),
       (rows, repayments) {
-        final borrowedRepayments = repayments.where((r) => r.recordType == 'borrowed');
+        final borrowedRepayments =
+            repayments.where((r) => r.recordType == 'borrowed' && r.entryType == 'repayment');
 
         return rows.map((row) {
           final record = row.readTable(_db.borrowedRecords);
@@ -183,7 +184,8 @@ class KhataRepositoryImpl implements KhataRepository {
   Future<List<BorrowedRecordEntity>> getAllBorrowedRecords() async {
     final rows = await _db.getAllBorrowedRecordsWithPerson();
     final repayments = await _db.getAllRepayments();
-    final borrowedRepayments = repayments.where((r) => r.recordType == 'borrowed');
+    final borrowedRepayments =
+        repayments.where((r) => r.recordType == 'borrowed' && r.entryType == 'repayment');
 
     return rows.map((row) {
       final record = row.readTable(_db.borrowedRecords);
@@ -218,17 +220,50 @@ class KhataRepositoryImpl implements KhataRepository {
     String? note,
   }) async {
     final now = DateTime.now();
-    return await _db.insertBorrowedRecord(
-      BorrowedRecordsCompanion.insert(
-        personId: personId,
-        totalAmountCents: totalAmountCents,
+    final existingRecords = await _db.getAllBorrowedRecordsWithPerson();
+    final match =
+        existingRecords.where((row) => row.readTable(_db.borrowedRecords).personId == personId);
+
+    int targetRecordId;
+    if (match.isNotEmpty) {
+      final existing = match.first.readTable(_db.borrowedRecords);
+      targetRecordId = existing.id;
+      final newTotal = existing.totalAmountCents + totalAmountCents;
+
+      await (_db.update(_db.borrowedRecords)..where((t) => t.id.equals(targetRecordId))).write(
+        BorrowedRecordsCompanion(
+          totalAmountCents: Value(newTotal),
+          updatedAt: Value(now),
+        ),
+      );
+    } else {
+      targetRecordId = await _db.insertBorrowedRecord(
+        BorrowedRecordsCompanion.insert(
+          personId: personId,
+          totalAmountCents: totalAmountCents,
+          date: date,
+          note: Value(note?.trim()),
+          status: 'pending',
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+    }
+
+    // Log addition entry in history
+    await _db.insertRepayment(
+      RepaymentsCompanion.insert(
+        recordType: 'borrowed',
+        recordId: targetRecordId,
+        amountCents: totalAmountCents,
+        entryType: const Value('addition'),
         date: date,
         note: Value(note?.trim()),
-        status: 'pending',
         createdAt: now,
-        updatedAt: now,
       ),
     );
+
+    return targetRecordId;
   }
 
   @override
@@ -265,7 +300,8 @@ class KhataRepositoryImpl implements KhataRepository {
       _db.watchAllLentRecordsWithPerson(),
       _db.watchAllRepayments(),
       (rows, repayments) {
-        final lentRepayments = repayments.where((r) => r.recordType == 'lent');
+        final lentRepayments =
+            repayments.where((r) => r.recordType == 'lent' && r.entryType == 'repayment');
 
         return rows.map((row) {
           final record = row.readTable(_db.lentRecords);
@@ -298,7 +334,8 @@ class KhataRepositoryImpl implements KhataRepository {
   Future<List<LentRecordEntity>> getAllLentRecords() async {
     final rows = await _db.getAllLentRecordsWithPerson();
     final repayments = await _db.getAllRepayments();
-    final lentRepayments = repayments.where((r) => r.recordType == 'lent');
+    final lentRepayments =
+        repayments.where((r) => r.recordType == 'lent' && r.entryType == 'repayment');
 
     return rows.map((row) {
       final record = row.readTable(_db.lentRecords);
@@ -333,17 +370,50 @@ class KhataRepositoryImpl implements KhataRepository {
     String? note,
   }) async {
     final now = DateTime.now();
-    return await _db.insertLentRecord(
-      LentRecordsCompanion.insert(
-        personId: personId,
-        totalAmountCents: totalAmountCents,
+    final existingRecords = await _db.getAllLentRecordsWithPerson();
+    final match =
+        existingRecords.where((row) => row.readTable(_db.lentRecords).personId == personId);
+
+    int targetRecordId;
+    if (match.isNotEmpty) {
+      final existing = match.first.readTable(_db.lentRecords);
+      targetRecordId = existing.id;
+      final newTotal = existing.totalAmountCents + totalAmountCents;
+
+      await (_db.update(_db.lentRecords)..where((t) => t.id.equals(targetRecordId))).write(
+        LentRecordsCompanion(
+          totalAmountCents: Value(newTotal),
+          updatedAt: Value(now),
+        ),
+      );
+    } else {
+      targetRecordId = await _db.insertLentRecord(
+        LentRecordsCompanion.insert(
+          personId: personId,
+          totalAmountCents: totalAmountCents,
+          date: date,
+          note: Value(note?.trim()),
+          status: 'pending',
+          createdAt: now,
+          updatedAt: now,
+        ),
+      );
+    }
+
+    // Log addition entry in history
+    await _db.insertRepayment(
+      RepaymentsCompanion.insert(
+        recordType: 'lent',
+        recordId: targetRecordId,
+        amountCents: totalAmountCents,
+        entryType: const Value('addition'),
         date: date,
         note: Value(note?.trim()),
-        status: 'pending',
         createdAt: now,
-        updatedAt: now,
       ),
     );
+
+    return targetRecordId;
   }
 
   @override
@@ -373,7 +443,7 @@ class KhataRepositoryImpl implements KhataRepository {
     return await _db.deleteLentRecord(id);
   }
 
-  // Repayments
+  // Repayments / Transaction History
   @override
   Stream<List<RepaymentEntity>> watchRepaymentsForRecord({
     required String recordType,
@@ -387,6 +457,7 @@ class KhataRepositoryImpl implements KhataRepository {
                   recordType: r.recordType,
                   recordId: r.recordId,
                   amountCents: r.amountCents,
+                  entryType: r.entryType,
                   date: r.date,
                   note: r.note,
                   createdAt: r.createdAt,
@@ -409,6 +480,7 @@ class KhataRepositoryImpl implements KhataRepository {
             recordType: r.recordType,
             recordId: r.recordId,
             amountCents: r.amountCents,
+            entryType: r.entryType,
             date: r.date,
             note: r.note,
             createdAt: r.createdAt,
@@ -431,6 +503,7 @@ class KhataRepositoryImpl implements KhataRepository {
         recordType: recordType,
         recordId: recordId,
         amountCents: amountCents,
+        entryType: const Value('repayment'),
         date: date,
         note: Value(note?.trim()),
         createdAt: now,
@@ -440,6 +513,29 @@ class KhataRepositoryImpl implements KhataRepository {
 
   @override
   Future<int> deleteRepayment(int id) async {
+    final repayment =
+        await (_db.select(_db.repayments)..where((t) => t.id.equals(id))).getSingleOrNull();
+    if (repayment != null && repayment.entryType == 'addition') {
+      if (repayment.recordType == 'borrowed') {
+        final rec = await (_db.select(_db.borrowedRecords)
+              ..where((t) => t.id.equals(repayment.recordId)))
+            .getSingleOrNull();
+        if (rec != null) {
+          final newTotal = rec.totalAmountCents - repayment.amountCents;
+          await (_db.update(_db.borrowedRecords)..where((t) => t.id.equals(repayment.recordId)))
+              .write(BorrowedRecordsCompanion(totalAmountCents: Value(newTotal < 0 ? 0 : newTotal)));
+        }
+      } else if (repayment.recordType == 'lent') {
+        final rec = await (_db.select(_db.lentRecords)
+              ..where((t) => t.id.equals(repayment.recordId)))
+            .getSingleOrNull();
+        if (rec != null) {
+          final newTotal = rec.totalAmountCents - repayment.amountCents;
+          await (_db.update(_db.lentRecords)..where((t) => t.id.equals(repayment.recordId)))
+              .write(LentRecordsCompanion(totalAmountCents: Value(newTotal < 0 ? 0 : newTotal)));
+        }
+      }
+    }
     return await _db.deleteRepayment(id);
   }
 }

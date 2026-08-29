@@ -321,7 +321,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 834,
+        "offset": 833,
         "name": "ExpenseEntries"
       },
       "references": [
@@ -341,7 +341,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 882,
+            "offset": 881,
             "name": "id"
           },
           "typeConverter": null,
@@ -362,7 +362,7 @@
           "nameInDart": "amountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 914,
+            "offset": 913,
             "name": "amountCents"
           },
           "typeConverter": null,
@@ -383,7 +383,7 @@
           "nameInDart": "categoryId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 958,
+            "offset": 957,
             "name": "categoryId"
           },
           "typeConverter": null,
@@ -418,7 +418,7 @@
           "nameInDart": "date",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1034,
+            "offset": 1033,
             "name": "date"
           },
           "typeConverter": null,
@@ -439,7 +439,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1073,
+            "offset": 1072,
             "name": "note"
           },
           "typeConverter": null,
@@ -460,7 +460,7 @@
           "nameInDart": "paymentMethod",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1119,
+            "offset": 1118,
             "name": "paymentMethod"
           },
           "typeConverter": null,
@@ -481,7 +481,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1178,
+            "offset": 1177,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -502,7 +502,7 @@
           "nameInDart": "updatedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1226,
+            "offset": 1225,
             "name": "updatedAt"
           },
           "typeConverter": null,
@@ -543,7 +543,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 1347,
+        "offset": 1346,
         "name": "Persons"
       },
       "references": [],
@@ -558,7 +558,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1387,
+            "offset": 1386,
             "name": "id"
           },
           "typeConverter": null,
@@ -584,7 +584,7 @@
           "nameInDart": "name",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1439,
+            "offset": 1438,
             "name": "name"
           },
           "typeConverter": null,
@@ -605,7 +605,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1474,
+            "offset": 1473,
             "name": "note"
           },
           "typeConverter": null,
@@ -626,7 +626,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1524,
+            "offset": 1523,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -647,7 +647,7 @@
           "nameInDart": "updatedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1572,
+            "offset": 1571,
             "name": "updatedAt"
           },
           "typeConverter": null,
@@ -681,7 +681,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 1650,
+        "offset": 1649,
         "name": "BorrowedRecords"
       },
       "references": [
@@ -701,7 +701,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1698,
+            "offset": 1697,
             "name": "id"
           },
           "typeConverter": null,
@@ -727,7 +727,7 @@
           "nameInDart": "personId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1749,
+            "offset": 1748,
             "name": "personId"
           },
           "typeConverter": null,
@@ -762,7 +762,7 @@
           "nameInDart": "totalAmountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1815,
+            "offset": 1814,
             "name": "totalAmountCents"
           },
           "typeConverter": null,
@@ -783,7 +783,7 @@
           "nameInDart": "date",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1869,
+            "offset": 1868,
             "name": "date"
           },
           "typeConverter": null,
@@ -804,7 +804,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1908,
+            "offset": 1907,
             "name": "note"
           },
           "typeConverter": null,
@@ -825,7 +825,7 @@
           "nameInDart": "status",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1954,
+            "offset": 1953,
             "name": "status"
           },
           "typeConverter": null,
@@ -846,7 +846,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2038,
+            "offset": 2049,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -867,7 +867,7 @@
           "nameInDart": "updatedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2086,
+            "offset": 2097,
             "name": "updatedAt"
           },
           "typeConverter": null,
@@ -901,7 +901,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 2160,
+        "offset": 2171,
         "name": "LentRecords"
       },
       "references": [
@@ -921,7 +921,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2204,
+            "offset": 2215,
             "name": "id"
           },
           "typeConverter": null,
@@ -947,7 +947,7 @@
           "nameInDart": "personId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2255,
+            "offset": 2266,
             "name": "personId"
           },
           "typeConverter": null,
@@ -982,7 +982,7 @@
           "nameInDart": "totalAmountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2321,
+            "offset": 2332,
             "name": "totalAmountCents"
           },
           "typeConverter": null,
@@ -1003,7 +1003,7 @@
           "nameInDart": "date",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2375,
+            "offset": 2386,
             "name": "date"
           },
           "typeConverter": null,
@@ -1024,7 +1024,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2414,
+            "offset": 2425,
             "name": "note"
           },
           "typeConverter": null,
@@ -1045,7 +1045,7 @@
           "nameInDart": "status",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2460,
+            "offset": 2471,
             "name": "status"
           },
           "typeConverter": null,
@@ -1066,7 +1066,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2544,
+            "offset": 2567,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -1087,7 +1087,7 @@
           "nameInDart": "updatedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2592,
+            "offset": 2615,
             "name": "updatedAt"
           },
           "typeConverter": null,
@@ -1121,7 +1121,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 2665,
+        "offset": 2688,
         "name": "Repayments"
       },
       "references": [],
@@ -1136,7 +1136,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2708,
+            "offset": 2731,
             "name": "id"
           },
           "typeConverter": null,
@@ -1162,7 +1162,7 @@
           "nameInDart": "recordType",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2760,
+            "offset": 2783,
             "name": "recordType"
           },
           "typeConverter": null,
@@ -1183,7 +1183,7 @@
           "nameInDart": "recordId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2824,
+            "offset": 2847,
             "name": "recordId"
           },
           "typeConverter": null,
@@ -1204,12 +1204,42 @@
           "nameInDart": "amountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2911,
+            "offset": 2934,
             "name": "amountCents"
           },
           "typeConverter": null,
           "clientDefaultCode": null,
           "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "entry_type",
+          "nameInDart": "entryType",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 2979,
+            "name": "entryType"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "('repayment')"
+            ]
+          },
           "overriddenJsonName": null,
           "referenceName": null,
           "documentationComment": null,
@@ -1225,7 +1255,7 @@
           "nameInDart": "date",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2960,
+            "offset": 3093,
             "name": "date"
           },
           "typeConverter": null,
@@ -1246,7 +1276,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2999,
+            "offset": 3132,
             "name": "note"
           },
           "typeConverter": null,
@@ -1267,7 +1297,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3049,
+            "offset": 3182,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -1287,6 +1317,934 @@
       "fixed_entity_info_name": null,
       "base_dart_name": "Repayments",
       "row_class_name": "RepaymentTableData",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "wishlist_items": {
+      "id": {
+        "library_uri": "package:apnabatwa/data/local/tables.dart",
+        "name": "wishlist_items"
+      },
+      "declaration": {
+        "source_uri": "package:apnabatwa/data/local/tables.dart",
+        "offset": 3258,
+        "name": "WishlistItems"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3305,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "name",
+          "nameInDart": "name",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3338,
+            "name": "name"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "price_cents",
+          "nameInDart": "priceCents",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3372,
+            "name": "priceCents"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "category",
+          "nameInDart": "category",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3416,
+            "name": "category"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "priority",
+          "nameInDart": "priority",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3455,
+            "name": "priority"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "notes",
+          "nameInDart": "notes",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3521,
+            "name": "notes"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_purchased",
+          "nameInDart": "isPurchased",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3568,
+            "name": "isPurchased"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(false)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "created_at",
+          "nameInDart": "createdAt",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3652,
+            "name": "createdAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "purchased_at",
+          "nameInDart": "purchasedAt",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3700,
+            "name": "purchasedAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "WishlistItems",
+      "row_class_name": "WishlistItemTableData",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "purchases": {
+      "id": {
+        "library_uri": "package:apnabatwa/data/local/tables.dart",
+        "name": "purchases"
+      },
+      "declaration": {
+        "source_uri": "package:apnabatwa/data/local/tables.dart",
+        "offset": 3836,
+        "name": "Purchases"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3879,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "name",
+          "nameInDart": "name",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3912,
+            "name": "name"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "amount_cents",
+          "nameInDart": "amountCents",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3946,
+            "name": "amountCents"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "category",
+          "nameInDart": "category",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 3991,
+            "name": "category"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "purchase_date",
+          "nameInDart": "purchaseDate",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4034,
+            "name": "purchaseDate"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "linked_wishlist_item_id",
+          "nameInDart": "linkedWishlistItemId",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4081,
+            "name": "linkedWishlistItemId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "linked_expense_id",
+          "nameInDart": "linkedExpenseId",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4143,
+            "name": "linkedExpenseId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "notes",
+          "nameInDart": "notes",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4200,
+            "name": "notes"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "created_at",
+          "nameInDart": "createdAt",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4251,
+            "name": "createdAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Purchases",
+      "row_class_name": "PurchaseTableData",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "budgets": {
+      "id": {
+        "library_uri": "package:apnabatwa/data/local/tables.dart",
+        "name": "budgets"
+      },
+      "declaration": {
+        "source_uri": "package:apnabatwa/data/local/tables.dart",
+        "offset": 4372,
+        "name": "Budgets"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4413,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "category",
+          "nameInDart": "category",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4446,
+            "name": "category"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "monthly_limit_cents",
+          "nameInDart": "monthlyLimitCents",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4484,
+            "name": "monthlyLimitCents"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "month",
+          "nameInDart": "month",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4534,
+            "name": "month"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "year",
+          "nameInDart": "year",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4572,
+            "name": "year"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "created_at",
+          "nameInDart": "createdAt",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4614,
+            "name": "createdAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "Budgets",
+      "row_class_name": "BudgetTableData",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "savings_goals": {
+      "id": {
+        "library_uri": "package:apnabatwa/data/local/tables.dart",
+        "name": "savings_goals"
+      },
+      "declaration": {
+        "source_uri": "package:apnabatwa/data/local/tables.dart",
+        "offset": 4740,
+        "name": "SavingsGoals"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4786,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "name",
+          "nameInDart": "name",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4819,
+            "name": "name"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "target_amount_cents",
+          "nameInDart": "targetAmountCents",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4853,
+            "name": "targetAmountCents"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": true,
+          "nameInSql": "target_date",
+          "nameInDart": "targetDate",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4908,
+            "name": "targetDate"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "created_at",
+          "nameInDart": "createdAt",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 4968,
+            "name": "createdAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "bool"
+          },
+          "nullable": false,
+          "nameInSql": "is_completed",
+          "nameInDart": "isCompleted",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 5012,
+            "name": "isCompleted"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "(false)"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "SavingsGoals",
+      "row_class_name": "SavingsGoalTableData",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
+    },
+    "savings_contributions": {
+      "id": {
+        "library_uri": "package:apnabatwa/data/local/tables.dart",
+        "name": "savings_contributions"
+      },
+      "declaration": {
+        "source_uri": "package:apnabatwa/data/local/tables.dart",
+        "offset": 5182,
+        "name": "SavingsContributions"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 5236,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "savings_goal_id",
+          "nameInDart": "savingsGoalId",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 5269,
+            "name": "savingsGoalId"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "amount_cents",
+          "nameInDart": "amountCents",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 5312,
+            "name": "amountCents"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "contribution_date",
+          "nameInDart": "contributionDate",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 5361,
+            "name": "contributionDate"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
+          "nameInSql": "notes",
+          "nameInDart": "notes",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 5412,
+            "name": "notes"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [
+        {
+          "type": "primary_key",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "SavingsContributions",
+      "row_class_name": "SavingsContributionTableData",
       "companion_class_name": null,
       "without_rowid": false,
       "strict": false,

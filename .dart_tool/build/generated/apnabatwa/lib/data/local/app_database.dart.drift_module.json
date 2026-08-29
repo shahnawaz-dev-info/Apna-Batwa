@@ -7,7 +7,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/app_database.dart",
-        "offset": 679,
+        "offset": 760,
         "name": "AppDatabase"
       },
       "references": [
@@ -38,6 +38,26 @@
         {
           "library_uri": "package:apnabatwa/data/local/tables.dart",
           "name": "repayments"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "wishlist_items"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "purchases"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "budgets"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "savings_goals"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "savings_contributions"
         }
       ],
       "type": "database",
@@ -69,12 +89,32 @@
         {
           "library_uri": "package:apnabatwa/data/local/tables.dart",
           "name": "repayments"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "wishlist_items"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "purchases"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "budgets"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "savings_goals"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "savings_contributions"
         }
       ],
       "views": [],
       "includes": [],
       "queries": [],
-      "schema_version": 2,
+      "schema_version": 4,
       "daos": [],
       "has_constructor_arg": false
     }

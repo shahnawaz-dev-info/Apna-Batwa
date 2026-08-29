@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'core/theme/colors.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'features/khata/presentation/screens/khata_screen.dart';
 import 'features/transactions/presentation/screens/transactions_screen.dart';
+
+import 'features/wishlist/presentation/screens/wishlist_screen.dart';
+import 'features/more/presentation/screens/more_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -18,16 +20,8 @@ class _MainShellState extends State<MainShell> {
     const DashboardScreen(),
     const TransactionsScreen(),
     const KhataScreen(),
-    const _PlaceholderScreen(
-      title: 'Wishlist',
-      subtitle: 'Smart Shopping & Savings Wishlist coming soon!',
-      icon: Icons.card_giftcard_outlined,
-    ),
-    const _PlaceholderScreen(
-      title: 'More Options',
-      subtitle: 'Settings, Backup, Security & Reminders coming soon!',
-      icon: Icons.more_horiz_outlined,
-    ),
+    const WishlistScreen(),
+    const MoreScreen(),
   ];
 
   @override
@@ -73,74 +67,4 @@ class _MainShellState extends State<MainShell> {
   }
 }
 
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
 
-  const _PlaceholderScreen({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 64, color: AppColors.primaryBlue),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                ),
-              ),
-              const SizedBox(height: 24),
-              Chip(
-                backgroundColor: AppColors.warningAmber.withOpacity(0.15),
-                side: BorderSide.none,
-                label: const Text(
-                  'Coming Soon • Phase 1 Core Active',
-                  style: TextStyle(
-                    color: AppColors.warningAmber,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

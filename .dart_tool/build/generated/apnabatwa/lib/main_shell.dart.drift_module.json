@@ -4,6 +4,7 @@
     "package:flutter/material.dart",
     "package:apnabatwa/core/theme/colors.dart",
     "package:apnabatwa/features/dashboard/presentation/screens/dashboard_screen.dart",
+    "package:apnabatwa/features/khata/presentation/screens/khata_screen.dart",
     "package:apnabatwa/features/transactions/presentation/screens/transactions_screen.dart"
   ]
 }

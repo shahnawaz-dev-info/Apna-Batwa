@@ -4,6 +4,7 @@ import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/borrowed_record.dart';
 import '../../domain/entities/lent_record.dart';
+import '../../domain/entities/repayment.dart';
 import '../providers/khata_providers.dart';
 import '../widgets/add_borrowed_lent_modal.dart';
 import '../widgets/add_repayment_modal.dart';
@@ -200,40 +201,39 @@ class KhataDetailScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Repayment History',
+                  'Transaction History',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
                   ),
                 ),
-                if (status != DebtStatus.fullyPaid)
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isBorrowed ? AppColors.successGreen : AppColors.primaryBlue,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isBorrowed ? AppColors.successGreen : AppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onPressed: () {
-                      AddRepaymentModal.show(
-                        context,
-                        recordType: recordType,
-                        recordId: recordId,
-                        remainingCents: remainingCents,
-                      );
-                    },
-                    icon: const Icon(Icons.add_circle_outline, size: 18),
-                    label: Text(isBorrowed ? '+ Return Money' : '+ Receive Money'),
                   ),
+                  onPressed: () {
+                    AddRepaymentModal.show(
+                      context,
+                      recordType: recordType,
+                      recordId: recordId,
+                      remainingCents: remainingCents,
+                    );
+                  },
+                  icon: const Icon(Icons.add_circle_outline, size: 18),
+                  label: Text(isBorrowed ? '+ Return Money' : '+ Receive Money'),
+                ),
               ],
             ),
 
             const SizedBox(height: 12),
 
-            // Repayment History List
+            // Transaction History List (Additions & Repayments)
             repaymentsAsync.when(
               data: (repayments) {
                 if (repayments.isEmpty) {
@@ -256,7 +256,7 @@ class KhataDetailScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'No repayments logged yet',
+                          'No transactions logged yet',
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -268,13 +268,26 @@ class KhataDetailScreen extends ConsumerWidget {
                   );
                 }
 
+                final sorted = [...repayments]..sort((a, b) => b.date.compareTo(a.date));
+
                 return ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: repayments.length,
+                  itemCount: sorted.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
-                    final item = repayments[index];
+                    final item = sorted[index];
+                    final isAddition = item.entryType == 'addition';
+
+                    final iconData = isAddition ? Icons.add_circle_outline : Icons.check_circle_outline;
+                    final iconColor = isAddition
+                        ? (isBorrowed ? AppColors.warningAmber : AppColors.primaryBlue)
+                        : AppColors.successGreen;
+
+                    final actionPrefix = isAddition
+                        ? (isBorrowed ? 'Borrowed' : 'Lent')
+                        : (isBorrowed ? 'Returned' : 'Received');
+
                     return Container(
                       decoration: BoxDecoration(
                         color: isDark ? AppColors.cardDark : AppColors.cardLight,
@@ -287,17 +300,17 @@ class KhataDetailScreen extends ConsumerWidget {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: AppColors.successGreen.withOpacity(0.1),
+                            color: iconColor.withOpacity(0.1),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.check_circle_outline, color: AppColors.successGreen, size: 20),
+                          child: Icon(iconData, color: iconColor, size: 20),
                         ),
                         title: Text(
-                          CurrencyFormatter.formatCents(item.amountCents),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          '$actionPrefix ${CurrencyFormatter.formatCents(item.amountCents)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                         ),
                         subtitle: Text(
-                          '${DateFormatters.formatDate(item.date)}${item.note != null ? " • ${item.note}" : ""}',
+                          '${DateFormatters.formatDate(item.date)}${item.note != null && item.note!.isNotEmpty ? " • ${item.note}" : ""}',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -305,7 +318,7 @@ class KhataDetailScreen extends ConsumerWidget {
                         ),
                         trailing: IconButton(
                           icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
-                          onPressed: () => _confirmDeleteRepayment(context, ref, item.id),
+                          onPressed: () => _confirmDeleteRepayment(context, ref, item),
                         ),
                       ),
                     );
@@ -313,7 +326,7 @@ class KhataDetailScreen extends ConsumerWidget {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Text('Error loading repayments: $err'),
+              error: (err, _) => Text('Error loading history: $err'),
             ),
           ],
         ),
@@ -350,7 +363,7 @@ class KhataDetailScreen extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Delete Khata Entry'),
-        content: const Text('Are you sure you want to delete this record and all its repayment logs?'),
+        content: const Text('Are you sure you want to delete this record and all its transaction logs?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -375,12 +388,14 @@ class KhataDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmDeleteRepayment(BuildContext context, WidgetRef ref, int repaymentId) {
+  void _confirmDeleteRepayment(BuildContext context, WidgetRef ref, RepaymentEntity item) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Repayment'),
-        content: const Text('Are you sure you want to delete this repayment log?'),
+        title: Text(item.entryType == 'addition' ? 'Delete Transaction Entry' : 'Delete Payment Log'),
+        content: Text(
+          'Are you sure you want to delete this ${item.entryType == 'addition' ? 'addition' : 'payment'} entry of ${CurrencyFormatter.formatCents(item.amountCents)}?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -391,7 +406,7 @@ class KhataDetailScreen extends ConsumerWidget {
             onPressed: () async {
               Navigator.pop(ctx);
               final repo = ref.read(khataRepositoryProvider);
-              await repo.deleteRepayment(repaymentId);
+              await repo.deleteRepayment(item.id);
             },
             child: const Text('Delete'),
           ),

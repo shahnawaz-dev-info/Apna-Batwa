@@ -3,6 +3,7 @@ class RepaymentEntity {
   final String recordType; // 'borrowed' or 'lent'
   final int recordId;
   final int amountCents;
+  final String entryType; // 'addition' or 'repayment'
   final DateTime date;
   final String? note;
   final DateTime createdAt;
@@ -12,6 +13,7 @@ class RepaymentEntity {
     required this.recordType,
     required this.recordId,
     required this.amountCents,
+    this.entryType = 'repayment',
     required this.date,
     this.note,
     required this.createdAt,

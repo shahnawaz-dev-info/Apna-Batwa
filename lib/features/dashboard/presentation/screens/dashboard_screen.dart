@@ -9,6 +9,7 @@ import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../expenses/presentation/widgets/add_expense_modal.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
 import '../../../khata/presentation/providers/khata_providers.dart';
+import '../../../savings/presentation/providers/savings_providers.dart';
 import '../providers/dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -22,6 +23,7 @@ class DashboardScreen extends ConsumerWidget {
     final totalExpensesCents = ref.watch(totalExpensesCentsProvider);
     final totalYouOweCents = ref.watch(totalYouOweCentsProvider);
     final totalOthersOweYouCents = ref.watch(totalOthersOweYouCentsProvider);
+    final totalActiveSavingsCents = ref.watch(totalActiveSavingsCentsProvider);
     final recentTransactions = ref.watch(recentTransactionsProvider);
 
     return Scaffold(
@@ -204,8 +206,25 @@ class DashboardScreen extends ConsumerWidget {
                       context,
                       title: 'Others Owe You',
                       amount: CurrencyFormatter.formatCents(totalOthersOweYouCents),
-                      icon: Icons.savings_outlined,
+                      icon: Icons.account_balance_outlined,
                       color: AppColors.successGreen,
+                      isPlaceholder: false,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildSummaryCard(
+                      context,
+                      title: 'Active Savings Set Aside',
+                      amount: CurrencyFormatter.formatCents(totalActiveSavingsCents),
+                      icon: Icons.savings_outlined,
+                      color: AppColors.primaryBlue,
                       isPlaceholder: false,
                     ),
                   ),

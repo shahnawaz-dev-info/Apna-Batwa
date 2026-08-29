@@ -4,14 +4,17 @@ import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../income/domain/entities/income_entry.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
 import '../../../khata/presentation/providers/khata_providers.dart';
+import '../../../savings/presentation/providers/savings_providers.dart';
 
 final currentBalanceCentsProvider = Provider<int>((ref) {
   final totalIncome = ref.watch(totalIncomeCentsProvider);
   final totalExpenses = ref.watch(totalExpensesCentsProvider);
   final totalYouOwe = ref.watch(totalYouOweCentsProvider);
   final totalOthersOweYou = ref.watch(totalOthersOweYouCentsProvider);
+  final totalActiveSavings = ref.watch(totalActiveSavingsCentsProvider);
 
-  return (totalIncome - totalExpenses) + totalYouOwe - totalOthersOweYou;
+  // Current Balance = (Income - Expenses) + You Owe - Others Owe You - Active Savings Contributions
+  return (totalIncome - totalExpenses) + totalYouOwe - totalOthersOweYou - totalActiveSavings;
 });
 
 class CombinedTransactionItem {

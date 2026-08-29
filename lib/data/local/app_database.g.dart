@@ -2270,6 +2270,14 @@ class $RepaymentsTable extends Repayments
   late final GeneratedColumn<int> amountCents = GeneratedColumn<int>(
       'amount_cents', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _entryTypeMeta =
+      const VerificationMeta('entryType');
+  @override
+  late final GeneratedColumn<String> entryType = GeneratedColumn<String>(
+      'entry_type', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      defaultValue: const Constant('repayment'));
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
   @override
   late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
@@ -2288,7 +2296,7 @@ class $RepaymentsTable extends Repayments
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, recordType, recordId, amountCents, date, note, createdAt];
+      [id, recordType, recordId, amountCents, entryType, date, note, createdAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2324,6 +2332,10 @@ class $RepaymentsTable extends Repayments
     } else if (isInserting) {
       context.missing(_amountCentsMeta);
     }
+    if (data.containsKey('entry_type')) {
+      context.handle(_entryTypeMeta,
+          entryType.isAcceptableOrUnknown(data['entry_type']!, _entryTypeMeta));
+    }
     if (data.containsKey('date')) {
       context.handle(
           _dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
@@ -2357,6 +2369,8 @@ class $RepaymentsTable extends Repayments
           .read(DriftSqlType.int, data['${effectivePrefix}record_id'])!,
       amountCents: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}amount_cents'])!,
+      entryType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}entry_type'])!,
       date: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date'])!,
       note: attachedDatabase.typeMapping
@@ -2378,6 +2392,7 @@ class RepaymentTableData extends DataClass
   final String recordType;
   final int recordId;
   final int amountCents;
+  final String entryType;
   final DateTime date;
   final String? note;
   final DateTime createdAt;
@@ -2386,6 +2401,7 @@ class RepaymentTableData extends DataClass
       required this.recordType,
       required this.recordId,
       required this.amountCents,
+      required this.entryType,
       required this.date,
       this.note,
       required this.createdAt});
@@ -2396,6 +2412,7 @@ class RepaymentTableData extends DataClass
     map['record_type'] = Variable<String>(recordType);
     map['record_id'] = Variable<int>(recordId);
     map['amount_cents'] = Variable<int>(amountCents);
+    map['entry_type'] = Variable<String>(entryType);
     map['date'] = Variable<DateTime>(date);
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
@@ -2410,6 +2427,7 @@ class RepaymentTableData extends DataClass
       recordType: Value(recordType),
       recordId: Value(recordId),
       amountCents: Value(amountCents),
+      entryType: Value(entryType),
       date: Value(date),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       createdAt: Value(createdAt),
@@ -2424,6 +2442,7 @@ class RepaymentTableData extends DataClass
       recordType: serializer.fromJson<String>(json['recordType']),
       recordId: serializer.fromJson<int>(json['recordId']),
       amountCents: serializer.fromJson<int>(json['amountCents']),
+      entryType: serializer.fromJson<String>(json['entryType']),
       date: serializer.fromJson<DateTime>(json['date']),
       note: serializer.fromJson<String?>(json['note']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -2437,6 +2456,7 @@ class RepaymentTableData extends DataClass
       'recordType': serializer.toJson<String>(recordType),
       'recordId': serializer.toJson<int>(recordId),
       'amountCents': serializer.toJson<int>(amountCents),
+      'entryType': serializer.toJson<String>(entryType),
       'date': serializer.toJson<DateTime>(date),
       'note': serializer.toJson<String?>(note),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -2448,6 +2468,7 @@ class RepaymentTableData extends DataClass
           String? recordType,
           int? recordId,
           int? amountCents,
+          String? entryType,
           DateTime? date,
           Value<String?> note = const Value.absent(),
           DateTime? createdAt}) =>
@@ -2456,6 +2477,7 @@ class RepaymentTableData extends DataClass
         recordType: recordType ?? this.recordType,
         recordId: recordId ?? this.recordId,
         amountCents: amountCents ?? this.amountCents,
+        entryType: entryType ?? this.entryType,
         date: date ?? this.date,
         note: note.present ? note.value : this.note,
         createdAt: createdAt ?? this.createdAt,
@@ -2468,6 +2490,7 @@ class RepaymentTableData extends DataClass
       recordId: data.recordId.present ? data.recordId.value : this.recordId,
       amountCents:
           data.amountCents.present ? data.amountCents.value : this.amountCents,
+      entryType: data.entryType.present ? data.entryType.value : this.entryType,
       date: data.date.present ? data.date.value : this.date,
       note: data.note.present ? data.note.value : this.note,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -2481,6 +2504,7 @@ class RepaymentTableData extends DataClass
           ..write('recordType: $recordType, ')
           ..write('recordId: $recordId, ')
           ..write('amountCents: $amountCents, ')
+          ..write('entryType: $entryType, ')
           ..write('date: $date, ')
           ..write('note: $note, ')
           ..write('createdAt: $createdAt')
@@ -2489,8 +2513,8 @@ class RepaymentTableData extends DataClass
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, recordType, recordId, amountCents, date, note, createdAt);
+  int get hashCode => Object.hash(
+      id, recordType, recordId, amountCents, entryType, date, note, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2499,6 +2523,7 @@ class RepaymentTableData extends DataClass
           other.recordType == this.recordType &&
           other.recordId == this.recordId &&
           other.amountCents == this.amountCents &&
+          other.entryType == this.entryType &&
           other.date == this.date &&
           other.note == this.note &&
           other.createdAt == this.createdAt);
@@ -2509,6 +2534,7 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
   final Value<String> recordType;
   final Value<int> recordId;
   final Value<int> amountCents;
+  final Value<String> entryType;
   final Value<DateTime> date;
   final Value<String?> note;
   final Value<DateTime> createdAt;
@@ -2517,6 +2543,7 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
     this.recordType = const Value.absent(),
     this.recordId = const Value.absent(),
     this.amountCents = const Value.absent(),
+    this.entryType = const Value.absent(),
     this.date = const Value.absent(),
     this.note = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -2526,6 +2553,7 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
     required String recordType,
     required int recordId,
     required int amountCents,
+    this.entryType = const Value.absent(),
     required DateTime date,
     this.note = const Value.absent(),
     required DateTime createdAt,
@@ -2539,6 +2567,7 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
     Expression<String>? recordType,
     Expression<int>? recordId,
     Expression<int>? amountCents,
+    Expression<String>? entryType,
     Expression<DateTime>? date,
     Expression<String>? note,
     Expression<DateTime>? createdAt,
@@ -2548,6 +2577,7 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
       if (recordType != null) 'record_type': recordType,
       if (recordId != null) 'record_id': recordId,
       if (amountCents != null) 'amount_cents': amountCents,
+      if (entryType != null) 'entry_type': entryType,
       if (date != null) 'date': date,
       if (note != null) 'note': note,
       if (createdAt != null) 'created_at': createdAt,
@@ -2559,6 +2589,7 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
       Value<String>? recordType,
       Value<int>? recordId,
       Value<int>? amountCents,
+      Value<String>? entryType,
       Value<DateTime>? date,
       Value<String?>? note,
       Value<DateTime>? createdAt}) {
@@ -2567,6 +2598,7 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
       recordType: recordType ?? this.recordType,
       recordId: recordId ?? this.recordId,
       amountCents: amountCents ?? this.amountCents,
+      entryType: entryType ?? this.entryType,
       date: date ?? this.date,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
@@ -2588,6 +2620,9 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
     if (amountCents.present) {
       map['amount_cents'] = Variable<int>(amountCents.value);
     }
+    if (entryType.present) {
+      map['entry_type'] = Variable<String>(entryType.value);
+    }
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
     }
@@ -2607,9 +2642,2013 @@ class RepaymentsCompanion extends UpdateCompanion<RepaymentTableData> {
           ..write('recordType: $recordType, ')
           ..write('recordId: $recordId, ')
           ..write('amountCents: $amountCents, ')
+          ..write('entryType: $entryType, ')
           ..write('date: $date, ')
           ..write('note: $note, ')
           ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WishlistItemsTable extends WishlistItems
+    with TableInfo<$WishlistItemsTable, WishlistItemTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WishlistItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _priceCentsMeta =
+      const VerificationMeta('priceCents');
+  @override
+  late final GeneratedColumn<int> priceCents = GeneratedColumn<int>(
+      'price_cents', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _priorityMeta =
+      const VerificationMeta('priority');
+  @override
+  late final GeneratedColumn<String> priority = GeneratedColumn<String>(
+      'priority', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _isPurchasedMeta =
+      const VerificationMeta('isPurchased');
+  @override
+  late final GeneratedColumn<bool> isPurchased = GeneratedColumn<bool>(
+      'is_purchased', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_purchased" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _purchasedAtMeta =
+      const VerificationMeta('purchasedAt');
+  @override
+  late final GeneratedColumn<DateTime> purchasedAt = GeneratedColumn<DateTime>(
+      'purchased_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        priceCents,
+        category,
+        priority,
+        notes,
+        isPurchased,
+        createdAt,
+        purchasedAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'wishlist_items';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<WishlistItemTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('price_cents')) {
+      context.handle(
+          _priceCentsMeta,
+          priceCents.isAcceptableOrUnknown(
+              data['price_cents']!, _priceCentsMeta));
+    } else if (isInserting) {
+      context.missing(_priceCentsMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('priority')) {
+      context.handle(_priorityMeta,
+          priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta));
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('is_purchased')) {
+      context.handle(
+          _isPurchasedMeta,
+          isPurchased.isAcceptableOrUnknown(
+              data['is_purchased']!, _isPurchasedMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('purchased_at')) {
+      context.handle(
+          _purchasedAtMeta,
+          purchasedAt.isAcceptableOrUnknown(
+              data['purchased_at']!, _purchasedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WishlistItemTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WishlistItemTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      priceCents: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}price_cents'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
+      priority: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}priority'])!,
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      isPurchased: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_purchased'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      purchasedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}purchased_at']),
+    );
+  }
+
+  @override
+  $WishlistItemsTable createAlias(String alias) {
+    return $WishlistItemsTable(attachedDatabase, alias);
+  }
+}
+
+class WishlistItemTableData extends DataClass
+    implements Insertable<WishlistItemTableData> {
+  final String id;
+  final String name;
+  final int priceCents;
+  final String category;
+  final String priority;
+  final String? notes;
+  final bool isPurchased;
+  final DateTime createdAt;
+  final DateTime? purchasedAt;
+  const WishlistItemTableData(
+      {required this.id,
+      required this.name,
+      required this.priceCents,
+      required this.category,
+      required this.priority,
+      this.notes,
+      required this.isPurchased,
+      required this.createdAt,
+      this.purchasedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['price_cents'] = Variable<int>(priceCents);
+    map['category'] = Variable<String>(category);
+    map['priority'] = Variable<String>(priority);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['is_purchased'] = Variable<bool>(isPurchased);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || purchasedAt != null) {
+      map['purchased_at'] = Variable<DateTime>(purchasedAt);
+    }
+    return map;
+  }
+
+  WishlistItemsCompanion toCompanion(bool nullToAbsent) {
+    return WishlistItemsCompanion(
+      id: Value(id),
+      name: Value(name),
+      priceCents: Value(priceCents),
+      category: Value(category),
+      priority: Value(priority),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      isPurchased: Value(isPurchased),
+      createdAt: Value(createdAt),
+      purchasedAt: purchasedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(purchasedAt),
+    );
+  }
+
+  factory WishlistItemTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WishlistItemTableData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      priceCents: serializer.fromJson<int>(json['priceCents']),
+      category: serializer.fromJson<String>(json['category']),
+      priority: serializer.fromJson<String>(json['priority']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      isPurchased: serializer.fromJson<bool>(json['isPurchased']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      purchasedAt: serializer.fromJson<DateTime?>(json['purchasedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'priceCents': serializer.toJson<int>(priceCents),
+      'category': serializer.toJson<String>(category),
+      'priority': serializer.toJson<String>(priority),
+      'notes': serializer.toJson<String?>(notes),
+      'isPurchased': serializer.toJson<bool>(isPurchased),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'purchasedAt': serializer.toJson<DateTime?>(purchasedAt),
+    };
+  }
+
+  WishlistItemTableData copyWith(
+          {String? id,
+          String? name,
+          int? priceCents,
+          String? category,
+          String? priority,
+          Value<String?> notes = const Value.absent(),
+          bool? isPurchased,
+          DateTime? createdAt,
+          Value<DateTime?> purchasedAt = const Value.absent()}) =>
+      WishlistItemTableData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        priceCents: priceCents ?? this.priceCents,
+        category: category ?? this.category,
+        priority: priority ?? this.priority,
+        notes: notes.present ? notes.value : this.notes,
+        isPurchased: isPurchased ?? this.isPurchased,
+        createdAt: createdAt ?? this.createdAt,
+        purchasedAt: purchasedAt.present ? purchasedAt.value : this.purchasedAt,
+      );
+  WishlistItemTableData copyWithCompanion(WishlistItemsCompanion data) {
+    return WishlistItemTableData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      priceCents:
+          data.priceCents.present ? data.priceCents.value : this.priceCents,
+      category: data.category.present ? data.category.value : this.category,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      isPurchased:
+          data.isPurchased.present ? data.isPurchased.value : this.isPurchased,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      purchasedAt:
+          data.purchasedAt.present ? data.purchasedAt.value : this.purchasedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishlistItemTableData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('priceCents: $priceCents, ')
+          ..write('category: $category, ')
+          ..write('priority: $priority, ')
+          ..write('notes: $notes, ')
+          ..write('isPurchased: $isPurchased, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('purchasedAt: $purchasedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, priceCents, category, priority,
+      notes, isPurchased, createdAt, purchasedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WishlistItemTableData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.priceCents == this.priceCents &&
+          other.category == this.category &&
+          other.priority == this.priority &&
+          other.notes == this.notes &&
+          other.isPurchased == this.isPurchased &&
+          other.createdAt == this.createdAt &&
+          other.purchasedAt == this.purchasedAt);
+}
+
+class WishlistItemsCompanion extends UpdateCompanion<WishlistItemTableData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> priceCents;
+  final Value<String> category;
+  final Value<String> priority;
+  final Value<String?> notes;
+  final Value<bool> isPurchased;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> purchasedAt;
+  final Value<int> rowid;
+  const WishlistItemsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.priceCents = const Value.absent(),
+    this.category = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.isPurchased = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.purchasedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  WishlistItemsCompanion.insert({
+    required String id,
+    required String name,
+    required int priceCents,
+    required String category,
+    required String priority,
+    this.notes = const Value.absent(),
+    this.isPurchased = const Value.absent(),
+    required DateTime createdAt,
+    this.purchasedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        priceCents = Value(priceCents),
+        category = Value(category),
+        priority = Value(priority),
+        createdAt = Value(createdAt);
+  static Insertable<WishlistItemTableData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? priceCents,
+    Expression<String>? category,
+    Expression<String>? priority,
+    Expression<String>? notes,
+    Expression<bool>? isPurchased,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? purchasedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (priceCents != null) 'price_cents': priceCents,
+      if (category != null) 'category': category,
+      if (priority != null) 'priority': priority,
+      if (notes != null) 'notes': notes,
+      if (isPurchased != null) 'is_purchased': isPurchased,
+      if (createdAt != null) 'created_at': createdAt,
+      if (purchasedAt != null) 'purchased_at': purchasedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  WishlistItemsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<int>? priceCents,
+      Value<String>? category,
+      Value<String>? priority,
+      Value<String?>? notes,
+      Value<bool>? isPurchased,
+      Value<DateTime>? createdAt,
+      Value<DateTime?>? purchasedAt,
+      Value<int>? rowid}) {
+    return WishlistItemsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      priceCents: priceCents ?? this.priceCents,
+      category: category ?? this.category,
+      priority: priority ?? this.priority,
+      notes: notes ?? this.notes,
+      isPurchased: isPurchased ?? this.isPurchased,
+      createdAt: createdAt ?? this.createdAt,
+      purchasedAt: purchasedAt ?? this.purchasedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (priceCents.present) {
+      map['price_cents'] = Variable<int>(priceCents.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<String>(priority.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (isPurchased.present) {
+      map['is_purchased'] = Variable<bool>(isPurchased.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (purchasedAt.present) {
+      map['purchased_at'] = Variable<DateTime>(purchasedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WishlistItemsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('priceCents: $priceCents, ')
+          ..write('category: $category, ')
+          ..write('priority: $priority, ')
+          ..write('notes: $notes, ')
+          ..write('isPurchased: $isPurchased, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('purchasedAt: $purchasedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PurchasesTable extends Purchases
+    with TableInfo<$PurchasesTable, PurchaseTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PurchasesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _amountCentsMeta =
+      const VerificationMeta('amountCents');
+  @override
+  late final GeneratedColumn<int> amountCents = GeneratedColumn<int>(
+      'amount_cents', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _purchaseDateMeta =
+      const VerificationMeta('purchaseDate');
+  @override
+  late final GeneratedColumn<DateTime> purchaseDate = GeneratedColumn<DateTime>(
+      'purchase_date', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _linkedWishlistItemIdMeta =
+      const VerificationMeta('linkedWishlistItemId');
+  @override
+  late final GeneratedColumn<String> linkedWishlistItemId =
+      GeneratedColumn<String>('linked_wishlist_item_id', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _linkedExpenseIdMeta =
+      const VerificationMeta('linkedExpenseId');
+  @override
+  late final GeneratedColumn<String> linkedExpenseId = GeneratedColumn<String>(
+      'linked_expense_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        amountCents,
+        category,
+        purchaseDate,
+        linkedWishlistItemId,
+        linkedExpenseId,
+        notes,
+        createdAt
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'purchases';
+  @override
+  VerificationContext validateIntegrity(Insertable<PurchaseTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('amount_cents')) {
+      context.handle(
+          _amountCentsMeta,
+          amountCents.isAcceptableOrUnknown(
+              data['amount_cents']!, _amountCentsMeta));
+    } else if (isInserting) {
+      context.missing(_amountCentsMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('purchase_date')) {
+      context.handle(
+          _purchaseDateMeta,
+          purchaseDate.isAcceptableOrUnknown(
+              data['purchase_date']!, _purchaseDateMeta));
+    } else if (isInserting) {
+      context.missing(_purchaseDateMeta);
+    }
+    if (data.containsKey('linked_wishlist_item_id')) {
+      context.handle(
+          _linkedWishlistItemIdMeta,
+          linkedWishlistItemId.isAcceptableOrUnknown(
+              data['linked_wishlist_item_id']!, _linkedWishlistItemIdMeta));
+    }
+    if (data.containsKey('linked_expense_id')) {
+      context.handle(
+          _linkedExpenseIdMeta,
+          linkedExpenseId.isAcceptableOrUnknown(
+              data['linked_expense_id']!, _linkedExpenseIdMeta));
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PurchaseTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PurchaseTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      amountCents: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount_cents'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
+      purchaseDate: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}purchase_date'])!,
+      linkedWishlistItemId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}linked_wishlist_item_id']),
+      linkedExpenseId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}linked_expense_id']),
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $PurchasesTable createAlias(String alias) {
+    return $PurchasesTable(attachedDatabase, alias);
+  }
+}
+
+class PurchaseTableData extends DataClass
+    implements Insertable<PurchaseTableData> {
+  final String id;
+  final String name;
+  final int amountCents;
+  final String category;
+  final DateTime purchaseDate;
+  final String? linkedWishlistItemId;
+  final String? linkedExpenseId;
+  final String? notes;
+  final DateTime createdAt;
+  const PurchaseTableData(
+      {required this.id,
+      required this.name,
+      required this.amountCents,
+      required this.category,
+      required this.purchaseDate,
+      this.linkedWishlistItemId,
+      this.linkedExpenseId,
+      this.notes,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['amount_cents'] = Variable<int>(amountCents);
+    map['category'] = Variable<String>(category);
+    map['purchase_date'] = Variable<DateTime>(purchaseDate);
+    if (!nullToAbsent || linkedWishlistItemId != null) {
+      map['linked_wishlist_item_id'] = Variable<String>(linkedWishlistItemId);
+    }
+    if (!nullToAbsent || linkedExpenseId != null) {
+      map['linked_expense_id'] = Variable<String>(linkedExpenseId);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  PurchasesCompanion toCompanion(bool nullToAbsent) {
+    return PurchasesCompanion(
+      id: Value(id),
+      name: Value(name),
+      amountCents: Value(amountCents),
+      category: Value(category),
+      purchaseDate: Value(purchaseDate),
+      linkedWishlistItemId: linkedWishlistItemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedWishlistItemId),
+      linkedExpenseId: linkedExpenseId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(linkedExpenseId),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory PurchaseTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PurchaseTableData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      amountCents: serializer.fromJson<int>(json['amountCents']),
+      category: serializer.fromJson<String>(json['category']),
+      purchaseDate: serializer.fromJson<DateTime>(json['purchaseDate']),
+      linkedWishlistItemId:
+          serializer.fromJson<String?>(json['linkedWishlistItemId']),
+      linkedExpenseId: serializer.fromJson<String?>(json['linkedExpenseId']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'amountCents': serializer.toJson<int>(amountCents),
+      'category': serializer.toJson<String>(category),
+      'purchaseDate': serializer.toJson<DateTime>(purchaseDate),
+      'linkedWishlistItemId': serializer.toJson<String?>(linkedWishlistItemId),
+      'linkedExpenseId': serializer.toJson<String?>(linkedExpenseId),
+      'notes': serializer.toJson<String?>(notes),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  PurchaseTableData copyWith(
+          {String? id,
+          String? name,
+          int? amountCents,
+          String? category,
+          DateTime? purchaseDate,
+          Value<String?> linkedWishlistItemId = const Value.absent(),
+          Value<String?> linkedExpenseId = const Value.absent(),
+          Value<String?> notes = const Value.absent(),
+          DateTime? createdAt}) =>
+      PurchaseTableData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        amountCents: amountCents ?? this.amountCents,
+        category: category ?? this.category,
+        purchaseDate: purchaseDate ?? this.purchaseDate,
+        linkedWishlistItemId: linkedWishlistItemId.present
+            ? linkedWishlistItemId.value
+            : this.linkedWishlistItemId,
+        linkedExpenseId: linkedExpenseId.present
+            ? linkedExpenseId.value
+            : this.linkedExpenseId,
+        notes: notes.present ? notes.value : this.notes,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  PurchaseTableData copyWithCompanion(PurchasesCompanion data) {
+    return PurchaseTableData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      amountCents:
+          data.amountCents.present ? data.amountCents.value : this.amountCents,
+      category: data.category.present ? data.category.value : this.category,
+      purchaseDate: data.purchaseDate.present
+          ? data.purchaseDate.value
+          : this.purchaseDate,
+      linkedWishlistItemId: data.linkedWishlistItemId.present
+          ? data.linkedWishlistItemId.value
+          : this.linkedWishlistItemId,
+      linkedExpenseId: data.linkedExpenseId.present
+          ? data.linkedExpenseId.value
+          : this.linkedExpenseId,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PurchaseTableData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('category: $category, ')
+          ..write('purchaseDate: $purchaseDate, ')
+          ..write('linkedWishlistItemId: $linkedWishlistItemId, ')
+          ..write('linkedExpenseId: $linkedExpenseId, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, amountCents, category, purchaseDate,
+      linkedWishlistItemId, linkedExpenseId, notes, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PurchaseTableData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.amountCents == this.amountCents &&
+          other.category == this.category &&
+          other.purchaseDate == this.purchaseDate &&
+          other.linkedWishlistItemId == this.linkedWishlistItemId &&
+          other.linkedExpenseId == this.linkedExpenseId &&
+          other.notes == this.notes &&
+          other.createdAt == this.createdAt);
+}
+
+class PurchasesCompanion extends UpdateCompanion<PurchaseTableData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> amountCents;
+  final Value<String> category;
+  final Value<DateTime> purchaseDate;
+  final Value<String?> linkedWishlistItemId;
+  final Value<String?> linkedExpenseId;
+  final Value<String?> notes;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const PurchasesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.amountCents = const Value.absent(),
+    this.category = const Value.absent(),
+    this.purchaseDate = const Value.absent(),
+    this.linkedWishlistItemId = const Value.absent(),
+    this.linkedExpenseId = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PurchasesCompanion.insert({
+    required String id,
+    required String name,
+    required int amountCents,
+    required String category,
+    required DateTime purchaseDate,
+    this.linkedWishlistItemId = const Value.absent(),
+    this.linkedExpenseId = const Value.absent(),
+    this.notes = const Value.absent(),
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        amountCents = Value(amountCents),
+        category = Value(category),
+        purchaseDate = Value(purchaseDate),
+        createdAt = Value(createdAt);
+  static Insertable<PurchaseTableData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? amountCents,
+    Expression<String>? category,
+    Expression<DateTime>? purchaseDate,
+    Expression<String>? linkedWishlistItemId,
+    Expression<String>? linkedExpenseId,
+    Expression<String>? notes,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (amountCents != null) 'amount_cents': amountCents,
+      if (category != null) 'category': category,
+      if (purchaseDate != null) 'purchase_date': purchaseDate,
+      if (linkedWishlistItemId != null)
+        'linked_wishlist_item_id': linkedWishlistItemId,
+      if (linkedExpenseId != null) 'linked_expense_id': linkedExpenseId,
+      if (notes != null) 'notes': notes,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PurchasesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<int>? amountCents,
+      Value<String>? category,
+      Value<DateTime>? purchaseDate,
+      Value<String?>? linkedWishlistItemId,
+      Value<String?>? linkedExpenseId,
+      Value<String?>? notes,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return PurchasesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      amountCents: amountCents ?? this.amountCents,
+      category: category ?? this.category,
+      purchaseDate: purchaseDate ?? this.purchaseDate,
+      linkedWishlistItemId: linkedWishlistItemId ?? this.linkedWishlistItemId,
+      linkedExpenseId: linkedExpenseId ?? this.linkedExpenseId,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (amountCents.present) {
+      map['amount_cents'] = Variable<int>(amountCents.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (purchaseDate.present) {
+      map['purchase_date'] = Variable<DateTime>(purchaseDate.value);
+    }
+    if (linkedWishlistItemId.present) {
+      map['linked_wishlist_item_id'] =
+          Variable<String>(linkedWishlistItemId.value);
+    }
+    if (linkedExpenseId.present) {
+      map['linked_expense_id'] = Variable<String>(linkedExpenseId.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PurchasesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('category: $category, ')
+          ..write('purchaseDate: $purchaseDate, ')
+          ..write('linkedWishlistItemId: $linkedWishlistItemId, ')
+          ..write('linkedExpenseId: $linkedExpenseId, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BudgetsTable extends Budgets
+    with TableInfo<$BudgetsTable, BudgetTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BudgetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _monthlyLimitCentsMeta =
+      const VerificationMeta('monthlyLimitCents');
+  @override
+  late final GeneratedColumn<int> monthlyLimitCents = GeneratedColumn<int>(
+      'monthly_limit_cents', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  @override
+  late final GeneratedColumn<int> month = GeneratedColumn<int>(
+      'month', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+      'year', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, category, monthlyLimitCents, month, year, createdAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'budgets';
+  @override
+  VerificationContext validateIntegrity(Insertable<BudgetTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    } else if (isInserting) {
+      context.missing(_categoryMeta);
+    }
+    if (data.containsKey('monthly_limit_cents')) {
+      context.handle(
+          _monthlyLimitCentsMeta,
+          monthlyLimitCents.isAcceptableOrUnknown(
+              data['monthly_limit_cents']!, _monthlyLimitCentsMeta));
+    } else if (isInserting) {
+      context.missing(_monthlyLimitCentsMeta);
+    }
+    if (data.containsKey('month')) {
+      context.handle(
+          _monthMeta, month.isAcceptableOrUnknown(data['month']!, _monthMeta));
+    } else if (isInserting) {
+      context.missing(_monthMeta);
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+          _yearMeta, year.isAcceptableOrUnknown(data['year']!, _yearMeta));
+    } else if (isInserting) {
+      context.missing(_yearMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BudgetTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BudgetTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category'])!,
+      monthlyLimitCents: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}monthly_limit_cents'])!,
+      month: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}month'])!,
+      year: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}year'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+    );
+  }
+
+  @override
+  $BudgetsTable createAlias(String alias) {
+    return $BudgetsTable(attachedDatabase, alias);
+  }
+}
+
+class BudgetTableData extends DataClass implements Insertable<BudgetTableData> {
+  final String id;
+  final String category;
+  final int monthlyLimitCents;
+  final int month;
+  final int year;
+  final DateTime createdAt;
+  const BudgetTableData(
+      {required this.id,
+      required this.category,
+      required this.monthlyLimitCents,
+      required this.month,
+      required this.year,
+      required this.createdAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['category'] = Variable<String>(category);
+    map['monthly_limit_cents'] = Variable<int>(monthlyLimitCents);
+    map['month'] = Variable<int>(month);
+    map['year'] = Variable<int>(year);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  BudgetsCompanion toCompanion(bool nullToAbsent) {
+    return BudgetsCompanion(
+      id: Value(id),
+      category: Value(category),
+      monthlyLimitCents: Value(monthlyLimitCents),
+      month: Value(month),
+      year: Value(year),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory BudgetTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BudgetTableData(
+      id: serializer.fromJson<String>(json['id']),
+      category: serializer.fromJson<String>(json['category']),
+      monthlyLimitCents: serializer.fromJson<int>(json['monthlyLimitCents']),
+      month: serializer.fromJson<int>(json['month']),
+      year: serializer.fromJson<int>(json['year']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'category': serializer.toJson<String>(category),
+      'monthlyLimitCents': serializer.toJson<int>(monthlyLimitCents),
+      'month': serializer.toJson<int>(month),
+      'year': serializer.toJson<int>(year),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  BudgetTableData copyWith(
+          {String? id,
+          String? category,
+          int? monthlyLimitCents,
+          int? month,
+          int? year,
+          DateTime? createdAt}) =>
+      BudgetTableData(
+        id: id ?? this.id,
+        category: category ?? this.category,
+        monthlyLimitCents: monthlyLimitCents ?? this.monthlyLimitCents,
+        month: month ?? this.month,
+        year: year ?? this.year,
+        createdAt: createdAt ?? this.createdAt,
+      );
+  BudgetTableData copyWithCompanion(BudgetsCompanion data) {
+    return BudgetTableData(
+      id: data.id.present ? data.id.value : this.id,
+      category: data.category.present ? data.category.value : this.category,
+      monthlyLimitCents: data.monthlyLimitCents.present
+          ? data.monthlyLimitCents.value
+          : this.monthlyLimitCents,
+      month: data.month.present ? data.month.value : this.month,
+      year: data.year.present ? data.year.value : this.year,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BudgetTableData(')
+          ..write('id: $id, ')
+          ..write('category: $category, ')
+          ..write('monthlyLimitCents: $monthlyLimitCents, ')
+          ..write('month: $month, ')
+          ..write('year: $year, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, category, monthlyLimitCents, month, year, createdAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BudgetTableData &&
+          other.id == this.id &&
+          other.category == this.category &&
+          other.monthlyLimitCents == this.monthlyLimitCents &&
+          other.month == this.month &&
+          other.year == this.year &&
+          other.createdAt == this.createdAt);
+}
+
+class BudgetsCompanion extends UpdateCompanion<BudgetTableData> {
+  final Value<String> id;
+  final Value<String> category;
+  final Value<int> monthlyLimitCents;
+  final Value<int> month;
+  final Value<int> year;
+  final Value<DateTime> createdAt;
+  final Value<int> rowid;
+  const BudgetsCompanion({
+    this.id = const Value.absent(),
+    this.category = const Value.absent(),
+    this.monthlyLimitCents = const Value.absent(),
+    this.month = const Value.absent(),
+    this.year = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BudgetsCompanion.insert({
+    required String id,
+    required String category,
+    required int monthlyLimitCents,
+    required int month,
+    required int year,
+    required DateTime createdAt,
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        category = Value(category),
+        monthlyLimitCents = Value(monthlyLimitCents),
+        month = Value(month),
+        year = Value(year),
+        createdAt = Value(createdAt);
+  static Insertable<BudgetTableData> custom({
+    Expression<String>? id,
+    Expression<String>? category,
+    Expression<int>? monthlyLimitCents,
+    Expression<int>? month,
+    Expression<int>? year,
+    Expression<DateTime>? createdAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (category != null) 'category': category,
+      if (monthlyLimitCents != null) 'monthly_limit_cents': monthlyLimitCents,
+      if (month != null) 'month': month,
+      if (year != null) 'year': year,
+      if (createdAt != null) 'created_at': createdAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BudgetsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? category,
+      Value<int>? monthlyLimitCents,
+      Value<int>? month,
+      Value<int>? year,
+      Value<DateTime>? createdAt,
+      Value<int>? rowid}) {
+    return BudgetsCompanion(
+      id: id ?? this.id,
+      category: category ?? this.category,
+      monthlyLimitCents: monthlyLimitCents ?? this.monthlyLimitCents,
+      month: month ?? this.month,
+      year: year ?? this.year,
+      createdAt: createdAt ?? this.createdAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (monthlyLimitCents.present) {
+      map['monthly_limit_cents'] = Variable<int>(monthlyLimitCents.value);
+    }
+    if (month.present) {
+      map['month'] = Variable<int>(month.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BudgetsCompanion(')
+          ..write('id: $id, ')
+          ..write('category: $category, ')
+          ..write('monthlyLimitCents: $monthlyLimitCents, ')
+          ..write('month: $month, ')
+          ..write('year: $year, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SavingsGoalsTable extends SavingsGoals
+    with TableInfo<$SavingsGoalsTable, SavingsGoalTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavingsGoalsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _targetAmountCentsMeta =
+      const VerificationMeta('targetAmountCents');
+  @override
+  late final GeneratedColumn<int> targetAmountCents = GeneratedColumn<int>(
+      'target_amount_cents', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _targetDateMeta =
+      const VerificationMeta('targetDate');
+  @override
+  late final GeneratedColumn<DateTime> targetDate = GeneratedColumn<DateTime>(
+      'target_date', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _isCompletedMeta =
+      const VerificationMeta('isCompleted');
+  @override
+  late final GeneratedColumn<bool> isCompleted = GeneratedColumn<bool>(
+      'is_completed', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints: GeneratedColumn.constraintIsAlways(
+          'CHECK ("is_completed" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, targetAmountCents, targetDate, createdAt, isCompleted];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'savings_goals';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<SavingsGoalTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('target_amount_cents')) {
+      context.handle(
+          _targetAmountCentsMeta,
+          targetAmountCents.isAcceptableOrUnknown(
+              data['target_amount_cents']!, _targetAmountCentsMeta));
+    } else if (isInserting) {
+      context.missing(_targetAmountCentsMeta);
+    }
+    if (data.containsKey('target_date')) {
+      context.handle(
+          _targetDateMeta,
+          targetDate.isAcceptableOrUnknown(
+              data['target_date']!, _targetDateMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('is_completed')) {
+      context.handle(
+          _isCompletedMeta,
+          isCompleted.isAcceptableOrUnknown(
+              data['is_completed']!, _isCompletedMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavingsGoalTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavingsGoalTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      targetAmountCents: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}target_amount_cents'])!,
+      targetDate: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}target_date']),
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      isCompleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_completed'])!,
+    );
+  }
+
+  @override
+  $SavingsGoalsTable createAlias(String alias) {
+    return $SavingsGoalsTable(attachedDatabase, alias);
+  }
+}
+
+class SavingsGoalTableData extends DataClass
+    implements Insertable<SavingsGoalTableData> {
+  final String id;
+  final String name;
+  final int targetAmountCents;
+  final DateTime? targetDate;
+  final DateTime createdAt;
+  final bool isCompleted;
+  const SavingsGoalTableData(
+      {required this.id,
+      required this.name,
+      required this.targetAmountCents,
+      this.targetDate,
+      required this.createdAt,
+      required this.isCompleted});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    map['target_amount_cents'] = Variable<int>(targetAmountCents);
+    if (!nullToAbsent || targetDate != null) {
+      map['target_date'] = Variable<DateTime>(targetDate);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['is_completed'] = Variable<bool>(isCompleted);
+    return map;
+  }
+
+  SavingsGoalsCompanion toCompanion(bool nullToAbsent) {
+    return SavingsGoalsCompanion(
+      id: Value(id),
+      name: Value(name),
+      targetAmountCents: Value(targetAmountCents),
+      targetDate: targetDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(targetDate),
+      createdAt: Value(createdAt),
+      isCompleted: Value(isCompleted),
+    );
+  }
+
+  factory SavingsGoalTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavingsGoalTableData(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      targetAmountCents: serializer.fromJson<int>(json['targetAmountCents']),
+      targetDate: serializer.fromJson<DateTime?>(json['targetDate']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      isCompleted: serializer.fromJson<bool>(json['isCompleted']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'targetAmountCents': serializer.toJson<int>(targetAmountCents),
+      'targetDate': serializer.toJson<DateTime?>(targetDate),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'isCompleted': serializer.toJson<bool>(isCompleted),
+    };
+  }
+
+  SavingsGoalTableData copyWith(
+          {String? id,
+          String? name,
+          int? targetAmountCents,
+          Value<DateTime?> targetDate = const Value.absent(),
+          DateTime? createdAt,
+          bool? isCompleted}) =>
+      SavingsGoalTableData(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        targetAmountCents: targetAmountCents ?? this.targetAmountCents,
+        targetDate: targetDate.present ? targetDate.value : this.targetDate,
+        createdAt: createdAt ?? this.createdAt,
+        isCompleted: isCompleted ?? this.isCompleted,
+      );
+  SavingsGoalTableData copyWithCompanion(SavingsGoalsCompanion data) {
+    return SavingsGoalTableData(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      targetAmountCents: data.targetAmountCents.present
+          ? data.targetAmountCents.value
+          : this.targetAmountCents,
+      targetDate:
+          data.targetDate.present ? data.targetDate.value : this.targetDate,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      isCompleted:
+          data.isCompleted.present ? data.isCompleted.value : this.isCompleted,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingsGoalTableData(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('targetAmountCents: $targetAmountCents, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('isCompleted: $isCompleted')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id, name, targetAmountCents, targetDate, createdAt, isCompleted);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavingsGoalTableData &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.targetAmountCents == this.targetAmountCents &&
+          other.targetDate == this.targetDate &&
+          other.createdAt == this.createdAt &&
+          other.isCompleted == this.isCompleted);
+}
+
+class SavingsGoalsCompanion extends UpdateCompanion<SavingsGoalTableData> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<int> targetAmountCents;
+  final Value<DateTime?> targetDate;
+  final Value<DateTime> createdAt;
+  final Value<bool> isCompleted;
+  final Value<int> rowid;
+  const SavingsGoalsCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.targetAmountCents = const Value.absent(),
+    this.targetDate = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.isCompleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavingsGoalsCompanion.insert({
+    required String id,
+    required String name,
+    required int targetAmountCents,
+    this.targetDate = const Value.absent(),
+    required DateTime createdAt,
+    this.isCompleted = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        targetAmountCents = Value(targetAmountCents),
+        createdAt = Value(createdAt);
+  static Insertable<SavingsGoalTableData> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<int>? targetAmountCents,
+    Expression<DateTime>? targetDate,
+    Expression<DateTime>? createdAt,
+    Expression<bool>? isCompleted,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (targetAmountCents != null) 'target_amount_cents': targetAmountCents,
+      if (targetDate != null) 'target_date': targetDate,
+      if (createdAt != null) 'created_at': createdAt,
+      if (isCompleted != null) 'is_completed': isCompleted,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavingsGoalsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<int>? targetAmountCents,
+      Value<DateTime?>? targetDate,
+      Value<DateTime>? createdAt,
+      Value<bool>? isCompleted,
+      Value<int>? rowid}) {
+    return SavingsGoalsCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      targetAmountCents: targetAmountCents ?? this.targetAmountCents,
+      targetDate: targetDate ?? this.targetDate,
+      createdAt: createdAt ?? this.createdAt,
+      isCompleted: isCompleted ?? this.isCompleted,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (targetAmountCents.present) {
+      map['target_amount_cents'] = Variable<int>(targetAmountCents.value);
+    }
+    if (targetDate.present) {
+      map['target_date'] = Variable<DateTime>(targetDate.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (isCompleted.present) {
+      map['is_completed'] = Variable<bool>(isCompleted.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingsGoalsCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('targetAmountCents: $targetAmountCents, ')
+          ..write('targetDate: $targetDate, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('isCompleted: $isCompleted, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SavingsContributionsTable extends SavingsContributions
+    with TableInfo<$SavingsContributionsTable, SavingsContributionTableData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavingsContributionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _savingsGoalIdMeta =
+      const VerificationMeta('savingsGoalId');
+  @override
+  late final GeneratedColumn<String> savingsGoalId = GeneratedColumn<String>(
+      'savings_goal_id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _amountCentsMeta =
+      const VerificationMeta('amountCents');
+  @override
+  late final GeneratedColumn<int> amountCents = GeneratedColumn<int>(
+      'amount_cents', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _contributionDateMeta =
+      const VerificationMeta('contributionDate');
+  @override
+  late final GeneratedColumn<DateTime> contributionDate =
+      GeneratedColumn<DateTime>('contribution_date', aliasedName, false,
+          type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+      'notes', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, savingsGoalId, amountCents, contributionDate, notes];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'savings_contributions';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<SavingsContributionTableData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('savings_goal_id')) {
+      context.handle(
+          _savingsGoalIdMeta,
+          savingsGoalId.isAcceptableOrUnknown(
+              data['savings_goal_id']!, _savingsGoalIdMeta));
+    } else if (isInserting) {
+      context.missing(_savingsGoalIdMeta);
+    }
+    if (data.containsKey('amount_cents')) {
+      context.handle(
+          _amountCentsMeta,
+          amountCents.isAcceptableOrUnknown(
+              data['amount_cents']!, _amountCentsMeta));
+    } else if (isInserting) {
+      context.missing(_amountCentsMeta);
+    }
+    if (data.containsKey('contribution_date')) {
+      context.handle(
+          _contributionDateMeta,
+          contributionDate.isAcceptableOrUnknown(
+              data['contribution_date']!, _contributionDateMeta));
+    } else if (isInserting) {
+      context.missing(_contributionDateMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+          _notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SavingsContributionTableData map(Map<String, dynamic> data,
+      {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavingsContributionTableData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      savingsGoalId: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}savings_goal_id'])!,
+      amountCents: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}amount_cents'])!,
+      contributionDate: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}contribution_date'])!,
+      notes: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}notes']),
+    );
+  }
+
+  @override
+  $SavingsContributionsTable createAlias(String alias) {
+    return $SavingsContributionsTable(attachedDatabase, alias);
+  }
+}
+
+class SavingsContributionTableData extends DataClass
+    implements Insertable<SavingsContributionTableData> {
+  final String id;
+  final String savingsGoalId;
+  final int amountCents;
+  final DateTime contributionDate;
+  final String? notes;
+  const SavingsContributionTableData(
+      {required this.id,
+      required this.savingsGoalId,
+      required this.amountCents,
+      required this.contributionDate,
+      this.notes});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['savings_goal_id'] = Variable<String>(savingsGoalId);
+    map['amount_cents'] = Variable<int>(amountCents);
+    map['contribution_date'] = Variable<DateTime>(contributionDate);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    return map;
+  }
+
+  SavingsContributionsCompanion toCompanion(bool nullToAbsent) {
+    return SavingsContributionsCompanion(
+      id: Value(id),
+      savingsGoalId: Value(savingsGoalId),
+      amountCents: Value(amountCents),
+      contributionDate: Value(contributionDate),
+      notes:
+          notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+    );
+  }
+
+  factory SavingsContributionTableData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavingsContributionTableData(
+      id: serializer.fromJson<String>(json['id']),
+      savingsGoalId: serializer.fromJson<String>(json['savingsGoalId']),
+      amountCents: serializer.fromJson<int>(json['amountCents']),
+      contributionDate: serializer.fromJson<DateTime>(json['contributionDate']),
+      notes: serializer.fromJson<String?>(json['notes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'savingsGoalId': serializer.toJson<String>(savingsGoalId),
+      'amountCents': serializer.toJson<int>(amountCents),
+      'contributionDate': serializer.toJson<DateTime>(contributionDate),
+      'notes': serializer.toJson<String?>(notes),
+    };
+  }
+
+  SavingsContributionTableData copyWith(
+          {String? id,
+          String? savingsGoalId,
+          int? amountCents,
+          DateTime? contributionDate,
+          Value<String?> notes = const Value.absent()}) =>
+      SavingsContributionTableData(
+        id: id ?? this.id,
+        savingsGoalId: savingsGoalId ?? this.savingsGoalId,
+        amountCents: amountCents ?? this.amountCents,
+        contributionDate: contributionDate ?? this.contributionDate,
+        notes: notes.present ? notes.value : this.notes,
+      );
+  SavingsContributionTableData copyWithCompanion(
+      SavingsContributionsCompanion data) {
+    return SavingsContributionTableData(
+      id: data.id.present ? data.id.value : this.id,
+      savingsGoalId: data.savingsGoalId.present
+          ? data.savingsGoalId.value
+          : this.savingsGoalId,
+      amountCents:
+          data.amountCents.present ? data.amountCents.value : this.amountCents,
+      contributionDate: data.contributionDate.present
+          ? data.contributionDate.value
+          : this.contributionDate,
+      notes: data.notes.present ? data.notes.value : this.notes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingsContributionTableData(')
+          ..write('id: $id, ')
+          ..write('savingsGoalId: $savingsGoalId, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('contributionDate: $contributionDate, ')
+          ..write('notes: $notes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, savingsGoalId, amountCents, contributionDate, notes);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavingsContributionTableData &&
+          other.id == this.id &&
+          other.savingsGoalId == this.savingsGoalId &&
+          other.amountCents == this.amountCents &&
+          other.contributionDate == this.contributionDate &&
+          other.notes == this.notes);
+}
+
+class SavingsContributionsCompanion
+    extends UpdateCompanion<SavingsContributionTableData> {
+  final Value<String> id;
+  final Value<String> savingsGoalId;
+  final Value<int> amountCents;
+  final Value<DateTime> contributionDate;
+  final Value<String?> notes;
+  final Value<int> rowid;
+  const SavingsContributionsCompanion({
+    this.id = const Value.absent(),
+    this.savingsGoalId = const Value.absent(),
+    this.amountCents = const Value.absent(),
+    this.contributionDate = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavingsContributionsCompanion.insert({
+    required String id,
+    required String savingsGoalId,
+    required int amountCents,
+    required DateTime contributionDate,
+    this.notes = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        savingsGoalId = Value(savingsGoalId),
+        amountCents = Value(amountCents),
+        contributionDate = Value(contributionDate);
+  static Insertable<SavingsContributionTableData> custom({
+    Expression<String>? id,
+    Expression<String>? savingsGoalId,
+    Expression<int>? amountCents,
+    Expression<DateTime>? contributionDate,
+    Expression<String>? notes,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (savingsGoalId != null) 'savings_goal_id': savingsGoalId,
+      if (amountCents != null) 'amount_cents': amountCents,
+      if (contributionDate != null) 'contribution_date': contributionDate,
+      if (notes != null) 'notes': notes,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavingsContributionsCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? savingsGoalId,
+      Value<int>? amountCents,
+      Value<DateTime>? contributionDate,
+      Value<String?>? notes,
+      Value<int>? rowid}) {
+    return SavingsContributionsCompanion(
+      id: id ?? this.id,
+      savingsGoalId: savingsGoalId ?? this.savingsGoalId,
+      amountCents: amountCents ?? this.amountCents,
+      contributionDate: contributionDate ?? this.contributionDate,
+      notes: notes ?? this.notes,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (savingsGoalId.present) {
+      map['savings_goal_id'] = Variable<String>(savingsGoalId.value);
+    }
+    if (amountCents.present) {
+      map['amount_cents'] = Variable<int>(amountCents.value);
+    }
+    if (contributionDate.present) {
+      map['contribution_date'] = Variable<DateTime>(contributionDate.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavingsContributionsCompanion(')
+          ..write('id: $id, ')
+          ..write('savingsGoalId: $savingsGoalId, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('contributionDate: $contributionDate, ')
+          ..write('notes: $notes, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -2626,6 +4665,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $BorrowedRecordsTable(this);
   late final $LentRecordsTable lentRecords = $LentRecordsTable(this);
   late final $RepaymentsTable repayments = $RepaymentsTable(this);
+  late final $WishlistItemsTable wishlistItems = $WishlistItemsTable(this);
+  late final $PurchasesTable purchases = $PurchasesTable(this);
+  late final $BudgetsTable budgets = $BudgetsTable(this);
+  late final $SavingsGoalsTable savingsGoals = $SavingsGoalsTable(this);
+  late final $SavingsContributionsTable savingsContributions =
+      $SavingsContributionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2637,7 +4682,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         persons,
         borrowedRecords,
         lentRecords,
-        repayments
+        repayments,
+        wishlistItems,
+        purchases,
+        budgets,
+        savingsGoals,
+        savingsContributions
       ];
 }
 
@@ -4356,6 +6406,7 @@ typedef $$RepaymentsTableCreateCompanionBuilder = RepaymentsCompanion Function({
   required String recordType,
   required int recordId,
   required int amountCents,
+  Value<String> entryType,
   required DateTime date,
   Value<String?> note,
   required DateTime createdAt,
@@ -4365,6 +6416,7 @@ typedef $$RepaymentsTableUpdateCompanionBuilder = RepaymentsCompanion Function({
   Value<String> recordType,
   Value<int> recordId,
   Value<int> amountCents,
+  Value<String> entryType,
   Value<DateTime> date,
   Value<String?> note,
   Value<DateTime> createdAt,
@@ -4390,6 +6442,9 @@ class $$RepaymentsTableFilterComposer
 
   ColumnFilters<int> get amountCents => $composableBuilder(
       column: $table.amountCents, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get entryType => $composableBuilder(
+      column: $table.entryType, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<DateTime> get date => $composableBuilder(
       column: $table.date, builder: (column) => ColumnFilters(column));
@@ -4422,6 +6477,9 @@ class $$RepaymentsTableOrderingComposer
   ColumnOrderings<int> get amountCents => $composableBuilder(
       column: $table.amountCents, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get entryType => $composableBuilder(
+      column: $table.entryType, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get date => $composableBuilder(
       column: $table.date, builder: (column) => ColumnOrderings(column));
 
@@ -4452,6 +6510,9 @@ class $$RepaymentsTableAnnotationComposer
 
   GeneratedColumn<int> get amountCents => $composableBuilder(
       column: $table.amountCents, builder: (column) => column);
+
+  GeneratedColumn<String> get entryType =>
+      $composableBuilder(column: $table.entryType, builder: (column) => column);
 
   GeneratedColumn<DateTime> get date =>
       $composableBuilder(column: $table.date, builder: (column) => column);
@@ -4493,6 +6554,7 @@ class $$RepaymentsTableTableManager extends RootTableManager<
             Value<String> recordType = const Value.absent(),
             Value<int> recordId = const Value.absent(),
             Value<int> amountCents = const Value.absent(),
+            Value<String> entryType = const Value.absent(),
             Value<DateTime> date = const Value.absent(),
             Value<String?> note = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
@@ -4502,6 +6564,7 @@ class $$RepaymentsTableTableManager extends RootTableManager<
             recordType: recordType,
             recordId: recordId,
             amountCents: amountCents,
+            entryType: entryType,
             date: date,
             note: note,
             createdAt: createdAt,
@@ -4511,6 +6574,7 @@ class $$RepaymentsTableTableManager extends RootTableManager<
             required String recordType,
             required int recordId,
             required int amountCents,
+            Value<String> entryType = const Value.absent(),
             required DateTime date,
             Value<String?> note = const Value.absent(),
             required DateTime createdAt,
@@ -4520,6 +6584,7 @@ class $$RepaymentsTableTableManager extends RootTableManager<
             recordType: recordType,
             recordId: recordId,
             amountCents: amountCents,
+            entryType: entryType,
             date: date,
             note: note,
             createdAt: createdAt,
@@ -4546,6 +6611,1035 @@ typedef $$RepaymentsTableProcessedTableManager = ProcessedTableManager<
     ),
     RepaymentTableData,
     PrefetchHooks Function()>;
+typedef $$WishlistItemsTableCreateCompanionBuilder = WishlistItemsCompanion
+    Function({
+  required String id,
+  required String name,
+  required int priceCents,
+  required String category,
+  required String priority,
+  Value<String?> notes,
+  Value<bool> isPurchased,
+  required DateTime createdAt,
+  Value<DateTime?> purchasedAt,
+  Value<int> rowid,
+});
+typedef $$WishlistItemsTableUpdateCompanionBuilder = WishlistItemsCompanion
+    Function({
+  Value<String> id,
+  Value<String> name,
+  Value<int> priceCents,
+  Value<String> category,
+  Value<String> priority,
+  Value<String?> notes,
+  Value<bool> isPurchased,
+  Value<DateTime> createdAt,
+  Value<DateTime?> purchasedAt,
+  Value<int> rowid,
+});
+
+class $$WishlistItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $WishlistItemsTable> {
+  $$WishlistItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get priceCents => $composableBuilder(
+      column: $table.priceCents, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get priority => $composableBuilder(
+      column: $table.priority, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isPurchased => $composableBuilder(
+      column: $table.isPurchased, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get purchasedAt => $composableBuilder(
+      column: $table.purchasedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$WishlistItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WishlistItemsTable> {
+  $$WishlistItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get priceCents => $composableBuilder(
+      column: $table.priceCents, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get priority => $composableBuilder(
+      column: $table.priority, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isPurchased => $composableBuilder(
+      column: $table.isPurchased, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get purchasedAt => $composableBuilder(
+      column: $table.purchasedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$WishlistItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WishlistItemsTable> {
+  $$WishlistItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get priceCents => $composableBuilder(
+      column: $table.priceCents, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<bool> get isPurchased => $composableBuilder(
+      column: $table.isPurchased, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get purchasedAt => $composableBuilder(
+      column: $table.purchasedAt, builder: (column) => column);
+}
+
+class $$WishlistItemsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $WishlistItemsTable,
+    WishlistItemTableData,
+    $$WishlistItemsTableFilterComposer,
+    $$WishlistItemsTableOrderingComposer,
+    $$WishlistItemsTableAnnotationComposer,
+    $$WishlistItemsTableCreateCompanionBuilder,
+    $$WishlistItemsTableUpdateCompanionBuilder,
+    (
+      WishlistItemTableData,
+      BaseReferences<_$AppDatabase, $WishlistItemsTable, WishlistItemTableData>
+    ),
+    WishlistItemTableData,
+    PrefetchHooks Function()> {
+  $$WishlistItemsTableTableManager(_$AppDatabase db, $WishlistItemsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WishlistItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WishlistItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WishlistItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> priceCents = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<String> priority = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<bool> isPurchased = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> purchasedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              WishlistItemsCompanion(
+            id: id,
+            name: name,
+            priceCents: priceCents,
+            category: category,
+            priority: priority,
+            notes: notes,
+            isPurchased: isPurchased,
+            createdAt: createdAt,
+            purchasedAt: purchasedAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required int priceCents,
+            required String category,
+            required String priority,
+            Value<String?> notes = const Value.absent(),
+            Value<bool> isPurchased = const Value.absent(),
+            required DateTime createdAt,
+            Value<DateTime?> purchasedAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              WishlistItemsCompanion.insert(
+            id: id,
+            name: name,
+            priceCents: priceCents,
+            category: category,
+            priority: priority,
+            notes: notes,
+            isPurchased: isPurchased,
+            createdAt: createdAt,
+            purchasedAt: purchasedAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$WishlistItemsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $WishlistItemsTable,
+    WishlistItemTableData,
+    $$WishlistItemsTableFilterComposer,
+    $$WishlistItemsTableOrderingComposer,
+    $$WishlistItemsTableAnnotationComposer,
+    $$WishlistItemsTableCreateCompanionBuilder,
+    $$WishlistItemsTableUpdateCompanionBuilder,
+    (
+      WishlistItemTableData,
+      BaseReferences<_$AppDatabase, $WishlistItemsTable, WishlistItemTableData>
+    ),
+    WishlistItemTableData,
+    PrefetchHooks Function()>;
+typedef $$PurchasesTableCreateCompanionBuilder = PurchasesCompanion Function({
+  required String id,
+  required String name,
+  required int amountCents,
+  required String category,
+  required DateTime purchaseDate,
+  Value<String?> linkedWishlistItemId,
+  Value<String?> linkedExpenseId,
+  Value<String?> notes,
+  required DateTime createdAt,
+  Value<int> rowid,
+});
+typedef $$PurchasesTableUpdateCompanionBuilder = PurchasesCompanion Function({
+  Value<String> id,
+  Value<String> name,
+  Value<int> amountCents,
+  Value<String> category,
+  Value<DateTime> purchaseDate,
+  Value<String?> linkedWishlistItemId,
+  Value<String?> linkedExpenseId,
+  Value<String?> notes,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$PurchasesTableFilterComposer
+    extends Composer<_$AppDatabase, $PurchasesTable> {
+  $$PurchasesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get amountCents => $composableBuilder(
+      column: $table.amountCents, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get purchaseDate => $composableBuilder(
+      column: $table.purchaseDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get linkedWishlistItemId => $composableBuilder(
+      column: $table.linkedWishlistItemId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get linkedExpenseId => $composableBuilder(
+      column: $table.linkedExpenseId,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$PurchasesTableOrderingComposer
+    extends Composer<_$AppDatabase, $PurchasesTable> {
+  $$PurchasesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amountCents => $composableBuilder(
+      column: $table.amountCents, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get purchaseDate => $composableBuilder(
+      column: $table.purchaseDate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get linkedWishlistItemId => $composableBuilder(
+      column: $table.linkedWishlistItemId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get linkedExpenseId => $composableBuilder(
+      column: $table.linkedExpenseId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$PurchasesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PurchasesTable> {
+  $$PurchasesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get amountCents => $composableBuilder(
+      column: $table.amountCents, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get purchaseDate => $composableBuilder(
+      column: $table.purchaseDate, builder: (column) => column);
+
+  GeneratedColumn<String> get linkedWishlistItemId => $composableBuilder(
+      column: $table.linkedWishlistItemId, builder: (column) => column);
+
+  GeneratedColumn<String> get linkedExpenseId => $composableBuilder(
+      column: $table.linkedExpenseId, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$PurchasesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $PurchasesTable,
+    PurchaseTableData,
+    $$PurchasesTableFilterComposer,
+    $$PurchasesTableOrderingComposer,
+    $$PurchasesTableAnnotationComposer,
+    $$PurchasesTableCreateCompanionBuilder,
+    $$PurchasesTableUpdateCompanionBuilder,
+    (
+      PurchaseTableData,
+      BaseReferences<_$AppDatabase, $PurchasesTable, PurchaseTableData>
+    ),
+    PurchaseTableData,
+    PrefetchHooks Function()> {
+  $$PurchasesTableTableManager(_$AppDatabase db, $PurchasesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PurchasesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PurchasesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PurchasesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> amountCents = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<DateTime> purchaseDate = const Value.absent(),
+            Value<String?> linkedWishlistItemId = const Value.absent(),
+            Value<String?> linkedExpenseId = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PurchasesCompanion(
+            id: id,
+            name: name,
+            amountCents: amountCents,
+            category: category,
+            purchaseDate: purchaseDate,
+            linkedWishlistItemId: linkedWishlistItemId,
+            linkedExpenseId: linkedExpenseId,
+            notes: notes,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required int amountCents,
+            required String category,
+            required DateTime purchaseDate,
+            Value<String?> linkedWishlistItemId = const Value.absent(),
+            Value<String?> linkedExpenseId = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            required DateTime createdAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              PurchasesCompanion.insert(
+            id: id,
+            name: name,
+            amountCents: amountCents,
+            category: category,
+            purchaseDate: purchaseDate,
+            linkedWishlistItemId: linkedWishlistItemId,
+            linkedExpenseId: linkedExpenseId,
+            notes: notes,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$PurchasesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $PurchasesTable,
+    PurchaseTableData,
+    $$PurchasesTableFilterComposer,
+    $$PurchasesTableOrderingComposer,
+    $$PurchasesTableAnnotationComposer,
+    $$PurchasesTableCreateCompanionBuilder,
+    $$PurchasesTableUpdateCompanionBuilder,
+    (
+      PurchaseTableData,
+      BaseReferences<_$AppDatabase, $PurchasesTable, PurchaseTableData>
+    ),
+    PurchaseTableData,
+    PrefetchHooks Function()>;
+typedef $$BudgetsTableCreateCompanionBuilder = BudgetsCompanion Function({
+  required String id,
+  required String category,
+  required int monthlyLimitCents,
+  required int month,
+  required int year,
+  required DateTime createdAt,
+  Value<int> rowid,
+});
+typedef $$BudgetsTableUpdateCompanionBuilder = BudgetsCompanion Function({
+  Value<String> id,
+  Value<String> category,
+  Value<int> monthlyLimitCents,
+  Value<int> month,
+  Value<int> year,
+  Value<DateTime> createdAt,
+  Value<int> rowid,
+});
+
+class $$BudgetsTableFilterComposer
+    extends Composer<_$AppDatabase, $BudgetsTable> {
+  $$BudgetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get monthlyLimitCents => $composableBuilder(
+      column: $table.monthlyLimitCents,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get month => $composableBuilder(
+      column: $table.month, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get year => $composableBuilder(
+      column: $table.year, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$BudgetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $BudgetsTable> {
+  $$BudgetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get monthlyLimitCents => $composableBuilder(
+      column: $table.monthlyLimitCents,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get month => $composableBuilder(
+      column: $table.month, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get year => $composableBuilder(
+      column: $table.year, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$BudgetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $BudgetsTable> {
+  $$BudgetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get monthlyLimitCents => $composableBuilder(
+      column: $table.monthlyLimitCents, builder: (column) => column);
+
+  GeneratedColumn<int> get month =>
+      $composableBuilder(column: $table.month, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+}
+
+class $$BudgetsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $BudgetsTable,
+    BudgetTableData,
+    $$BudgetsTableFilterComposer,
+    $$BudgetsTableOrderingComposer,
+    $$BudgetsTableAnnotationComposer,
+    $$BudgetsTableCreateCompanionBuilder,
+    $$BudgetsTableUpdateCompanionBuilder,
+    (
+      BudgetTableData,
+      BaseReferences<_$AppDatabase, $BudgetsTable, BudgetTableData>
+    ),
+    BudgetTableData,
+    PrefetchHooks Function()> {
+  $$BudgetsTableTableManager(_$AppDatabase db, $BudgetsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$BudgetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$BudgetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$BudgetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> category = const Value.absent(),
+            Value<int> monthlyLimitCents = const Value.absent(),
+            Value<int> month = const Value.absent(),
+            Value<int> year = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BudgetsCompanion(
+            id: id,
+            category: category,
+            monthlyLimitCents: monthlyLimitCents,
+            month: month,
+            year: year,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String category,
+            required int monthlyLimitCents,
+            required int month,
+            required int year,
+            required DateTime createdAt,
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              BudgetsCompanion.insert(
+            id: id,
+            category: category,
+            monthlyLimitCents: monthlyLimitCents,
+            month: month,
+            year: year,
+            createdAt: createdAt,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$BudgetsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $BudgetsTable,
+    BudgetTableData,
+    $$BudgetsTableFilterComposer,
+    $$BudgetsTableOrderingComposer,
+    $$BudgetsTableAnnotationComposer,
+    $$BudgetsTableCreateCompanionBuilder,
+    $$BudgetsTableUpdateCompanionBuilder,
+    (
+      BudgetTableData,
+      BaseReferences<_$AppDatabase, $BudgetsTable, BudgetTableData>
+    ),
+    BudgetTableData,
+    PrefetchHooks Function()>;
+typedef $$SavingsGoalsTableCreateCompanionBuilder = SavingsGoalsCompanion
+    Function({
+  required String id,
+  required String name,
+  required int targetAmountCents,
+  Value<DateTime?> targetDate,
+  required DateTime createdAt,
+  Value<bool> isCompleted,
+  Value<int> rowid,
+});
+typedef $$SavingsGoalsTableUpdateCompanionBuilder = SavingsGoalsCompanion
+    Function({
+  Value<String> id,
+  Value<String> name,
+  Value<int> targetAmountCents,
+  Value<DateTime?> targetDate,
+  Value<DateTime> createdAt,
+  Value<bool> isCompleted,
+  Value<int> rowid,
+});
+
+class $$SavingsGoalsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavingsGoalsTable> {
+  $$SavingsGoalsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get targetAmountCents => $composableBuilder(
+      column: $table.targetAmountCents,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get targetDate => $composableBuilder(
+      column: $table.targetDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isCompleted => $composableBuilder(
+      column: $table.isCompleted, builder: (column) => ColumnFilters(column));
+}
+
+class $$SavingsGoalsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavingsGoalsTable> {
+  $$SavingsGoalsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get targetAmountCents => $composableBuilder(
+      column: $table.targetAmountCents,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get targetDate => $composableBuilder(
+      column: $table.targetDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isCompleted => $composableBuilder(
+      column: $table.isCompleted, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SavingsGoalsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavingsGoalsTable> {
+  $$SavingsGoalsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get targetAmountCents => $composableBuilder(
+      column: $table.targetAmountCents, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get targetDate => $composableBuilder(
+      column: $table.targetDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isCompleted => $composableBuilder(
+      column: $table.isCompleted, builder: (column) => column);
+}
+
+class $$SavingsGoalsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SavingsGoalsTable,
+    SavingsGoalTableData,
+    $$SavingsGoalsTableFilterComposer,
+    $$SavingsGoalsTableOrderingComposer,
+    $$SavingsGoalsTableAnnotationComposer,
+    $$SavingsGoalsTableCreateCompanionBuilder,
+    $$SavingsGoalsTableUpdateCompanionBuilder,
+    (
+      SavingsGoalTableData,
+      BaseReferences<_$AppDatabase, $SavingsGoalsTable, SavingsGoalTableData>
+    ),
+    SavingsGoalTableData,
+    PrefetchHooks Function()> {
+  $$SavingsGoalsTableTableManager(_$AppDatabase db, $SavingsGoalsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavingsGoalsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavingsGoalsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavingsGoalsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> targetAmountCents = const Value.absent(),
+            Value<DateTime?> targetDate = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<bool> isCompleted = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SavingsGoalsCompanion(
+            id: id,
+            name: name,
+            targetAmountCents: targetAmountCents,
+            targetDate: targetDate,
+            createdAt: createdAt,
+            isCompleted: isCompleted,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            required int targetAmountCents,
+            Value<DateTime?> targetDate = const Value.absent(),
+            required DateTime createdAt,
+            Value<bool> isCompleted = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SavingsGoalsCompanion.insert(
+            id: id,
+            name: name,
+            targetAmountCents: targetAmountCents,
+            targetDate: targetDate,
+            createdAt: createdAt,
+            isCompleted: isCompleted,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$SavingsGoalsTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $SavingsGoalsTable,
+    SavingsGoalTableData,
+    $$SavingsGoalsTableFilterComposer,
+    $$SavingsGoalsTableOrderingComposer,
+    $$SavingsGoalsTableAnnotationComposer,
+    $$SavingsGoalsTableCreateCompanionBuilder,
+    $$SavingsGoalsTableUpdateCompanionBuilder,
+    (
+      SavingsGoalTableData,
+      BaseReferences<_$AppDatabase, $SavingsGoalsTable, SavingsGoalTableData>
+    ),
+    SavingsGoalTableData,
+    PrefetchHooks Function()>;
+typedef $$SavingsContributionsTableCreateCompanionBuilder
+    = SavingsContributionsCompanion Function({
+  required String id,
+  required String savingsGoalId,
+  required int amountCents,
+  required DateTime contributionDate,
+  Value<String?> notes,
+  Value<int> rowid,
+});
+typedef $$SavingsContributionsTableUpdateCompanionBuilder
+    = SavingsContributionsCompanion Function({
+  Value<String> id,
+  Value<String> savingsGoalId,
+  Value<int> amountCents,
+  Value<DateTime> contributionDate,
+  Value<String?> notes,
+  Value<int> rowid,
+});
+
+class $$SavingsContributionsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavingsContributionsTable> {
+  $$SavingsContributionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get savingsGoalId => $composableBuilder(
+      column: $table.savingsGoalId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get amountCents => $composableBuilder(
+      column: $table.amountCents, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get contributionDate => $composableBuilder(
+      column: $table.contributionDate,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnFilters(column));
+}
+
+class $$SavingsContributionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavingsContributionsTable> {
+  $$SavingsContributionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get savingsGoalId => $composableBuilder(
+      column: $table.savingsGoalId,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get amountCents => $composableBuilder(
+      column: $table.amountCents, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get contributionDate => $composableBuilder(
+      column: $table.contributionDate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+      column: $table.notes, builder: (column) => ColumnOrderings(column));
+}
+
+class $$SavingsContributionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavingsContributionsTable> {
+  $$SavingsContributionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get savingsGoalId => $composableBuilder(
+      column: $table.savingsGoalId, builder: (column) => column);
+
+  GeneratedColumn<int> get amountCents => $composableBuilder(
+      column: $table.amountCents, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get contributionDate => $composableBuilder(
+      column: $table.contributionDate, builder: (column) => column);
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+}
+
+class $$SavingsContributionsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SavingsContributionsTable,
+    SavingsContributionTableData,
+    $$SavingsContributionsTableFilterComposer,
+    $$SavingsContributionsTableOrderingComposer,
+    $$SavingsContributionsTableAnnotationComposer,
+    $$SavingsContributionsTableCreateCompanionBuilder,
+    $$SavingsContributionsTableUpdateCompanionBuilder,
+    (
+      SavingsContributionTableData,
+      BaseReferences<_$AppDatabase, $SavingsContributionsTable,
+          SavingsContributionTableData>
+    ),
+    SavingsContributionTableData,
+    PrefetchHooks Function()> {
+  $$SavingsContributionsTableTableManager(
+      _$AppDatabase db, $SavingsContributionsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavingsContributionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavingsContributionsTableOrderingComposer(
+                  $db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavingsContributionsTableAnnotationComposer(
+                  $db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> savingsGoalId = const Value.absent(),
+            Value<int> amountCents = const Value.absent(),
+            Value<DateTime> contributionDate = const Value.absent(),
+            Value<String?> notes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SavingsContributionsCompanion(
+            id: id,
+            savingsGoalId: savingsGoalId,
+            amountCents: amountCents,
+            contributionDate: contributionDate,
+            notes: notes,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String savingsGoalId,
+            required int amountCents,
+            required DateTime contributionDate,
+            Value<String?> notes = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              SavingsContributionsCompanion.insert(
+            id: id,
+            savingsGoalId: savingsGoalId,
+            amountCents: amountCents,
+            contributionDate: contributionDate,
+            notes: notes,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$SavingsContributionsTableProcessedTableManager
+    = ProcessedTableManager<
+        _$AppDatabase,
+        $SavingsContributionsTable,
+        SavingsContributionTableData,
+        $$SavingsContributionsTableFilterComposer,
+        $$SavingsContributionsTableOrderingComposer,
+        $$SavingsContributionsTableAnnotationComposer,
+        $$SavingsContributionsTableCreateCompanionBuilder,
+        $$SavingsContributionsTableUpdateCompanionBuilder,
+        (
+          SavingsContributionTableData,
+          BaseReferences<_$AppDatabase, $SavingsContributionsTable,
+              SavingsContributionTableData>
+        ),
+        SavingsContributionTableData,
+        PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -4564,4 +7658,14 @@ class $AppDatabaseManager {
       $$LentRecordsTableTableManager(_db, _db.lentRecords);
   $$RepaymentsTableTableManager get repayments =>
       $$RepaymentsTableTableManager(_db, _db.repayments);
+  $$WishlistItemsTableTableManager get wishlistItems =>
+      $$WishlistItemsTableTableManager(_db, _db.wishlistItems);
+  $$PurchasesTableTableManager get purchases =>
+      $$PurchasesTableTableManager(_db, _db.purchases);
+  $$BudgetsTableTableManager get budgets =>
+      $$BudgetsTableTableManager(_db, _db.budgets);
+  $$SavingsGoalsTableTableManager get savingsGoals =>
+      $$SavingsGoalsTableTableManager(_db, _db.savingsGoals);
+  $$SavingsContributionsTableTableManager get savingsContributions =>
+      $$SavingsContributionsTableTableManager(_db, _db.savingsContributions);
 }
