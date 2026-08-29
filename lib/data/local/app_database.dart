@@ -16,14 +16,22 @@ LazyDatabase _openConnection() {
   });
 }
 
-@DriftDatabase(tables: [Categories, IncomeEntries, ExpenseEntries])
+@DriftDatabase(tables: [
+  Categories,
+  IncomeEntries,
+  ExpenseEntries,
+  Persons,
+  BorrowedRecords,
+  LentRecords,
+  Repayments,
+])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   AppDatabase.forTesting(QueryExecutor executor) : super(executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -38,6 +46,14 @@ class AppDatabase extends _$AppDatabase {
                 isDefault: const Value(true),
               ),
             );
+          }
+        },
+        onUpgrade: (Migrator m, int from, int to) async {
+          if (from < 2) {
+            await m.createTable(persons);
+            await m.createTable(borrowedRecords);
+            await m.createTable(lentRecords);
+            await m.createTable(repayments);
           }
         },
       );
@@ -96,4 +112,88 @@ class AppDatabase extends _$AppDatabase {
   Future<int> deleteExpenseEntry(String id) {
     return (delete(expenseEntries)..where((t) => t.id.equals(id))).go();
   }
+
+  // Person Operations
+  Stream<List<PersonTableData>> watchAllPersons() =>
+      (select(persons)..orderBy([(t) => OrderingTerm(expression: t.name, mode: OrderingMode.asc)])).watch();
+  Future<List<PersonTableData>> getAllPersons() =>
+      (select(persons)..orderBy([(t) => OrderingTerm(expression: t.name, mode: OrderingMode.asc)])).get();
+  Future<int> insertPerson(PersonsCompanion entry) => into(persons).insert(entry);
+  Future<bool> updatePerson(PersonsCompanion entry) => update(persons).replace(entry);
+  Future<int> deletePerson(int id) => (delete(persons)..where((t) => t.id.equals(id))).go();
+
+  // BorrowedRecord Operations
+  Stream<List<TypedResult>> watchAllBorrowedRecordsWithPerson() {
+    final query = select(borrowedRecords).join([
+      innerJoin(persons, persons.id.equalsExp(borrowedRecords.personId)),
+    ]);
+    query.orderBy([OrderingTerm(expression: borrowedRecords.date, mode: OrderingMode.desc)]);
+    return query.watch();
+  }
+
+  Future<List<TypedResult>> getAllBorrowedRecordsWithPerson() {
+    final query = select(borrowedRecords).join([
+      innerJoin(persons, persons.id.equalsExp(borrowedRecords.personId)),
+    ]);
+    query.orderBy([OrderingTerm(expression: borrowedRecords.date, mode: OrderingMode.desc)]);
+    return query.get();
+  }
+
+  Future<int> insertBorrowedRecord(BorrowedRecordsCompanion entry) => into(borrowedRecords).insert(entry);
+  Future<bool> updateBorrowedRecord(BorrowedRecordsCompanion entry) => update(borrowedRecords).replace(entry);
+  Future<int> deleteBorrowedRecord(int id) async {
+    await (delete(repayments)..where((t) => t.recordType.equals('borrowed') & t.recordId.equals(id))).go();
+    return (delete(borrowedRecords)..where((t) => t.id.equals(id))).go();
+  }
+
+  // LentRecord Operations
+  Stream<List<TypedResult>> watchAllLentRecordsWithPerson() {
+    final query = select(lentRecords).join([
+      innerJoin(persons, persons.id.equalsExp(lentRecords.personId)),
+    ]);
+    query.orderBy([OrderingTerm(expression: lentRecords.date, mode: OrderingMode.desc)]);
+    return query.watch();
+  }
+
+  Future<List<TypedResult>> getAllLentRecordsWithPerson() {
+    final query = select(lentRecords).join([
+      innerJoin(persons, persons.id.equalsExp(lentRecords.personId)),
+    ]);
+    query.orderBy([OrderingTerm(expression: lentRecords.date, mode: OrderingMode.desc)]);
+    return query.get();
+  }
+
+  Future<int> insertLentRecord(LentRecordsCompanion entry) => into(lentRecords).insert(entry);
+  Future<bool> updateLentRecord(LentRecordsCompanion entry) => update(lentRecords).replace(entry);
+  Future<int> deleteLentRecord(int id) async {
+    await (delete(repayments)..where((t) => t.recordType.equals('lent') & t.recordId.equals(id))).go();
+    return (delete(lentRecords)..where((t) => t.id.equals(id))).go();
+  }
+
+  // Repayment Operations
+  Stream<List<RepaymentTableData>> watchRepaymentsForRecord(String recordType, int recordId) {
+    return (select(repayments)
+          ..where((t) => t.recordType.equals(recordType) & t.recordId.equals(recordId))
+          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+        .watch();
+  }
+
+  Future<List<RepaymentTableData>> getRepaymentsForRecord(String recordType, int recordId) {
+    return (select(repayments)
+          ..where((t) => t.recordType.equals(recordType) & t.recordId.equals(recordId))
+          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+        .get();
+  }
+
+  Stream<List<RepaymentTableData>> watchAllRepayments() {
+    return select(repayments).watch();
+  }
+
+  Future<List<RepaymentTableData>> getAllRepayments() {
+    return select(repayments).get();
+  }
+
+  Future<int> insertRepayment(RepaymentsCompanion entry) => into(repayments).insert(entry);
+  Future<int> deleteRepayment(int id) => (delete(repayments)..where((t) => t.id.equals(id))).go();
 }
+

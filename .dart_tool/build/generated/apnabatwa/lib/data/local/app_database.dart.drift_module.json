@@ -7,7 +7,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/app_database.dart",
-        "offset": 611,
+        "offset": 679,
         "name": "AppDatabase"
       },
       "references": [
@@ -22,6 +22,22 @@
         {
           "library_uri": "package:apnabatwa/data/local/tables.dart",
           "name": "expense_entries"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "persons"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "borrowed_records"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "lent_records"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "repayments"
         }
       ],
       "type": "database",
@@ -37,12 +53,28 @@
         {
           "library_uri": "package:apnabatwa/data/local/tables.dart",
           "name": "expense_entries"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "persons"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "borrowed_records"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "lent_records"
+        },
+        {
+          "library_uri": "package:apnabatwa/data/local/tables.dart",
+          "name": "repayments"
         }
       ],
       "views": [],
       "includes": [],
       "queries": [],
-      "schema_version": 1,
+      "schema_version": 2,
       "daos": [],
       "has_constructor_arg": false
     }

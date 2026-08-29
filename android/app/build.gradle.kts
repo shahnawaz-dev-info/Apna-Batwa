@@ -36,6 +36,15 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    applicationVariants.all {
+        if (buildType.name == "debug") {
+            outputs.all {
+                val output = this as? com.android.build.gradle.internal.api.ApkVariantOutputImpl
+                output?.outputFileName = "ApnaBatwa.apk"
+            }
+        }
+    }
 }
 
 kotlin {
@@ -47,3 +56,24 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+tasks.configureEach {
+    if (name == "assembleDebug" || name.contains("FlutterApk") || name == "build") {
+        doLast {
+            val flutterApkDir = layout.buildDirectory.dir("outputs/flutter-apk").get().asFile
+            flutterApkDir.mkdirs()
+            val defaultApk = File(flutterApkDir, "app-debug.apk")
+            val targetApk = File(flutterApkDir, "ApnaBatwa.apk")
+            if (defaultApk.exists()) {
+                defaultApk.copyTo(targetApk, overwrite = true)
+                defaultApk.delete()
+            }
+            val agpApk = layout.buildDirectory.file("outputs/apk/debug/ApnaBatwa.apk").get().asFile
+            if (agpApk.exists()) {
+                agpApk.copyTo(targetApk, overwrite = true)
+            }
+        }
+    }
+}
+
+

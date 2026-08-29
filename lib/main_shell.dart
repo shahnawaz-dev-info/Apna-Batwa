@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'core/theme/colors.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
+import 'features/khata/presentation/screens/khata_screen.dart';
 import 'features/transactions/presentation/screens/transactions_screen.dart';
 
 class MainShell extends StatefulWidget {
@@ -16,11 +17,7 @@ class _MainShellState extends State<MainShell> {
   final List<Widget> _screens = [
     const DashboardScreen(),
     const TransactionsScreen(),
-    const _PlaceholderScreen(
-      title: 'Khata',
-      subtitle: 'Borrow & Lend Manager coming soon in Phase 2!',
-      icon: Icons.book_outlined,
-    ),
+    const KhataScreen(),
     const _PlaceholderScreen(
       title: 'Wishlist',
       subtitle: 'Smart Shopping & Savings Wishlist coming soon!',
@@ -35,8 +32,6 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,

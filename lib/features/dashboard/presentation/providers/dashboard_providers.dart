@@ -3,11 +3,15 @@ import '../../../income/presentation/providers/income_providers.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../income/domain/entities/income_entry.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
+import '../../../khata/presentation/providers/khata_providers.dart';
 
 final currentBalanceCentsProvider = Provider<int>((ref) {
   final totalIncome = ref.watch(totalIncomeCentsProvider);
   final totalExpenses = ref.watch(totalExpensesCentsProvider);
-  return totalIncome - totalExpenses;
+  final totalYouOwe = ref.watch(totalYouOweCentsProvider);
+  final totalOthersOweYou = ref.watch(totalOthersOweYouCentsProvider);
+
+  return (totalIncome - totalExpenses) + totalYouOwe - totalOthersOweYou;
 });
 
 class CombinedTransactionItem {

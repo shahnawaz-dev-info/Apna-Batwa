@@ -8,6 +8,7 @@ import '../../../income/domain/entities/income_entry.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../expenses/presentation/widgets/add_expense_modal.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
+import '../../../khata/presentation/providers/khata_providers.dart';
 import '../providers/dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerWidget {
@@ -19,6 +20,8 @@ class DashboardScreen extends ConsumerWidget {
     final currentBalanceCents = ref.watch(currentBalanceCentsProvider);
     final totalIncomeCents = ref.watch(totalIncomeCentsProvider);
     final totalExpensesCents = ref.watch(totalExpensesCentsProvider);
+    final totalYouOweCents = ref.watch(totalYouOweCentsProvider);
+    final totalOthersOweYouCents = ref.watch(totalOthersOweYouCentsProvider);
     final recentTransactions = ref.watch(recentTransactionsProvider);
 
     return Scaffold(
@@ -189,21 +192,21 @@ class DashboardScreen extends ConsumerWidget {
                     child: _buildSummaryCard(
                       context,
                       title: 'You Owe',
-                      amount: '—',
+                      amount: CurrencyFormatter.formatCents(totalYouOweCents),
                       icon: Icons.handshake_outlined,
-                      color: AppColors.warningAmber,
-                      isPlaceholder: true,
+                      color: AppColors.expenseRed,
+                      isPlaceholder: false,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildSummaryCard(
                       context,
-                      title: 'Savings',
-                      amount: '—',
+                      title: 'Others Owe You',
+                      amount: CurrencyFormatter.formatCents(totalOthersOweYouCents),
                       icon: Icons.savings_outlined,
-                      color: AppColors.primaryBlue,
-                      isPlaceholder: true,
+                      color: AppColors.successGreen,
+                      isPlaceholder: false,
                     ),
                   ),
                 ],
