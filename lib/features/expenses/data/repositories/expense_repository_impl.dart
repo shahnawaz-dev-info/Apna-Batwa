@@ -1,8 +1,8 @@
 import 'package:drift/drift.dart';
 import '../../../../data/local/app_database.dart';
-import '../domain/entities/category.dart';
-import '../domain/entities/expense_entry.dart';
-import '../domain/repositories/expense_repository.dart';
+import '../../domain/entities/category.dart';
+import '../../domain/entities/expense_entry.dart';
+import '../../domain/repositories/expense_repository.dart';
 
 class ExpenseRepositoryImpl implements ExpenseRepository {
   final AppDatabase _db;
@@ -68,7 +68,7 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Future<int> getTotalExpensesCents() async {
     final list = await getAllExpenses();
-    return list.fold(0, (sum, item) => sum + item.amountCents);
+    return list.fold<int>(0, (sum, item) => sum + item.amountCents);
   }
 
   @override

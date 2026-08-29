@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
-import '../../income/domain/entities/income_entry.dart';
-import '../../income/presentation/providers/income_providers.dart';
-import '../../income/presentation/widgets/add_income_modal.dart';
-import '../../expenses/domain/entities/expense_entry.dart';
-import '../../expenses/presentation/providers/expense_providers.dart';
-import '../../expenses/presentation/widgets/add_expense_modal.dart';
-import '../../dashboard/presentation/providers/dashboard_providers.dart';
+import '../../../income/domain/entities/income_entry.dart';
+import '../../../income/presentation/providers/income_providers.dart';
+import '../../../income/presentation/widgets/add_income_modal.dart';
+import '../../../expenses/domain/entities/expense_entry.dart';
+import '../../../expenses/presentation/providers/expense_providers.dart';
+import '../../../expenses/presentation/widgets/add_expense_modal.dart';
+import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});

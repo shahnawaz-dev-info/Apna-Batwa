@@ -81,6 +81,11 @@
       "dependencies": []
     },
     {
+      "name": "vector_math",
+      "version": "2.4.0",
+      "dependencies": []
+    },
+    {
       "name": "test_api",
       "version": "0.7.12",
       "dependencies": [
@@ -101,6 +106,11 @@
       "dependencies": [
         "async"
       ]
+    },
+    {
+      "name": "meta",
+      "version": "1.18.3",
+      "dependencies": []
     },
     {
       "name": "matcher",
@@ -167,11 +177,6 @@
       ]
     },
     {
-      "name": "meta",
-      "version": "1.19.0",
-      "dependencies": []
-    },
-    {
       "name": "clock",
       "version": "1.1.3",
       "dependencies": []
@@ -195,11 +200,6 @@
         "path",
         "vm_service"
       ]
-    },
-    {
-      "name": "vector_math",
-      "version": "2.4.2",
-      "dependencies": []
     },
     {
       "name": "term_glyph",
@@ -377,13 +377,8 @@
       ]
     },
     {
-      "name": "platform",
-      "version": "3.1.6",
-      "dependencies": []
-    },
-    {
       "name": "objective_c",
-      "version": "9.6.0",
+      "version": "9.5.0",
       "dependencies": [
         "code_assets",
         "collection",
@@ -395,24 +390,12 @@
       ]
     },
     {
-      "name": "hooks",
-      "version": "2.2.0",
+      "name": "record_use",
+      "version": "0.6.0",
       "dependencies": [
         "collection",
-        "crypto",
-        "logging",
-        "pub_semver",
-        "record_use",
-        "yaml"
-      ]
-    },
-    {
-      "name": "code_assets",
-      "version": "2.0.0",
-      "dependencies": [
-        "collection",
-        "hooks",
-        "logging"
+        "meta",
+        "pub_semver"
       ]
     },
     {
@@ -425,13 +408,30 @@
       ]
     },
     {
-      "name": "record_use",
-      "version": "1.1.1",
+      "name": "code_assets",
+      "version": "1.2.1",
       "dependencies": [
         "collection",
-        "meta",
-        "pub_semver"
+        "hooks"
       ]
+    },
+    {
+      "name": "hooks",
+      "version": "2.0.2",
+      "dependencies": [
+        "collection",
+        "crypto",
+        "logging",
+        "meta",
+        "pub_semver",
+        "record_use",
+        "yaml"
+      ]
+    },
+    {
+      "name": "platform",
+      "version": "3.1.6",
+      "dependencies": []
     },
     {
       "name": "xdg_directories",
@@ -591,6 +591,18 @@
       ]
     },
     {
+      "name": "native_toolchain_c",
+      "version": "0.19.2",
+      "dependencies": [
+        "code_assets",
+        "glob",
+        "hooks",
+        "logging",
+        "meta",
+        "pub_semver"
+      ]
+    },
+    {
       "name": "build_config",
       "version": "1.3.2",
       "dependencies": [
@@ -607,28 +619,6 @@
         "json_annotation",
         "source_span",
         "yaml"
-      ]
-    },
-    {
-      "name": "native_toolchain_c",
-      "version": "0.19.4",
-      "dependencies": [
-        "code_assets",
-        "glob",
-        "hooks",
-        "logging",
-        "meta",
-        "process",
-        "pub_semver"
-      ]
-    },
-    {
-      "name": "process",
-      "version": "5.0.6",
-      "dependencies": [
-        "file",
-        "path",
-        "platform"
       ]
     },
     {

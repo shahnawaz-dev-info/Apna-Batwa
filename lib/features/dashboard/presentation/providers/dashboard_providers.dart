@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../income/presentation/providers/income_providers.dart';
-import '../../expenses/presentation/providers/expense_providers.dart';
-import '../../income/domain/entities/income_entry.dart';
-import '../../expenses/domain/entities/expense_entry.dart';
+import '../../../income/presentation/providers/income_providers.dart';
+import '../../../expenses/presentation/providers/expense_providers.dart';
+import '../../../income/domain/entities/income_entry.dart';
+import '../../../expenses/domain/entities/expense_entry.dart';
 
 final currentBalanceCentsProvider = Provider<int>((ref) {
   final totalIncome = ref.watch(totalIncomeCentsProvider);

@@ -57,7 +57,7 @@ class IncomeRepositoryImpl implements IncomeRepository {
   @override
   Future<int> getTotalIncomeCents() async {
     final list = await getAllIncome();
-    return list.fold(0, (sum, item) => sum + item.amountCents);
+    return list.fold<int>(0, (sum, item) => sum + item.amountCents);
   }
 
   IncomeEntryEntity _mapToEntity(IncomeEntryTableData row) {
