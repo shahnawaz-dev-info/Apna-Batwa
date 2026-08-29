@@ -7,6 +7,7 @@ import '../../domain/entities/lent_record.dart';
 import '../../domain/entities/person.dart';
 import '../providers/khata_providers.dart';
 import 'add_person_modal.dart';
+import '../../../../core/services/notification_service.dart';
 
 class AddBorrowedLentModal extends ConsumerStatefulWidget {
   final bool isBorrowed;
@@ -48,6 +49,7 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
   final _noteController = TextEditingController();
   PersonEntity? _selectedPerson;
   DateTime _selectedDate = DateTime.now();
+  DateTime? _reminderDate;
   bool _isSaving = false;
 
   @override
@@ -104,15 +106,17 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
     setState(() => _isSaving = true);
     try {
       final repo = ref.read(khataRepositoryProvider);
+      int recordId = 0;
       if (widget.isBorrowed) {
         if (widget.existingBorrowed == null) {
-          await repo.addBorrowedRecord(
+          recordId = await repo.addBorrowedRecord(
             personId: _selectedPerson!.id,
             totalAmountCents: amountCents,
             date: _selectedDate,
             note: note.isEmpty ? null : note,
           );
         } else {
+          recordId = widget.existingBorrowed!.id;
           await repo.updateBorrowedRecord(
             id: widget.existingBorrowed!.id,
             personId: _selectedPerson!.id,
@@ -123,13 +127,14 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
         }
       } else {
         if (widget.existingLent == null) {
-          await repo.addLentRecord(
+          recordId = await repo.addLentRecord(
             personId: _selectedPerson!.id,
             totalAmountCents: amountCents,
             date: _selectedDate,
             note: note.isEmpty ? null : note,
           );
         } else {
+          recordId = widget.existingLent!.id;
           await repo.updateLentRecord(
             id: widget.existingLent!.id,
             personId: _selectedPerson!.id,
@@ -138,6 +143,16 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
             note: note.isEmpty ? null : note,
           );
         }
+      }
+
+      if (_reminderDate != null && _selectedPerson != null) {
+        await NotificationService.instance.scheduleKhataReminder(
+          notificationId: recordId * 10 + (widget.isBorrowed ? 1 : 2),
+          personName: _selectedPerson!.name,
+          amountCents: amountCents,
+          isBorrowed: widget.isBorrowed,
+          reminderDate: _reminderDate!,
+        );
       }
 
       if (!mounted) return;
@@ -295,6 +310,54 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                   labelText: 'Note / Reason (Optional)',
                   hintText: 'e.g. Hostel rent share, Lunch bill',
                   prefixIcon: Icon(Icons.note_alt_outlined),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Repayment Reminder Picker
+              InkWell(
+                onTap: () async {
+                  final pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: _reminderDate ?? DateTime.now().add(const Duration(days: 7)),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2100),
+                  );
+                  if (pickedDate != null && mounted) {
+                    final pickedTime = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.now(),
+                    );
+                    if (pickedTime != null) {
+                      setState(() {
+                        _reminderDate = DateTime(
+                          pickedDate.year,
+                          pickedDate.month,
+                          pickedDate.day,
+                          pickedTime.hour,
+                          pickedTime.minute,
+                        );
+                      });
+                    }
+                  }
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: 'Remind Me On (Optional)',
+                    prefixIcon: const Icon(Icons.alarm),
+                    suffixIcon: _reminderDate != null
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => setState(() => _reminderDate = null),
+                          )
+                        : null,
+                  ),
+                  child: Text(
+                    _reminderDate != null
+                        ? DateFormatters.formatDateTime(_reminderDate!)
+                        : 'Tap to set reminder date & time',
+                  ),
                 ),
               ),
               const SizedBox(height: 24),

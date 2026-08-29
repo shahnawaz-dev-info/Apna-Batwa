@@ -12,6 +12,8 @@
     "package:apnabatwa/features/expenses/presentation/widgets/add_expense_modal.dart",
     "package:apnabatwa/features/expenses/domain/entities/expense_entry.dart",
     "package:apnabatwa/features/khata/presentation/providers/khata_providers.dart",
+    "package:apnabatwa/features/savings/presentation/providers/savings_providers.dart",
+    "package:apnabatwa/features/recurring/presentation/providers/recurring_providers.dart",
     "package:apnabatwa/features/dashboard/presentation/providers/dashboard_providers.dart"
   ]
 }

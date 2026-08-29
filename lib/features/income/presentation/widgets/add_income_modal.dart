@@ -6,6 +6,8 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/id_generator.dart';
 import '../../domain/entities/income_entry.dart';
 import '../providers/income_providers.dart';
+import '../../../recurring/domain/entities/recurring_transaction.dart';
+import '../../../recurring/presentation/providers/recurring_providers.dart';
 
 class AddIncomeModal extends ConsumerStatefulWidget {
   final IncomeEntryEntity? existingEntry;
@@ -32,6 +34,8 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
   late String _selectedSource;
   late DateTime _selectedDate;
   bool _isSubmitting = false;
+  bool _isRecurring = false;
+  RecurringFrequency _recurringFrequency = RecurringFrequency.monthly;
 
   @override
   void initState() {
@@ -92,6 +96,33 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
           updatedAt: now,
         );
         await repo.addIncome(newEntry);
+
+        if (_isRecurring) {
+          final recRepo = ref.read(recurringRepositoryProvider);
+          DateTime nextDue = _selectedDate;
+          if (_recurringFrequency == RecurringFrequency.daily) {
+            nextDue = nextDue.add(const Duration(days: 1));
+          } else if (_recurringFrequency == RecurringFrequency.weekly) {
+            nextDue = nextDue.add(const Duration(days: 7));
+          } else {
+            nextDue = DateTime(nextDue.year, nextDue.month + 1, nextDue.day);
+          }
+
+          final recRule = RecurringTransactionEntity(
+            id: IdGenerator.generate(),
+            type: 'income',
+            name: _selectedSource,
+            amountCents: amountCents,
+            category: 'Income',
+            frequency: _recurringFrequency,
+            startDate: _selectedDate,
+            nextDueDate: nextDue,
+            isActive: true,
+            lastGeneratedDate: _selectedDate,
+            createdAt: now,
+          );
+          await recRepo.createRecurring(recRule);
+        }
       } else {
         final updated = widget.existingEntry!.copyWith(
           amountCents: amountCents,
@@ -225,6 +256,33 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
                   hintText: 'e.g. Monthly stipend from parents',
                 ),
               ),
+              if (!isEdit) ...[
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Make this recurring', style: TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: const Text('Auto-generate future income entries'),
+                  value: _isRecurring,
+                  onChanged: (val) => setState(() => _isRecurring = val),
+                  activeColor: AppColors.successGreen,
+                ),
+                if (_isRecurring) ...[
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<RecurringFrequency>(
+                    value: _recurringFrequency,
+                    decoration: const InputDecoration(
+                      labelText: 'Frequency',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: RecurringFrequency.values
+                        .map((f) => DropdownMenuItem(value: f, child: Text(f.name)))
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) setState(() => _recurringFrequency = val);
+                    },
+                  ),
+                ],
+              ],
               const SizedBox(height: 24),
               // Submit button
               SizedBox(

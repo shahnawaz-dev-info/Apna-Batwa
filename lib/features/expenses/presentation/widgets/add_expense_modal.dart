@@ -6,6 +6,10 @@ import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/id_generator.dart';
 import '../../domain/entities/expense_entry.dart';
 import '../providers/expense_providers.dart';
+import '../../../../core/services/notification_service.dart';
+import '../../../budgets/presentation/providers/budget_providers.dart';
+import '../../../recurring/domain/entities/recurring_transaction.dart';
+import '../../../recurring/presentation/providers/recurring_providers.dart';
 
 class AddExpenseModal extends ConsumerStatefulWidget {
   final ExpenseEntryEntity? existingEntry;
@@ -33,6 +37,8 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
   String? _selectedPaymentMethod;
   late DateTime _selectedDate;
   bool _isSubmitting = false;
+  bool _isRecurring = false;
+  RecurringFrequency _recurringFrequency = RecurringFrequency.monthly;
 
   @override
   void initState() {
@@ -101,6 +107,39 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
           updatedAt: now,
         );
         await repo.addExpense(newEntry);
+
+        if (_isRecurring) {
+          final categories = await repo.getCategories();
+          final cat = categories.firstWhere(
+            (c) => c.id == _selectedCategoryId,
+            orElse: () => categories.first,
+          );
+
+          final recRepo = ref.read(recurringRepositoryProvider);
+          DateTime nextDue = _selectedDate;
+          if (_recurringFrequency == RecurringFrequency.daily) {
+            nextDue = nextDue.add(const Duration(days: 1));
+          } else if (_recurringFrequency == RecurringFrequency.weekly) {
+            nextDue = nextDue.add(const Duration(days: 7));
+          } else {
+            nextDue = DateTime(nextDue.year, nextDue.month + 1, nextDue.day);
+          }
+
+          final recRule = RecurringTransactionEntity(
+            id: IdGenerator.generate(),
+            type: 'expense',
+            name: cat.name,
+            amountCents: amountCents,
+            category: cat.name,
+            frequency: _recurringFrequency,
+            startDate: _selectedDate,
+            nextDueDate: nextDue,
+            isActive: true,
+            lastGeneratedDate: _selectedDate,
+            createdAt: now,
+          );
+          await recRepo.createRecurring(recRule);
+        }
       } else {
         final updated = widget.existingEntry!.copyWith(
           amountCents: amountCents,
@@ -111,6 +150,38 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
           updatedAt: now,
         );
         await repo.updateExpense(updated);
+      }
+
+      // Check Budget Alert Trigger
+      try {
+        final categories = await repo.getCategories();
+        final cat = categories.firstWhere((c) => c.id == _selectedCategoryId);
+        final budgetRepo = ref.read(budgetRepositoryProvider);
+        final budgets = await budgetRepo.getBudgetsForMonth(_selectedDate.month, _selectedDate.year);
+        final matchingBudget = budgets.firstWhere(
+          (b) => b.category.toLowerCase() == cat.name.toLowerCase(),
+          orElse: () => throw Exception('No budget'),
+        );
+
+        final allExpenses = await repo.getAllExpenses();
+        final monthExpenses = allExpenses.where((e) =>
+            e.categoryId == cat.id &&
+            e.date.month == _selectedDate.month &&
+            e.date.year == _selectedDate.year);
+        final totalSpent = monthExpenses.fold<int>(0, (sum, e) => sum + e.amountCents);
+
+        final double ratio = totalSpent / matchingBudget.monthlyLimitCents;
+        if (ratio >= 0.9) {
+          final int percentage = (ratio * 100).round();
+          await NotificationService.instance.triggerBudgetWarningNotification(
+            categoryName: cat.name,
+            percentage: percentage,
+            limitCents: matchingBudget.monthlyLimitCents,
+            spentCents: totalSpent,
+          );
+        }
+      } catch (_) {
+        // No budget set for this category or ignore budget check error
       }
 
       if (mounted) {
@@ -258,6 +329,33 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                   hintText: 'e.g. Lunch at university canteen',
                 ),
               ),
+              if (!isEdit) ...[
+                const SizedBox(height: 16),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Make this recurring', style: TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: const Text('Auto-generate future expense entries'),
+                  value: _isRecurring,
+                  onChanged: (val) => setState(() => _isRecurring = val),
+                  activeColor: AppColors.expenseRed,
+                ),
+                if (_isRecurring) ...[
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<RecurringFrequency>(
+                    value: _recurringFrequency,
+                    decoration: const InputDecoration(
+                      labelText: 'Frequency',
+                      border: OutlineInputBorder(),
+                    ),
+                    items: RecurringFrequency.values
+                        .map((f) => DropdownMenuItem(value: f, child: Text(f.name)))
+                        .toList(),
+                    onChanged: (val) {
+                      if (val != null) setState(() => _recurringFrequency = val);
+                    },
+                  ),
+                ],
+              ],
               const SizedBox(height: 24),
               // Submit button
               SizedBox(

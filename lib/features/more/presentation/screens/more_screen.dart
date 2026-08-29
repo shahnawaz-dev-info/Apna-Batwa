@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../budgets/presentation/screens/budget_management_screen.dart';
 import '../../../savings/presentation/screens/savings_goals_screen.dart';
+import '../../../reports/presentation/screens/reports_screen.dart';
+import '../../../recurring/presentation/screens/recurring_management_screen.dart';
+import 'notification_settings_screen.dart';
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -24,6 +27,36 @@ class MoreScreen extends StatelessWidget {
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textSecondaryLight),
             ),
           ),
+          _buildMenuTile(
+            context,
+            icon: Icons.pie_chart_outline,
+            title: 'Reports & Analytics',
+            subtitle: 'Category breakdowns, trends & Khata charts',
+            color: AppColors.primaryBlue,
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ReportsScreen()),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
+          _buildMenuTile(
+            context,
+            icon: Icons.repeat_outlined,
+            title: 'Manage Recurring',
+            subtitle: 'Auto-recurring income & expense rules',
+            color: AppColors.warningAmber,
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const RecurringManagementScreen()),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
           _buildMenuTile(
             context,
             icon: Icons.account_balance_wallet_outlined,
@@ -57,10 +90,25 @@ class MoreScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
-              'PREFERENCES & SECURITY (COMING SOON)',
+              'PREFERENCES & SETTINGS',
               style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textSecondaryLight),
             ),
           ),
+          _buildMenuTile(
+            context,
+            icon: Icons.notifications_active_outlined,
+            title: 'Notification Settings',
+            subtitle: 'Budget alerts, Khata & Savings reminders',
+            color: AppColors.primaryBlue,
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const NotificationSettingsScreen()),
+              );
+            },
+          ),
+          const SizedBox(height: 10),
           _buildMenuTile(
             context,
             icon: Icons.shield_outlined,

@@ -19,6 +19,8 @@ class WishlistScreen extends ConsumerStatefulWidget {
 class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _wishlistFilterIndex = 0; // 0 = Active, 1 = Purchased
+  String _wishlistSearchQuery = '';
+  String _purchaseSearchQuery = '';
 
   @override
   void initState() {
@@ -78,13 +80,36 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
     final activeItems = ref.watch(activeWishlistItemsProvider);
     final purchasedItems = ref.watch(purchasedWishlistItemsProvider);
     final totalWishlistCents = ref.watch(totalWishlistCentsProvider);
-    final displayedItems = _wishlistFilterIndex == 0 ? activeItems : purchasedItems;
+    final rawDisplayedItems = _wishlistFilterIndex == 0 ? activeItems : purchasedItems;
+
+    final displayedItems = rawDisplayedItems.where((item) {
+      if (_wishlistSearchQuery.isEmpty) return true;
+      final q = _wishlistSearchQuery.toLowerCase();
+      return item.name.toLowerCase().contains(q) || item.category.toLowerCase().contains(q);
+    }).toList();
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Search Bar
+          TextField(
+            onChanged: (val) => setState(() => _wishlistSearchQuery = val),
+            decoration: InputDecoration(
+              hintText: 'Search wishlist by name or category...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: _wishlistSearchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () => setState(() => _wishlistSearchQuery = ''),
+                    )
+                  : null,
+              contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          ),
+          const SizedBox(height: 14),
           // Total Wishlist Value Banner
           Container(
             width: double.infinity,
@@ -308,28 +333,58 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
     final purchasesAsync = ref.watch(watchAllPurchasesProvider);
 
     return purchasesAsync.when(
-      data: (purchases) {
-        if (purchases.isEmpty) {
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: _buildEmptyState(
-              context,
-              icon: Icons.shopping_cart_outlined,
-              title: 'No purchase history yet',
-              subtitle: 'Log direct purchases or mark wishlist items as purchased to build history.',
-              isDark: isDark,
-            ),
-          );
-        }
+      data: (allPurchases) {
+        final purchases = allPurchases.where((p) {
+          if (_purchaseSearchQuery.isEmpty) return true;
+          final q = _purchaseSearchQuery.toLowerCase();
+          return p.name.toLowerCase().contains(q) || p.category.toLowerCase().contains(q);
+        }).toList();
 
-        return ListView.separated(
-          padding: const EdgeInsets.all(16),
-          itemCount: purchases.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
-          itemBuilder: (context, index) {
-            final purchase = purchases[index];
-            return _buildPurchaseCard(context, purchase, isDark);
-          },
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: TextField(
+                onChanged: (val) => setState(() => _purchaseSearchQuery = val),
+                decoration: InputDecoration(
+                  hintText: 'Search purchase history by item name or category...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: _purchaseSearchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () => setState(() => _purchaseSearchQuery = ''),
+                        )
+                      : null,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ),
+            Expanded(
+              child: purchases.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: _buildEmptyState(
+                        context,
+                        icon: Icons.shopping_cart_outlined,
+                        title: 'No purchases found',
+                        subtitle: _purchaseSearchQuery.isNotEmpty
+                            ? 'No purchase history matching "$_purchaseSearchQuery"'
+                            : 'Log direct purchases or mark wishlist items as purchased to build history.',
+                        isDark: isDark,
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: purchases.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final purchase = purchases[index];
+                        return _buildPurchaseCard(context, purchase, isDark);
+                      },
+                    ),
+            ),
+          ],
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),

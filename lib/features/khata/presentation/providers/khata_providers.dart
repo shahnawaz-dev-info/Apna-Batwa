@@ -70,3 +70,41 @@ final totalOthersOweYouCentsProvider = Provider<int>((ref) {
     orElse: () => 0,
   );
 });
+
+class KhataSummaryData {
+  final int totalBorrowedCents;
+  final int totalLentCents;
+
+  KhataSummaryData({required this.totalBorrowedCents, required this.totalLentCents});
+
+  int get netBalanceCents => totalLentCents - totalBorrowedCents;
+}
+
+final khataSummaryProvider = Provider<AsyncValue<KhataSummaryData>>((ref) {
+  final borrowedAsync = ref.watch(watchAllBorrowedRecordsProvider);
+  final lentAsync = ref.watch(watchAllLentRecordsProvider);
+
+  if (borrowedAsync is AsyncLoading || lentAsync is AsyncLoading) {
+    return const AsyncValue.loading();
+  }
+
+  if (borrowedAsync is AsyncError) {
+    return AsyncValue.error(borrowedAsync.error!, borrowedAsync.stackTrace!);
+  }
+
+  if (lentAsync is AsyncError) {
+    return AsyncValue.error(lentAsync.error!, lentAsync.stackTrace!);
+  }
+
+  final borrowedList = borrowedAsync.value ?? [];
+  final lentList = lentAsync.value ?? [];
+
+  final totalBorrowed = borrowedList.fold<int>(0, (sum, item) => sum + item.remainingCents);
+  final totalLent = lentList.fold<int>(0, (sum, item) => sum + item.remainingCents);
+
+  return AsyncValue.data(KhataSummaryData(
+    totalBorrowedCents: totalBorrowed,
+    totalLentCents: totalLent,
+  ));
+});
+

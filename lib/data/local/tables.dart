@@ -151,3 +151,22 @@ class SavingsContributions extends Table {
   @override
   Set<Column> get primaryKey => {id};
 }
+
+@DataClassName('RecurringTransactionTableData')
+class RecurringTransactions extends Table {
+  TextColumn get id => text()();
+  TextColumn get type => text()(); // 'income' or 'expense'
+  TextColumn get name => text()();
+  IntColumn get amountCents => integer()();
+  TextColumn get category => text()();
+  TextColumn get frequency => text()(); // 'daily', 'weekly', 'monthly'
+  DateTimeColumn get startDate => dateTime()();
+  DateTimeColumn get nextDueDate => dateTime()();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  DateTimeColumn get lastGeneratedDate => dateTime().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+

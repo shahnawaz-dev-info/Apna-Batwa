@@ -2,9 +2,10 @@
   "elements": {},
   "imports": [
     "package:flutter/material.dart",
-    "package:apnabatwa/core/theme/colors.dart",
     "package:apnabatwa/features/dashboard/presentation/screens/dashboard_screen.dart",
     "package:apnabatwa/features/khata/presentation/screens/khata_screen.dart",
-    "package:apnabatwa/features/transactions/presentation/screens/transactions_screen.dart"
+    "package:apnabatwa/features/transactions/presentation/screens/transactions_screen.dart",
+    "package:apnabatwa/features/wishlist/presentation/screens/wishlist_screen.dart",
+    "package:apnabatwa/features/more/presentation/screens/more_screen.dart"
   ]
 }

@@ -8,7 +8,8 @@ import '../../../income/presentation/widgets/add_income_modal.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../expenses/presentation/widgets/add_expense_modal.dart';
-import '../../../dashboard/presentation/providers/dashboard_providers.dart';
+import '../providers/transaction_filter_providers.dart';
+import '../widgets/transaction_filter_modal.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -36,10 +37,21 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final filterState = ref.watch(transactionFilterProvider);
+    final filterNotifier = ref.read(transactionFilterProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Transactions'),
+        actions: [
+          IconButton(
+            icon: Badge(
+              isLabelVisible: filterState.hasActiveFilters,
+              child: const Icon(Icons.filter_list),
+            ),
+            onPressed: () => TransactionFilterModal.show(context),
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.primaryBlue,
@@ -53,12 +65,89 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          _AllTransactionsTab(isDark: isDark),
-          _IncomeTransactionsTab(isDark: isDark),
-          _ExpenseTransactionsTab(isDark: isDark),
+          // Live Search Bar
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: TextField(
+              onChanged: (val) => filterNotifier.setSearchQuery(val),
+              decoration: InputDecoration(
+                hintText: 'Search transactions by name, note, or category...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: filterState.searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () => filterNotifier.setSearchQuery(''),
+                      )
+                    : null,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
+
+          // Applied Filter Chips Bar
+          if (filterState.hasActiveFilters)
+            Container(
+              height: 40,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  ActionChip(
+                    label: const Text('Clear All', style: TextStyle(color: AppColors.expenseRed, fontWeight: FontWeight.bold)),
+                    onPressed: () => filterNotifier.clearAll(),
+                    avatar: const Icon(Icons.close, size: 16, color: AppColors.expenseRed),
+                    backgroundColor: AppColors.expenseRed.withOpacity(0.1),
+                  ),
+                  const SizedBox(width: 6),
+                  if (filterState.typeFilter != 'all')
+                    Chip(
+                      label: Text('Type: ${filterState.typeFilter.toUpperCase()}'),
+                      onDeleted: () => filterNotifier.setTypeFilter('all'),
+                    ),
+                  for (final cat in filterState.selectedCategories) ...[
+                    const SizedBox(width: 6),
+                    Chip(
+                      label: Text('Cat: $cat'),
+                      onDeleted: () => filterNotifier.toggleCategory(cat),
+                    ),
+                  ],
+                  if (filterState.dateRange != null) ...[
+                    const SizedBox(width: 6),
+                    Chip(
+                      label: Text(
+                        'Date: ${DateFormatters.formatShortDate(filterState.dateRange!.start)} - ${DateFormatters.formatShortDate(filterState.dateRange!.end)}',
+                      ),
+                      onDeleted: () => filterNotifier.setDateRange(null),
+                    ),
+                  ],
+                  if (filterState.minAmountCents != null || filterState.maxAmountCents != null) ...[
+                    const SizedBox(width: 6),
+                    Chip(
+                      label: Text(
+                        'Amount: ${filterState.minAmountCents != null ? CurrencyFormatter.formatCents(filterState.minAmountCents!) : '0'} - ${filterState.maxAmountCents != null ? CurrencyFormatter.formatCents(filterState.maxAmountCents!) : '∞'}',
+                      ),
+                      onDeleted: () => filterNotifier.setAmountRange(null, null),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _AllTransactionsTab(isDark: isDark),
+                _IncomeTransactionsTab(isDark: isDark),
+                _ExpenseTransactionsTab(isDark: isDark),
+              ],
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -141,7 +230,7 @@ class _AllTransactionsTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recentTransactions = ref.watch(recentTransactionsProvider);
+    final recentTransactions = ref.watch(filteredTransactionsProvider);
 
     if (recentTransactions.isEmpty) {
       return _buildEmptyState(

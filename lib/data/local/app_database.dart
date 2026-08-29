@@ -29,6 +29,7 @@ LazyDatabase _openConnection() {
   Budgets,
   SavingsGoals,
   SavingsContributions,
+  RecurringTransactions,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -36,7 +37,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(QueryExecutor executor) : super(executor);
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -155,6 +156,9 @@ class AppDatabase extends _$AppDatabase {
             await m.createTable(budgets);
             await m.createTable(savingsGoals);
             await m.createTable(savingsContributions);
+          }
+          if (from < 5) {
+            await m.createTable(recurringTransactions);
           }
         },
       );
@@ -351,5 +355,21 @@ class AppDatabase extends _$AppDatabase {
       into(savingsContributions).insert(entry);
   Future<int> deleteSavingsContribution(String id) =>
       (delete(savingsContributions)..where((t) => t.id.equals(id))).go();
+
+  // Recurring Transaction Operations
+  Stream<List<RecurringTransactionTableData>> watchAllRecurringTransactions() =>
+      (select(recurringTransactions)
+            ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+          .watch();
+  Future<List<RecurringTransactionTableData>> getAllRecurringTransactions() =>
+      (select(recurringTransactions)
+            ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)]))
+          .get();
+  Future<int> insertRecurringTransaction(RecurringTransactionsCompanion entry) =>
+      into(recurringTransactions).insert(entry);
+  Future<bool> updateRecurringTransaction(RecurringTransactionsCompanion entry) =>
+      update(recurringTransactions).replace(entry);
+  Future<int> deleteRecurringTransaction(String id) =>
+      (delete(recurringTransactions)..where((t) => t.id.equals(id))).go();
 }
 

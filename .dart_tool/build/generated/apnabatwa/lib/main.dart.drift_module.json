@@ -4,6 +4,7 @@
     "package:flutter/material.dart",
     "package:flutter_riverpod/flutter_riverpod.dart",
     "package:apnabatwa/core/theme/app_theme.dart",
+    "package:apnabatwa/core/services/notification_service.dart",
     "package:apnabatwa/main_shell.dart"
   ]
 }

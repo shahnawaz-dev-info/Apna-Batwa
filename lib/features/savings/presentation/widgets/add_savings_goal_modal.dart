@@ -4,6 +4,7 @@ import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/savings_goal.dart';
 import '../providers/savings_providers.dart';
+import '../../../../core/services/notification_service.dart';
 
 class AddSavingsGoalModal extends ConsumerStatefulWidget {
   final SavingsGoalEntity? existingGoal;
@@ -84,6 +85,14 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
           name: name,
           targetAmountCents: targetCents,
           targetDate: _selectedTargetDate,
+        );
+      }
+
+      if (_selectedTargetDate != null) {
+        await NotificationService.instance.scheduleSavingsReminder(
+          notificationId: name.hashCode,
+          goalName: name,
+          targetDate: _selectedTargetDate!,
         );
       }
 
