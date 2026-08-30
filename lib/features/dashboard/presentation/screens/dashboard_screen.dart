@@ -20,6 +20,7 @@ import '../../../onboarding/presentation/widgets/whats_new_modal.dart';
 import '../../../recurring/presentation/providers/recurring_providers.dart';
 import '../../../savings/presentation/providers/savings_providers.dart';
 import '../../../savings/presentation/screens/savings_goals_screen.dart';
+import '../../../budgets/presentation/providers/budget_providers.dart';
 import '../providers/dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -115,6 +116,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final tr = ref.watch(translationsProvider);
+    final lang = ref.watch(appLanguageProvider);
 
     final currentBalanceCents = ref.watch(currentBalanceCentsProvider);
     final totalIncomeCents = ref.watch(totalIncomeCentsProvider);
@@ -123,6 +125,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final totalOthersOweYouCents = ref.watch(totalOthersOweYouCentsProvider);
     final totalActiveSavingsCents = ref.watch(totalActiveSavingsCentsProvider);
     final recentTransactions = ref.watch(recentTransactionsProvider);
+    final momTrend = ref.watch(momExpenseTrendProvider);
 
     final isCurrentRoute = ModalRoute.of(context)?.isCurrent ?? false;
     final isHomeTab = ref.watch(selectedMainTabProvider) == 0;
@@ -222,6 +225,13 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         onRefresh: () async {
           ref.invalidate(watchAllIncomeProvider);
           ref.invalidate(watchAllExpensesProvider);
+          ref.invalidate(watchAllBorrowedRecordsProvider);
+          ref.invalidate(watchAllLentRecordsProvider);
+          ref.invalidate(watchBudgetsForSelectedMonthProvider);
+          ref.invalidate(watchAllRecurringProvider);
+          ref.invalidate(watchAllSavingsGoalsProvider);
+          ref.invalidate(watchAllSavingsContributionsProvider);
+          await Future.delayed(const Duration(milliseconds: 300));
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -229,6 +239,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 0. Time-based Greeting
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  tr(getTimeBasedGreetingKey(DateTime.now())),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                  ),
+                ),
+              ),
+
               // 1. Prominent Current Balance Card
               Container(
                 width: double.infinity,
@@ -273,7 +296,29 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                         letterSpacing: -0.5,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    if (momTrend.hasPreviousMonthData) ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            momTrend.isExpenseIncreased ? Icons.arrow_upward : Icons.arrow_downward,
+                            size: 13,
+                            color: momTrend.isExpenseIncreased ? AppColors.expenseRed : AppColors.successGreen,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${momTrend.percentageChange.abs().toStringAsFixed(0)}% ${tr(momTrend.isExpenseIncreased ? 'dashboard_trend_higher' : 'dashboard_trend_lower')}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: momTrend.isExpenseIncreased ? AppColors.expenseRed : AppColors.successGreen,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    const SizedBox(height: 18),
                     // Quick Action Buttons Inside Balance Card
                     Row(
                       children: [
@@ -411,7 +456,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+
+              // 3. Budget Mini-Progress Indicator
+              _buildBudgetMiniProgress(context, ref, lang, isDark),
+
+              // 4. Upcoming Recurring Payment Banner
+              _buildRecurringBanner(context, ref, lang, isDark),
+
+              // 5. Rotating Financial Tip Banner
+              _buildFinancialTipBanner(context, ref, lang, isDark),
+
+              const SizedBox(height: 8),
 
               // 3. Recent Transactions Header
               Row(
@@ -425,11 +481,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
                     ),
                   ),
-                  Text(
-                    tr('dashboard_latest_10'),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  InkWell(
+                    onTap: () {
+                      ref.read(selectedMainTabProvider.notifier).state = 1;
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      child: Text(
+                        tr('common_show_all'),
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primaryBlue,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -437,7 +503,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
               const SizedBox(height: 12),
 
-              // 4. Recent Transactions List
+              // 4. Recent Transactions List (Single Most Recent Entry)
               if (recentTransactions.isEmpty)
                 Container(
                   width: double.infinity,
@@ -480,14 +546,27 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: recentTransactions.take(10).length,
+                  itemCount: recentTransactions.take(1).length,
                   separatorBuilder: (context, index) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final item = recentTransactions[index];
                     return _buildTransactionTile(context, ref, item, isDark);
                   },
                 ),
-              const SizedBox(height: 20),
+
+              const SizedBox(height: 28),
+              Center(
+                child: Text(
+                  tr('app_powered_by'),
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                    color: (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight).withOpacity(0.7),
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -632,6 +711,235 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             AddExpenseModal.show(context, existingEntry: item.rawEntity as ExpenseEntryEntity);
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildBudgetMiniProgress(BuildContext context, WidgetRef ref, AppLanguage lang, bool isDark) {
+    final budgetList = ref.watch(categoryBudgetProgressListProvider);
+    if (budgetList.isEmpty) return const SizedBox.shrink();
+
+    CategoryBudgetProgress? topBudget;
+    for (final b in budgetList) {
+      if (topBudget == null || b.percentage > topBudget.percentage) {
+        topBudget = b;
+      }
+    }
+
+    if (topBudget == null || topBudget.budget.monthlyLimitCents <= 0) {
+      return const SizedBox.shrink();
+    }
+
+    final categoryName = AppTranslations.translateCategory(topBudget.budget.category, lang);
+    final pct = topBudget.percentage;
+
+    Color progressColor;
+    if (pct < 80) {
+      progressColor = AppColors.successGreen;
+    } else if (pct <= 100) {
+      progressColor = AppColors.warningAmber;
+    } else {
+      progressColor = AppColors.expenseRed;
+    }
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.cardDark : AppColors.cardLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Icon(Icons.pie_chart_outline, size: 16, color: progressColor),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        '${AppTranslations.tr('dashboard_top_budget', lang)}: $categoryName',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${pct.toStringAsFixed(0)}% ${AppTranslations.tr('dashboard_budget_used', lang)}',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: progressColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: (pct / 100).clamp(0.0, 1.0),
+              minHeight: 6,
+              backgroundColor: progressColor.withOpacity(0.15),
+              valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecurringBanner(BuildContext context, WidgetRef ref, AppLanguage lang, bool isDark) {
+    final upcomingList = ref.watch(upcomingRecurringProvider);
+    if (upcomingList.isEmpty) return const SizedBox.shrink();
+
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.warningAmber.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.warningAmber.withOpacity(0.4),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.notifications_active_outlined, size: 18, color: AppColors.warningAmber),
+              const SizedBox(width: 8),
+              Text(
+                AppTranslations.tr('recurring_banner_title', lang),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.warningAmber,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ...upcomingList.take(2).map((item) {
+            final itemDate = DateTime(item.nextDueDate.year, item.nextDueDate.month, item.nextDueDate.day);
+            final daysDiff = itemDate.difference(todayStart).inDays;
+
+            String dueText;
+            if (daysDiff <= 0) {
+              dueText = AppTranslations.tr('recurring_due_today', lang);
+            } else if (daysDiff == 1) {
+              dueText = AppTranslations.tr('recurring_due_tomorrow', lang);
+            } else {
+              dueText = lang == AppLanguage.romanUrdu ? '$daysDiff din mein due hai' : 'due in $daysDiff days';
+            }
+
+            return Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${item.name} — ${CurrencyFormatter.formatCents(item.amountCents)}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    dueText,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.warningAmber,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFinancialTipBanner(BuildContext context, WidgetRef ref, AppLanguage lang, bool isDark) {
+    final tipIndex = ref.watch(financialTipIndexProvider);
+    final tipKey = 'tip_${tipIndex + 1}';
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.cardDark : AppColors.cardLight,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primaryBlue.withOpacity(0.12),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.lightbulb_outlined,
+              size: 20,
+              color: AppColors.primaryBlue,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  AppTranslations.tr('dashboard_tip_title', lang),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryBlue,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  AppTranslations.tr(tipKey, lang),
+                  style: TextStyle(
+                    fontSize: 13,
+                    height: 1.3,
+                    color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -117,6 +117,148 @@ class AppTranslations {
       AppLanguage.romanUrdu: 'Record karne ke liye "+ Money In" ya "− Expense" dabayein.',
     },
 
+    // Greetings (Home Dashboard)
+    'greeting_morning': {
+      AppLanguage.english: 'Good Morning!',
+      AppLanguage.romanUrdu: 'Subah Bakhair!',
+    },
+    'greeting_afternoon': {
+      AppLanguage.english: 'Good Afternoon!',
+      AppLanguage.romanUrdu: 'Dopahar Bakhair!',
+    },
+    'greeting_evening': {
+      AppLanguage.english: 'Good Evening!',
+      AppLanguage.romanUrdu: 'Shaam Bakhair!',
+    },
+    'greeting_night': {
+      AppLanguage.english: 'Good Night!',
+      AppLanguage.romanUrdu: 'Shab Bakhair!',
+    },
+
+    // MoM Expense Trend Indicator
+    'dashboard_trend_higher': {
+      AppLanguage.english: 'higher than last month',
+      AppLanguage.romanUrdu: 'pichle mahine se ziyada',
+    },
+    'dashboard_trend_lower': {
+      AppLanguage.english: 'lower than last month',
+      AppLanguage.romanUrdu: 'pichle mahine se kam',
+    },
+    'dashboard_trend_same': {
+      AppLanguage.english: 'Same as last month',
+      AppLanguage.romanUrdu: 'Pichle mahine ke barabar',
+    },
+
+    // Budget Mini-Progress
+    'dashboard_top_budget': {
+      AppLanguage.english: 'Highest Budget Usage',
+      AppLanguage.romanUrdu: 'Sab Se Ziyada Budget Use',
+    },
+    'dashboard_budget_used': {
+      AppLanguage.english: 'used',
+      AppLanguage.romanUrdu: 'istemaal hua',
+    },
+
+    // Recurring Reminders
+    'recurring_banner_title': {
+      AppLanguage.english: 'Upcoming Recurring Payment',
+      AppLanguage.romanUrdu: 'Aane Wali Recurring Adayegi',
+    },
+    'recurring_due_today': {
+      AppLanguage.english: 'due today',
+      AppLanguage.romanUrdu: 'aaj due hai',
+    },
+    'recurring_due_tomorrow': {
+      AppLanguage.english: 'due tomorrow',
+      AppLanguage.romanUrdu: 'kal due hai',
+    },
+
+    // Financial Tips
+    'dashboard_tip_title': {
+      AppLanguage.english: 'Financial Tip',
+      AppLanguage.romanUrdu: 'Maliyati Mashwara',
+    },
+    'tip_1': {
+      AppLanguage.english: 'Small savings today make a big difference tomorrow.',
+      AppLanguage.romanUrdu: 'Chhoti bachat, bada farq — roz thoda bachayein.',
+    },
+    'tip_2': {
+      AppLanguage.english: 'Before spending, ask: is it a need or a want?',
+      AppLanguage.romanUrdu: 'Kharcha karne se pehle sochein: zaroorat hai ya khwahish?',
+    },
+    'tip_3': {
+      AppLanguage.english: 'Set a monthly budget — and actually follow it.',
+      AppLanguage.romanUrdu: 'Har mahine ka budget banayein, aur usay follow karein.',
+    },
+    'tip_4': {
+      AppLanguage.english: "Building an emergency fund matters, even if it's small.",
+      AppLanguage.romanUrdu: 'Emergency fund banana zaroori hai, chahe chhota hi ho.',
+    },
+    'tip_5': {
+      AppLanguage.english: 'Before borrowing, think — can you repay it on time?',
+      AppLanguage.romanUrdu: 'Udhaar lene se pehle sochein — kya wapis kar sakenge?',
+    },
+    'tip_6': {
+      AppLanguage.english: 'Track every expense — what gets measured gets managed.',
+      AppLanguage.romanUrdu: 'Apne kharche likhna aadat banayein — jo likha jata hai, wahi control hota hai.',
+    },
+    'tip_7': {
+      AppLanguage.english: 'Save at least 10% of your pocket money.',
+      AppLanguage.romanUrdu: 'Pocket money ka 10% bachat mein daalein.',
+    },
+    'tip_8': {
+      AppLanguage.english: 'Big dreams start with small savings today.',
+      AppLanguage.romanUrdu: 'Bade khwabon ke liye chhoti bachat aaj se shuru karein.',
+    },
+    'tip_9': {
+      AppLanguage.english: 'Avoid unnecessary spending; prioritize what truly matters.',
+      AppLanguage.romanUrdu: 'Fizool kharchi se bachein, zaroori cheezon ko priority dein.',
+    },
+    'tip_10': {
+      AppLanguage.english: 'Paying with cash often gives you more control than cards.',
+      AppLanguage.romanUrdu: 'Cash mein kharch karna aksar zyada control deta hai card se.',
+    },
+    'tip_11': {
+      AppLanguage.english: 'Wait 24 hours before any big purchase — is it really needed?',
+      AppLanguage.romanUrdu: 'Har khareed se pehle 24 ghante sochein — zaroori hai ya nahi?',
+    },
+    'tip_12': {
+      AppLanguage.english: 'Splitting costs with friends is a smart habit.',
+      AppLanguage.romanUrdu: 'Doston ke sath kharcha share karna acha aadat hai.',
+    },
+    'tip_13': {
+      AppLanguage.english: 'Live within your means, not beyond them.',
+      AppLanguage.romanUrdu: 'Apni income ke mutabiq lifestyle rakhein, uss se zyada nahi.',
+    },
+    'tip_14': {
+      AppLanguage.english: 'Set savings goals — saving without a target is hard.',
+      AppLanguage.romanUrdu: 'Savings goal set karein — bina target ke bachat mushkil hoti hai.',
+    },
+    'tip_15': {
+      AppLanguage.english: 'Every rupee counts — small savings add up to big results.',
+      AppLanguage.romanUrdu: 'Har Rupya ginta hai — chhoti bachat bhi ikattha ho kar badi ban jaati hai.',
+    },
+    'tip_16': {
+      AppLanguage.english: "Plan before you spend, so you don't regret it later.",
+      AppLanguage.romanUrdu: 'Kharch se pehle plan banayein, baad mein pachtana na pade.',
+    },
+    'tip_17': {
+      AppLanguage.english: "Don't fall for discounts on things you don't actually need.",
+      AppLanguage.romanUrdu: 'Discount ke chakkar mein fizool cheezein na khareedein.',
+    },
+    'tip_18': {
+      AppLanguage.english: 'Clear your Khata (borrowed money) on time — it protects relationships too.',
+      AppLanguage.romanUrdu: 'Apna Khata (udhaar) waqt par clear karein — rishtay bhi mehfooz rahenge.',
+    },
+    'tip_19': {
+      AppLanguage.english: 'Divide your budget at the start of the month.',
+      AppLanguage.romanUrdu: 'Mahine ke shuru mein hi budget divide kar lein.',
+    },
+    'tip_20': {
+      AppLanguage.english: 'Financial freedom begins with small daily habits.',
+      AppLanguage.romanUrdu: 'Financial azadi choti aadaton se shuru hoti hai.',
+    },
+
     // Transactions Screen & Filters
     'transactions_title': {
       AppLanguage.english: 'Transactions',
@@ -1733,6 +1875,100 @@ class AppTranslations {
       AppLanguage.english: 'Overall borrowing, lending, and contact activity',
       AppLanguage.romanUrdu: 'Udhaar, len den, aur contacts ki activity',
     },
+    'reports_net_khata_pos': {
+      AppLanguage.english: 'Net Position',
+      AppLanguage.romanUrdu: 'Net Position',
+    },
+    'common_show_all': {
+      AppLanguage.english: 'Show All',
+      AppLanguage.romanUrdu: 'Sab Dekhein',
+    },
+    'app_powered_by': {
+      AppLanguage.english: 'Powered by SN Technologies',
+      AppLanguage.romanUrdu: 'Powered by SN Technologies',
+    },
+
+    // Month short names (for charts & analytics)
+    'month_jan': {AppLanguage.english: 'Jan', AppLanguage.romanUrdu: 'Jan'},
+    'month_feb': {AppLanguage.english: 'Feb', AppLanguage.romanUrdu: 'Feb'},
+    'month_mar': {AppLanguage.english: 'Mar', AppLanguage.romanUrdu: 'Mar'},
+    'month_apr': {AppLanguage.english: 'Apr', AppLanguage.romanUrdu: 'Apr'},
+    'month_may': {AppLanguage.english: 'May', AppLanguage.romanUrdu: 'May'},
+    'month_jun': {AppLanguage.english: 'Jun', AppLanguage.romanUrdu: 'Jun'},
+    'month_jul': {AppLanguage.english: 'Jul', AppLanguage.romanUrdu: 'Jul'},
+    'month_aug': {AppLanguage.english: 'Aug', AppLanguage.romanUrdu: 'Aug'},
+    'month_sep': {AppLanguage.english: 'Sep', AppLanguage.romanUrdu: 'Sep'},
+    'month_oct': {AppLanguage.english: 'Oct', AppLanguage.romanUrdu: 'Oct'},
+    'month_nov': {AppLanguage.english: 'Nov', AppLanguage.romanUrdu: 'Nov'},
+    'month_dec': {AppLanguage.english: 'Dec', AppLanguage.romanUrdu: 'Dec'},
+
+    // Onboarding aliases
+    'onboarding_p1_title': {AppLanguage.english: 'Welcome to Apna Batwa', AppLanguage.romanUrdu: 'Apna Batwa Mein Khush Aamdeed'},
+    'onboarding_p1_desc': {AppLanguage.english: 'Your personal finance manager built specifically for students. Track income, expenses, and savings with ease.', AppLanguage.romanUrdu: 'Aapka zaati finance manager jo khaas taur par students ke liye banaya gaya hai. Aamdani, kharchay aur savings aasani se track karein.'},
+    'onboarding_p2_title': {AppLanguage.english: 'Smart Khata & Udhaar', AppLanguage.romanUrdu: 'Smart Khata aur Udhaar'},
+    'onboarding_p2_desc': {AppLanguage.english: 'Never forget who owes you or who you owe money to. Keep clear records of all borrowing and lending.', AppLanguage.romanUrdu: 'Kabhie mat bhoolain k kis se kitne paise lene hain ya dene hain. Udhaar aur len den ka saaf hisab rakhein.'},
+    'onboarding_p3_title': {AppLanguage.english: 'Budgets & Savings Goals', AppLanguage.romanUrdu: 'Budgets aur Savings Goals'},
+    'onboarding_p3_desc': {AppLanguage.english: 'Set category budgets and plan for upcoming purchases with interactive savings goals.', AppLanguage.romanUrdu: 'Category wise budget set karein aur apni khwahishat ke liye aamdani se bachat karein.'},
+    'onboarding_p4_title': {AppLanguage.english: 'Private & Secure', AppLanguage.romanUrdu: 'Private aur Safe'},
+    'onboarding_p4_desc': {AppLanguage.english: 'All your financial data stays safely on your device. Protect your app with biometric or PIN lock.', AppLanguage.romanUrdu: 'Aapka tamam data aapke mobile mein safe rehta hai. PIN lock ya fingerprint se app secure karein.'},
+
+    // About screen
+    'about_desc_p1': {AppLanguage.english: 'Apna Batwa is a student-focused personal finance app designed to help you track expenses, manage budgets, keep track of Khata (borrowing & lending), and save money easily.', AppLanguage.romanUrdu: 'Apna Batwa ek student-focused finance app hai jo aapke kharchon, budgets, Khata aur savings ko aasan banata hai.'},
+    'about_desc_p2': {AppLanguage.english: 'Built with privacy in mind. All your financial data is stored locally on your device.', AppLanguage.romanUrdu: 'Privacy ke saath banaya gaya hai. Aapka tamam data aapke mobile mein safe rehta hai.'},
+    'about_developer': {AppLanguage.english: 'Developer', AppLanguage.romanUrdu: 'Developer'},
+
+    // Backup & Restore
+    'backup_create_btn': {AppLanguage.english: 'Create Backup', AppLanguage.romanUrdu: 'Backup Banayein'},
+    'backup_erase_confirm_btn': {AppLanguage.english: 'Yes, Erase All', AppLanguage.romanUrdu: 'Haan, Sab Khatam Karein'},
+    'backup_restore_dialog_msg': {AppLanguage.english: 'Are you sure you want to restore data from this backup file? Existing data will be merged/updated.', AppLanguage.romanUrdu: 'Kya aap is backup file se data restore karna chahte hain?'},
+    'backup_restore_dialog_title': {AppLanguage.english: 'Restore Backup', AppLanguage.romanUrdu: 'Backup Restore Karein'},
+    'common_ok': {AppLanguage.english: 'OK', AppLanguage.romanUrdu: 'OK'},
+
+    // Khata dialogs & persons
+    'khata_add_person_btn': {AppLanguage.english: 'Add Person', AppLanguage.romanUrdu: 'Banda Shamil Karein'},
+    'khata_delete_entry_title': {AppLanguage.english: 'Delete Record', AppLanguage.romanUrdu: 'Record Delete Karein'},
+    'khata_delete_entry_msg': {AppLanguage.english: 'Are you sure you want to delete this Khata record?', AppLanguage.romanUrdu: 'Kya aap yeh Khata record delete karna chahte hain?'},
+    'khata_delete_person_msg': {AppLanguage.english: 'Are you sure you want to remove this contact?', AppLanguage.romanUrdu: 'Kya aap is bande ko list se hatana chahte hain?'},
+    'khata_delete_person_error': {AppLanguage.english: 'Cannot delete person with active balance records.', AppLanguage.romanUrdu: 'Active balance wale bande ko delete nahi kiya ja sakta.'},
+
+    // Notification settings
+    'notif_budget_warnings': {AppLanguage.english: 'Budget Warnings', AppLanguage.romanUrdu: 'Budget Warnings'},
+    'notif_khata_reminders': {AppLanguage.english: 'Khata Reminders', AppLanguage.romanUrdu: 'Khata Reminders'},
+    'notif_savings_reminders': {AppLanguage.english: 'Savings Goal Reminders', AppLanguage.romanUrdu: 'Savings Reminders'},
+
+    // PIN lock & security
+    'pin_removed_snackbar': {AppLanguage.english: 'PIN lock removed successfully', AppLanguage.romanUrdu: 'PIN lock khatam ho gaya'},
+    'pin_reset_title': {AppLanguage.english: 'Forgot PIN?', AppLanguage.romanUrdu: 'PIN Bhool Gaye?'},
+    'pin_reset_msg': {AppLanguage.english: 'To reset your PIN, please re-authenticate using your device biometrics or master credentials.', AppLanguage.romanUrdu: 'PIN reset karne ke liye biometrics se verify karein.'},
+    'pin_reset_unlock_btn': {AppLanguage.english: 'Reset & Unlock', AppLanguage.romanUrdu: 'Reset & Unlock'},
+
+    // Purchase modals
+    'purchase_amount_label': {AppLanguage.english: 'Amount Paid', AppLanguage.romanUrdu: 'Adaya Karda Raqam'},
+    'purchase_modal_log_title': {AppLanguage.english: 'Log Purchase', AppLanguage.romanUrdu: 'Kharidari Indraj'},
+    'purchase_name_label': {AppLanguage.english: 'Item Name', AppLanguage.romanUrdu: 'Item Ka Naam'},
+
+    // Security screen
+    'sec_biometrics': {AppLanguage.english: 'Biometric Unlock', AppLanguage.romanUrdu: 'Fingerprint / Face Unlock'},
+    'sec_create_pin_sub': {AppLanguage.english: 'Set a 4-digit security PIN', AppLanguage.romanUrdu: '4-digit security PIN set karein'},
+    'sec_enter_pin_prompt': {AppLanguage.english: 'Enter your 4-digit PIN', AppLanguage.romanUrdu: 'Apna 4-digit PIN darj karein'},
+    'sec_set_pin': {AppLanguage.english: 'App PIN Lock', AppLanguage.romanUrdu: 'App PIN Lock'},
+    'sec_status_disabled': {AppLanguage.english: 'Disabled', AppLanguage.romanUrdu: 'Disabled'},
+    'sec_status_enabled': {AppLanguage.english: 'Enabled', AppLanguage.romanUrdu: 'Enabled'},
+
+    // Recurring & transactions
+    'tab_expenses': {AppLanguage.english: 'Expenses', AppLanguage.romanUrdu: 'Kharchay'},
+    'tab_income': {AppLanguage.english: 'Income', AppLanguage.romanUrdu: 'Aamdani'},
+    'transactions_filter_category': {AppLanguage.english: 'Category', AppLanguage.romanUrdu: 'Category'},
+
+    // What's new modal
+    'whats_new_title': {AppLanguage.english: "What's New in", AppLanguage.romanUrdu: 'Naye Features in'},
+    'whats_new_subtitle': {AppLanguage.english: 'Here are the latest updates and improvements in Apna Batwa.', AppLanguage.romanUrdu: 'Apna Batwa ki taza tareen updates aur behtari.'},
+
+    // Wishlist modals & screen
+    'wishlist_confirm_purchased_btn': {AppLanguage.english: 'Mark as Purchased', AppLanguage.romanUrdu: 'Kharid Liya Mark Karein'},
+    'wishlist_modal_mark_purchased': {AppLanguage.english: 'Mark Item as Purchased', AppLanguage.romanUrdu: 'Item Kharida Hua Mark Karein'},
+    'wishlist_tab_active': {AppLanguage.english: 'Wishlist', AppLanguage.romanUrdu: 'Wishlist'},
+    'wishlist_tab_purchased': {AppLanguage.english: 'Purchase History', AppLanguage.romanUrdu: 'Kharidari History'},
   };
 
   static String tr(String key, AppLanguage lang) {

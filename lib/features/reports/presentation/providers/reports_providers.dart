@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../income/presentation/providers/income_providers.dart';
 
@@ -120,6 +122,7 @@ class MonthlyTrendPoint {
 }
 
 final incomeExpenseTrendProvider = Provider<List<MonthlyTrendPoint>>((ref) {
+  final lang = ref.watch(appLanguageProvider);
   final rangeType = ref.watch(reportTimeRangeProvider);
   final incomeAsync = ref.watch(watchAllIncomeProvider);
   final expensesAsync = ref.watch(watchAllExpensesProvider);
@@ -140,11 +143,10 @@ final incomeExpenseTrendProvider = Provider<List<MonthlyTrendPoint>>((ref) {
     curr = DateTime(curr.year, curr.month + 1, 1);
   }
 
-  final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
   for (final m in months) {
     final key = '${m.year}-${m.month}';
-    final label = '${monthNames[m.month - 1]} ${m.year.toString().substring(2)}';
+    final monthLabel = AppTranslations.translateMonthShort(m.month, lang);
+    final label = '$monthLabel ${m.year.toString().substring(2)}';
 
     int incSum = 0;
     for (final inc in allIncome) {

@@ -338,14 +338,21 @@ class ReportsScreen extends ConsumerWidget {
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
+                              reservedSize: 36,
+                              interval: 1,
                               getTitlesWidget: (val, meta) {
                                 final index = val.toInt();
+                                if (val != index.toDouble()) return const SizedBox.shrink();
                                 if (index >= 0 && index < spendingTrends.monthlyPoints.length) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 6),
+                                  return SideTitleWidget(
+                                    axisSide: meta.axisSide,
+                                    space: 4,
                                     child: Text(
                                       spendingTrends.monthlyPoints[index].label,
-                                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                      style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   );
                                 }
@@ -529,14 +536,21 @@ class ReportsScreen extends ConsumerWidget {
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
                               showTitles: true,
+                              reservedSize: 36,
+                              interval: 1,
                               getTitlesWidget: (val, meta) {
                                 final index = val.toInt();
+                                if (val != index.toDouble()) return const SizedBox.shrink();
                                 if (index >= 0 && index < 7) {
-                                  return Padding(
-                                    padding: const EdgeInsets.only(top: 6),
+                                  return SideTitleWidget(
+                                    axisSide: meta.axisSide,
+                                    space: 4,
                                     child: Text(
                                       AppTranslations.translateWeekdayShort(index, lang),
-                                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                                      style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+                                      maxLines: 1,
+                                      softWrap: false,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
                                   );
                                 }
