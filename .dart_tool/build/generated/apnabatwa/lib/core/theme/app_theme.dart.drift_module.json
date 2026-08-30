@@ -1,7 +1,0 @@
-{
-  "elements": {},
-  "imports": [
-    "package:flutter/material.dart",
-    "package:apnabatwa/core/theme/colors.dart"
-  ]
-}

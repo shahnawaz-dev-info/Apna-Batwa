@@ -1,19 +1,72 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/providers/theme_providers.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../budgets/presentation/screens/budget_management_screen.dart';
-import '../../../savings/presentation/screens/savings_goals_screen.dart';
-import '../../../reports/presentation/screens/reports_screen.dart';
 import '../../../recurring/presentation/screens/recurring_management_screen.dart';
+import '../../../reports/presentation/screens/reports_screen.dart';
+import '../../../savings/presentation/screens/savings_goals_screen.dart';
 import '../../../security/presentation/screens/security_settings_screen.dart';
+import 'about_screen.dart';
 import 'backup_restore_screen.dart';
 import 'notification_settings_screen.dart';
 
-class MoreScreen extends StatelessWidget {
+class MoreScreen extends ConsumerStatefulWidget {
   const MoreScreen({super.key});
+
+  @override
+  ConsumerState<MoreScreen> createState() => _MoreScreenState();
+}
+
+class _MoreScreenState extends ConsumerState<MoreScreen> {
+  String _version = '1.1.0';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPackageInfo();
+  }
+
+  Future<void> _loadPackageInfo() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      setState(() {
+        _version = info.version;
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _launchContactEmail() async {
+    final Uri emailUri = Uri.parse('mailto:info.shahnawaz99@gmail.com?subject=Apna%20Batwa%20Feedback');
+    try {
+      final launched = await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+      if (!launched && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No email app available on this device'),
+            backgroundColor: AppColors.expenseRed,
+          ),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No email app available on this device'),
+            backgroundColor: AppColors.expenseRed,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final currentThemeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -22,6 +75,7 @@ class MoreScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // FINANCIAL TOOLS
           const Padding(
             padding: EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
@@ -88,7 +142,79 @@ class MoreScreen extends StatelessWidget {
               );
             },
           ),
+
           const SizedBox(height: 24),
+
+          // APPEARANCE & THEME (Feature 7)
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'APPEARANCE & THEME',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textSecondaryLight),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isDark ? AppColors.cardDark : AppColors.cardLight,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryBlue.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.brightness_6_outlined, color: AppColors.primaryBlue, size: 20),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'App Theme Mode',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                SegmentedButton<ThemeMode>(
+                  segments: const [
+                    ButtonSegment(
+                      value: ThemeMode.system,
+                      label: Text('System'),
+                      icon: Icon(Icons.settings_suggest_outlined, size: 16),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.light,
+                      label: Text('Light'),
+                      icon: Icon(Icons.wb_sunny_outlined, size: 16),
+                    ),
+                    ButtonSegment(
+                      value: ThemeMode.dark,
+                      label: Text('Dark'),
+                      icon: Icon(Icons.dark_mode_outlined, size: 16),
+                    ),
+                  ],
+                  selected: {currentThemeMode},
+                  onSelectionChanged: (Set<ThemeMode> newSelection) {
+                    ref.read(themeModeProvider.notifier).setThemeMode(newSelection.first);
+                  },
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // PREFERENCES & SETTINGS
           const Padding(
             padding: EdgeInsets.only(left: 4, bottom: 8),
             child: Text(
@@ -139,6 +265,81 @@ class MoreScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => const BackupRestoreScreen()),
               );
             },
+          ),
+
+          const SizedBox(height: 24),
+
+          // ABOUT & COMMUNITY (Feature 3, 4, 5)
+          const Padding(
+            padding: EdgeInsets.only(left: 4, bottom: 8),
+            child: Text(
+              'ABOUT & COMMUNITY',
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppColors.textSecondaryLight),
+            ),
+          ),
+          _buildMenuTile(
+            context,
+            icon: Icons.share_outlined,
+            title: 'Share App',
+            subtitle: 'Share Apna Batwa with friends & family',
+            color: AppColors.successGreen,
+            isDark: isDark,
+            onTap: () {
+              Share.share('Check out Apna Batwa — a free offline personal finance app for students to track income, expenses, and Khata!');
+            },
+          ),
+          const SizedBox(height: 10),
+          _buildMenuTile(
+            context,
+            icon: Icons.mail_outline,
+            title: 'Contact / Feedback',
+            subtitle: 'Send feedback directly to info.shahnawaz99@gmail.com',
+            color: AppColors.primaryBlue,
+            isDark: isDark,
+            onTap: _launchContactEmail,
+          ),
+          const SizedBox(height: 10),
+          _buildMenuTile(
+            context,
+            icon: Icons.info_outline,
+            title: 'About Apna Batwa',
+            subtitle: 'App details, version info & privacy details',
+            color: AppColors.warningAmber,
+            isDark: isDark,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AboutScreen()),
+              );
+            },
+          ),
+
+          const SizedBox(height: 32),
+
+          // FOOTER: Version & Credit (Feature 1 & 2)
+          Center(
+            child: Column(
+              children: [
+                Text(
+                  'Version $_version',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Developed by SN Technologies',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF64748B),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
           ),
         ],
       ),

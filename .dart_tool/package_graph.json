@@ -5,7 +5,7 @@
   "packages": [
     {
       "name": "apnabatwa",
-      "version": "1.0.0+1",
+      "version": "1.1.0+1",
       "dependencies": [
         "crypto",
         "csv",
@@ -19,6 +19,7 @@
         "flutter_secure_storage",
         "intl",
         "local_auth",
+        "package_info_plus",
         "path",
         "path_provider",
         "pdf",
@@ -27,6 +28,7 @@
         "shared_preferences",
         "sqlite3_flutter_libs",
         "timezone",
+        "url_launcher",
         "uuid"
       ],
       "devDependencies": [
@@ -35,6 +37,19 @@
         "flutter_launcher_icons",
         "flutter_lints",
         "flutter_test"
+      ]
+    },
+    {
+      "name": "flutter_launcher_icons",
+      "version": "0.14.4",
+      "dependencies": [
+        "args",
+        "checked_yaml",
+        "cli_util",
+        "image",
+        "json_annotation",
+        "path",
+        "yaml"
       ]
     },
     {
@@ -132,6 +147,20 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "url_launcher",
+      "version": "6.3.2",
+      "dependencies": [
+        "flutter",
+        "url_launcher_android",
+        "url_launcher_ios",
+        "url_launcher_linux",
+        "url_launcher_macos",
+        "url_launcher_platform_interface",
+        "url_launcher_web",
+        "url_launcher_windows"
       ]
     },
     {
@@ -368,6 +397,42 @@
         "source_span",
         "string_scanner"
       ]
+    },
+    {
+      "name": "json_annotation",
+      "version": "4.12.0",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "image",
+      "version": "4.9.2",
+      "dependencies": [
+        "archive"
+      ]
+    },
+    {
+      "name": "cli_util",
+      "version": "0.4.2",
+      "dependencies": [
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "checked_yaml",
+      "version": "2.0.4",
+      "dependencies": [
+        "json_annotation",
+        "source_span",
+        "yaml"
+      ]
+    },
+    {
+      "name": "args",
+      "version": "2.7.0",
+      "dependencies": []
     },
     {
       "name": "web_socket_channel",
@@ -653,11 +718,6 @@
       ]
     },
     {
-      "name": "args",
-      "version": "2.7.0",
-      "dependencies": []
-    },
-    {
       "name": "analyzer",
       "version": "6.4.1",
       "dependencies": [
@@ -738,21 +798,6 @@
       ]
     },
     {
-      "name": "cli_util",
-      "version": "0.4.2",
-      "dependencies": [
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "json_annotation",
-      "version": "4.12.0",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
       "name": "recase",
       "version": "4.1.0",
       "dependencies": []
@@ -830,6 +875,69 @@
       ]
     },
     {
+      "name": "url_launcher_windows",
+      "version": "3.1.6",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "url_launcher_platform_interface"
+      ]
+    },
+    {
+      "name": "url_launcher_web",
+      "version": "2.4.3",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "url_launcher_platform_interface",
+        "web"
+      ]
+    },
+    {
+      "name": "url_launcher_platform_interface",
+      "version": "2.3.2",
+      "dependencies": [
+        "flutter",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "url_launcher_macos",
+      "version": "3.2.6",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "url_launcher_platform_interface"
+      ]
+    },
+    {
+      "name": "url_launcher_linux",
+      "version": "3.2.3",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "url_launcher_platform_interface"
+      ]
+    },
+    {
+      "name": "url_launcher_ios",
+      "version": "6.4.2",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "url_launcher_platform_interface"
+      ]
+    },
+    {
+      "name": "url_launcher_android",
+      "version": "6.3.33",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "url_launcher_platform_interface"
+      ]
+    },
+    {
       "name": "web",
       "version": "0.5.1",
       "dependencies": []
@@ -847,13 +955,6 @@
       "dependencies": [
         "flutter",
         "pdf"
-      ]
-    },
-    {
-      "name": "image",
-      "version": "4.9.2",
-      "dependencies": [
-        "archive"
       ]
     },
     {
@@ -921,42 +1022,6 @@
       "version": "5.15.0",
       "dependencies": [
         "ffi"
-      ]
-    },
-    {
-      "name": "url_launcher_platform_interface",
-      "version": "2.3.2",
-      "dependencies": [
-        "flutter",
-        "plugin_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_linux",
-      "version": "3.2.3",
-      "dependencies": [
-        "flutter",
-        "meta",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_windows",
-      "version": "3.1.6",
-      "dependencies": [
-        "flutter",
-        "meta",
-        "url_launcher_platform_interface"
-      ]
-    },
-    {
-      "name": "url_launcher_web",
-      "version": "2.4.3",
-      "dependencies": [
-        "flutter",
-        "flutter_web_plugins",
-        "url_launcher_platform_interface",
-        "web"
       ]
     },
     {
@@ -1285,15 +1350,6 @@
       ]
     },
     {
-      "name": "checked_yaml",
-      "version": "2.0.4",
-      "dependencies": [
-        "json_annotation",
-        "source_span",
-        "yaml"
-      ]
-    },
-    {
       "name": "built_value",
       "version": "8.12.7",
       "dependencies": [
@@ -1473,16 +1529,28 @@
       ]
     },
     {
-      "name": "flutter_launcher_icons",
-      "version": "0.14.4",
+      "name": "package_info_plus",
+      "version": "8.3.1",
       "dependencies": [
-        "args",
-        "checked_yaml",
-        "cli_util",
-        "image",
-        "json_annotation",
+        "clock",
+        "ffi",
+        "flutter",
+        "flutter_web_plugins",
+        "http",
+        "meta",
+        "package_info_plus_platform_interface",
         "path",
-        "yaml"
+        "web",
+        "win32"
+      ]
+    },
+    {
+      "name": "package_info_plus_platform_interface",
+      "version": "3.2.1",
+      "dependencies": [
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
       ]
     }
   ],

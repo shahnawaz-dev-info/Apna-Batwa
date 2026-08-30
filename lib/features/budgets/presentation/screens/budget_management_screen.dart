@@ -114,16 +114,16 @@ class BudgetManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'No budgets set for ${DateFormat('MMMM yyyy').format(selectedMonthYear)}',
+                      'Koi Budget Set Nahi 🎯',
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Tap "Set Budget" to set spending limits for categories.',
+                      'Tap "Set Budget" to set monthly spending limits for categories!',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
                     ),

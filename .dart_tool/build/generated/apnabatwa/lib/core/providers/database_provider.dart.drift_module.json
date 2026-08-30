@@ -1,7 +1,0 @@
-{
-  "elements": {},
-  "imports": [
-    "package:flutter_riverpod/flutter_riverpod.dart",
-    "package:apnabatwa/data/local/app_database.dart"
-  ]
-}

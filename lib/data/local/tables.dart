@@ -41,6 +41,7 @@ class ExpenseEntries extends Table {
 class Persons extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text()();
+  TextColumn get phoneNumber => text().nullable()();
   TextColumn get note => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();

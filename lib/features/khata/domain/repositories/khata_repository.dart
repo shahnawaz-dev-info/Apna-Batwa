@@ -7,7 +7,7 @@ abstract class KhataRepository {
   // Persons
   Stream<List<PersonEntity>> watchAllPersons();
   Future<List<PersonEntity>> getAllPersons();
-  Future<int> addPerson({required String name, String? note});
+  Future<int> addPerson({required String name, String? phoneNumber, String? note});
   Future<bool> updatePerson(PersonEntity person);
   Future<int> deletePerson(int id);
 

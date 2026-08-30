@@ -1112,6 +1112,12 @@ class $PersonsTable extends Persons
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _phoneNumberMeta =
+      const VerificationMeta('phoneNumber');
+  @override
+  late final GeneratedColumn<String> phoneNumber = GeneratedColumn<String>(
+      'phone_number', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
   late final GeneratedColumn<String> note = GeneratedColumn<String>(
@@ -1130,7 +1136,8 @@ class $PersonsTable extends Persons
       'updated_at', aliasedName, false,
       type: DriftSqlType.dateTime, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, name, note, createdAt, updatedAt];
+  List<GeneratedColumn> get $columns =>
+      [id, name, phoneNumber, note, createdAt, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1149,6 +1156,12 @@ class $PersonsTable extends Persons
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
+    }
+    if (data.containsKey('phone_number')) {
+      context.handle(
+          _phoneNumberMeta,
+          phoneNumber.isAcceptableOrUnknown(
+              data['phone_number']!, _phoneNumberMeta));
     }
     if (data.containsKey('note')) {
       context.handle(
@@ -1179,6 +1192,8 @@ class $PersonsTable extends Persons
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      phoneNumber: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}phone_number']),
       note: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}note']),
       createdAt: attachedDatabase.typeMapping
@@ -1197,12 +1212,14 @@ class $PersonsTable extends Persons
 class PersonTableData extends DataClass implements Insertable<PersonTableData> {
   final int id;
   final String name;
+  final String? phoneNumber;
   final String? note;
   final DateTime createdAt;
   final DateTime updatedAt;
   const PersonTableData(
       {required this.id,
       required this.name,
+      this.phoneNumber,
       this.note,
       required this.createdAt,
       required this.updatedAt});
@@ -1211,6 +1228,9 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    if (!nullToAbsent || phoneNumber != null) {
+      map['phone_number'] = Variable<String>(phoneNumber);
+    }
     if (!nullToAbsent || note != null) {
       map['note'] = Variable<String>(note);
     }
@@ -1223,6 +1243,9 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
     return PersonsCompanion(
       id: Value(id),
       name: Value(name),
+      phoneNumber: phoneNumber == null && nullToAbsent
+          ? const Value.absent()
+          : Value(phoneNumber),
       note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -1235,6 +1258,7 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
     return PersonTableData(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      phoneNumber: serializer.fromJson<String?>(json['phoneNumber']),
       note: serializer.fromJson<String?>(json['note']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -1246,6 +1270,7 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'phoneNumber': serializer.toJson<String?>(phoneNumber),
       'note': serializer.toJson<String?>(note),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -1255,12 +1280,14 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
   PersonTableData copyWith(
           {int? id,
           String? name,
+          Value<String?> phoneNumber = const Value.absent(),
           Value<String?> note = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       PersonTableData(
         id: id ?? this.id,
         name: name ?? this.name,
+        phoneNumber: phoneNumber.present ? phoneNumber.value : this.phoneNumber,
         note: note.present ? note.value : this.note,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -1269,6 +1296,8 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
     return PersonTableData(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      phoneNumber:
+          data.phoneNumber.present ? data.phoneNumber.value : this.phoneNumber,
       note: data.note.present ? data.note.value : this.note,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
@@ -1280,6 +1309,7 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
     return (StringBuffer('PersonTableData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('phoneNumber: $phoneNumber, ')
           ..write('note: $note, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -1288,13 +1318,15 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
   }
 
   @override
-  int get hashCode => Object.hash(id, name, note, createdAt, updatedAt);
+  int get hashCode =>
+      Object.hash(id, name, phoneNumber, note, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is PersonTableData &&
           other.id == this.id &&
           other.name == this.name &&
+          other.phoneNumber == this.phoneNumber &&
           other.note == this.note &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -1303,12 +1335,14 @@ class PersonTableData extends DataClass implements Insertable<PersonTableData> {
 class PersonsCompanion extends UpdateCompanion<PersonTableData> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String?> phoneNumber;
   final Value<String?> note;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const PersonsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.phoneNumber = const Value.absent(),
     this.note = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -1316,6 +1350,7 @@ class PersonsCompanion extends UpdateCompanion<PersonTableData> {
   PersonsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
+    this.phoneNumber = const Value.absent(),
     this.note = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
@@ -1325,6 +1360,7 @@ class PersonsCompanion extends UpdateCompanion<PersonTableData> {
   static Insertable<PersonTableData> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? phoneNumber,
     Expression<String>? note,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -1332,6 +1368,7 @@ class PersonsCompanion extends UpdateCompanion<PersonTableData> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
       if (note != null) 'note': note,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -1341,12 +1378,14 @@ class PersonsCompanion extends UpdateCompanion<PersonTableData> {
   PersonsCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
+      Value<String?>? phoneNumber,
       Value<String?>? note,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt}) {
     return PersonsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       note: note ?? this.note,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -1361,6 +1400,9 @@ class PersonsCompanion extends UpdateCompanion<PersonTableData> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (phoneNumber.present) {
+      map['phone_number'] = Variable<String>(phoneNumber.value);
     }
     if (note.present) {
       map['note'] = Variable<String>(note.value);
@@ -1379,6 +1421,7 @@ class PersonsCompanion extends UpdateCompanion<PersonTableData> {
     return (StringBuffer('PersonsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
+          ..write('phoneNumber: $phoneNumber, ')
           ..write('note: $note, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -5736,6 +5779,7 @@ class $$ExpenseEntriesTableOrderingComposer
 typedef $$PersonsTableCreateCompanionBuilder = PersonsCompanion Function({
   Value<int> id,
   required String name,
+  Value<String?> phoneNumber,
   Value<String?> note,
   required DateTime createdAt,
   required DateTime updatedAt,
@@ -5743,6 +5787,7 @@ typedef $$PersonsTableCreateCompanionBuilder = PersonsCompanion Function({
 typedef $$PersonsTableUpdateCompanionBuilder = PersonsCompanion Function({
   Value<int> id,
   Value<String> name,
+  Value<String?> phoneNumber,
   Value<String?> note,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -5767,6 +5812,7 @@ class $$PersonsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
+            Value<String?> phoneNumber = const Value.absent(),
             Value<String?> note = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -5774,6 +5820,7 @@ class $$PersonsTableTableManager extends RootTableManager<
               PersonsCompanion(
             id: id,
             name: name,
+            phoneNumber: phoneNumber,
             note: note,
             createdAt: createdAt,
             updatedAt: updatedAt,
@@ -5781,6 +5828,7 @@ class $$PersonsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
+            Value<String?> phoneNumber = const Value.absent(),
             Value<String?> note = const Value.absent(),
             required DateTime createdAt,
             required DateTime updatedAt,
@@ -5788,6 +5836,7 @@ class $$PersonsTableTableManager extends RootTableManager<
               PersonsCompanion.insert(
             id: id,
             name: name,
+            phoneNumber: phoneNumber,
             note: note,
             createdAt: createdAt,
             updatedAt: updatedAt,
@@ -5805,6 +5854,11 @@ class $$PersonsTableFilterComposer
 
   ColumnFilters<String> get name => $state.composableBuilder(
       column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get phoneNumber => $state.composableBuilder(
+      column: $state.table.phoneNumber,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -5861,6 +5915,11 @@ class $$PersonsTableOrderingComposer
 
   ColumnOrderings<String> get name => $state.composableBuilder(
       column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get phoneNumber => $state.composableBuilder(
+      column: $state.table.phoneNumber,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

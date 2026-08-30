@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/providers/navigation_providers.dart';
+import '../../../../core/providers/theme_providers.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
-import '../../../income/presentation/providers/income_providers.dart';
-import '../../../income/presentation/widgets/add_income_modal.dart';
-import '../../../income/domain/entities/income_entry.dart';
+import '../../../expenses/domain/entities/expense_entry.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../expenses/presentation/widgets/add_expense_modal.dart';
-import '../../../expenses/domain/entities/expense_entry.dart';
+import '../../../income/domain/entities/income_entry.dart';
+import '../../../income/presentation/providers/income_providers.dart';
+import '../../../income/presentation/widgets/add_income_modal.dart';
 import '../../../khata/presentation/providers/khata_providers.dart';
+import '../../../onboarding/presentation/widgets/whats_new_modal.dart';
+import '../../../recurring/presentation/providers/recurring_providers.dart';
 import '../../../savings/presentation/providers/savings_providers.dart';
 import '../../../savings/presentation/screens/savings_goals_screen.dart';
-import '../../../recurring/presentation/providers/recurring_providers.dart';
 import '../providers/dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -28,7 +33,32 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(recurringAutoGeneratorProvider).checkAndGenerateDueTransactions();
+      _checkWhatsNew();
     });
+  }
+
+  Future<void> _checkWhatsNew() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final hasSeenOnboarding = prefs.getBool('has_seen_onboarding') ?? false;
+      if (!hasSeenOnboarding) return;
+
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersion = packageInfo.version;
+      final lastSeenVersion = prefs.getString('last_seen_version');
+
+      if (lastSeenVersion == null || lastSeenVersion != currentVersion) {
+        if (mounted) {
+          await WhatsNewModal.show(
+            context,
+            version: currentVersion,
+            onDismiss: () async {
+              await prefs.setString('last_seen_version', currentVersion);
+            },
+          );
+        }
+      }
+    } catch (_) {}
   }
 
   @override
@@ -42,43 +72,84 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final totalActiveSavingsCents = ref.watch(totalActiveSavingsCentsProvider);
     final recentTransactions = ref.watch(recentTransactionsProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.white.withOpacity(0.1) : AppColors.primaryBlue.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final shouldExit = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Exit Apna Batwa?'),
+            content: const Text('Are you sure you want to close the application?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Image.asset(
-                  'assets/icon/app_icon.png',
-                  width: 26,
-                  height: 26,
-                  fit: BoxFit.contain,
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.expenseRed,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Exit'),
+              ),
+            ],
+          ),
+        );
+        if (shouldExit == true) {
+          SystemNavigator.pop();
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white.withOpacity(0.1) : AppColors.primaryBlue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(6),
+                  child: Image.asset(
+                    'assets/icon/app_icon.png',
+                    width: 26,
+                    height: 26,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Apna Batwa',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Student Personal Finance',
-                  style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
-                ),
-              ],
+              const SizedBox(width: 12),
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Apna Batwa',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    'Student Personal Finance',
+                    style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(
+                isDark ? Icons.wb_sunny_outlined : Icons.dark_mode_outlined,
+                color: isDark ? Colors.amber : AppColors.primaryBlue,
+              ),
+              tooltip: 'Toggle Light/Dark Theme',
+              onPressed: () {
+                ref.read(themeModeProvider.notifier).toggleTheme(context);
+              },
             ),
           ],
         ),
-      ),
       body: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(watchAllIncomeProvider);
@@ -353,6 +424,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
       ),
+    ),
     );
   }
 

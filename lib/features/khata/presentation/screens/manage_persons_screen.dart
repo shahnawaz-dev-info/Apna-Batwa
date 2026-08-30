@@ -84,9 +84,10 @@ class ManagePersonsScreen extends ConsumerWidget {
                     person.name,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                  subtitle: person.note != null && person.note!.isNotEmpty
+                  subtitle: (person.phoneNumber != null && person.phoneNumber!.isNotEmpty) ||
+                          (person.note != null && person.note!.isNotEmpty)
                       ? Text(
-                          person.note!,
+                          '${person.phoneNumber != null && person.phoneNumber!.isNotEmpty ? "📞 ${person.phoneNumber}" : ""}${person.phoneNumber != null && person.phoneNumber!.isNotEmpty && person.note != null && person.note!.isNotEmpty ? " • " : ""}${person.note ?? ""}',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/theme/app_theme.dart';
+import 'core/providers/theme_providers.dart';
 import 'core/services/notification_service.dart';
-import 'features/security/presentation/widgets/app_lock_wrapper.dart';
-import 'main_shell.dart';
+import 'core/theme/app_theme.dart';
+import 'features/onboarding/presentation/widgets/initial_flow_wrapper.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,18 +15,20 @@ void main() async {
   );
 }
 
-class ApnaBatwaApp extends StatelessWidget {
+class ApnaBatwaApp extends ConsumerWidget {
   const ApnaBatwaApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themeModeProvider);
+
     return MaterialApp(
       title: 'Apna Batwa',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: const AppLockWrapper(child: MainShell()),
+      themeMode: themeMode,
+      home: const InitialFlowWrapper(),
     );
   }
 }

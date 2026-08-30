@@ -87,6 +87,7 @@ class KhataRepositoryImpl implements KhataRepository {
                 (r) => PersonEntity(
                   id: r.id,
                   name: r.name,
+                  phoneNumber: r.phoneNumber,
                   note: r.note,
                   createdAt: r.createdAt,
                   updatedAt: r.updatedAt,
@@ -104,6 +105,7 @@ class KhataRepositoryImpl implements KhataRepository {
           (r) => PersonEntity(
             id: r.id,
             name: r.name,
+            phoneNumber: r.phoneNumber,
             note: r.note,
             createdAt: r.createdAt,
             updatedAt: r.updatedAt,
@@ -113,11 +115,12 @@ class KhataRepositoryImpl implements KhataRepository {
   }
 
   @override
-  Future<int> addPerson({required String name, String? note}) async {
+  Future<int> addPerson({required String name, String? phoneNumber, String? note}) async {
     final now = DateTime.now();
     return await _db.insertPerson(
       PersonsCompanion.insert(
         name: name.trim(),
+        phoneNumber: Value(phoneNumber?.trim()),
         note: Value(note?.trim()),
         createdAt: now,
         updatedAt: now,
@@ -131,6 +134,7 @@ class KhataRepositoryImpl implements KhataRepository {
       PersonsCompanion(
         id: Value(person.id),
         name: Value(person.name.trim()),
+        phoneNumber: Value(person.phoneNumber?.trim()),
         note: Value(person.note?.trim()),
         createdAt: Value(person.createdAt),
         updatedAt: Value(DateTime.now()),

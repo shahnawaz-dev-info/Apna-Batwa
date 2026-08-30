@@ -119,8 +119,8 @@ class _BorrowedTab extends ConsumerWidget {
         if (records.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'No Borrowed Money Records',
-            subtitle: 'Tap "+ Borrowed" to log money you borrowed from someone.',
+            title: 'Koi Udhaar Record Nahi 🎉',
+            subtitle: 'Apka koi udhaar record nahi hai — sab clear hai!',
             icon: Icons.handshake_outlined,
           );
         }
@@ -204,8 +204,8 @@ class _LentTab extends ConsumerWidget {
         if (records.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'No Lent Money Records',
-            subtitle: 'Tap "+ Lent" to log money you lent to a friend.',
+            title: 'No Lent Money Records 🤝',
+            subtitle: 'Kisi ko pese diye hain? Log them here!',
             icon: Icons.savings_outlined,
           );
         }

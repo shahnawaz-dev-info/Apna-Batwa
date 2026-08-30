@@ -68,7 +68,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'No savings goals created yet',
+                      'No Active Savings Goals 🐖',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Tap "New Goal" to set target savings for your future plans.',
+                      'Apna pehla savings goal banayein aur bachat shuru karein!',
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
                     ),

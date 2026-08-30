@@ -293,8 +293,8 @@ class _AllTransactionsTab extends ConsumerWidget {
     if (recentTransactions.isEmpty) {
       return _buildEmptyState(
         isDark,
-        title: 'No Transactions',
-        subtitle: 'You haven\'t added any income or expense entries yet.',
+        title: 'No Transactions Yet 📝',
+        subtitle: 'Apna pehla income ya kharcha log karein!',
       );
     }
 
@@ -389,8 +389,8 @@ class _IncomeTransactionsTab extends ConsumerWidget {
         if (incomes.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'No Income Entries',
-            subtitle: 'Tap the button below to add your first income record.',
+            title: 'No Income Entries 💰',
+            subtitle: 'Apna pehla income add karein!',
           );
         }
 
@@ -472,8 +472,8 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
         if (expenses.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'No Expenses Recorded',
-            subtitle: 'Tap the button below to add your first expense.',
+            title: 'No Expenses Recorded 🛒',
+            subtitle: 'Koi kharcha nahi hai — sub set hai!',
           );
         }
 

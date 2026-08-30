@@ -1,6 +1,0 @@
-{
-  "elements": {},
-  "imports": [
-    "package:apnabatwa/features/income/domain/entities/income_entry.dart"
-  ]
-}

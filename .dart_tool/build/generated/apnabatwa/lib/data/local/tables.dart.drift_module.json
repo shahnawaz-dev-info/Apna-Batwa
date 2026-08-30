@@ -598,11 +598,32 @@
             "builtin": "string"
           },
           "nullable": true,
+          "nameInSql": "phone_number",
+          "nameInDart": "phoneNumber",
+          "declaration": {
+            "source_uri": "package:apnabatwa/data/local/tables.dart",
+            "offset": 1473,
+            "name": "phoneNumber"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": true,
           "nameInSql": "note",
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1473,
+            "offset": 1526,
             "name": "note"
           },
           "typeConverter": null,
@@ -623,7 +644,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1523,
+            "offset": 1576,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -644,7 +665,7 @@
           "nameInDart": "updatedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1571,
+            "offset": 1624,
             "name": "updatedAt"
           },
           "typeConverter": null,
@@ -677,7 +698,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 1649,
+        "offset": 1702,
         "name": "BorrowedRecords"
       },
       "references": [
@@ -697,7 +718,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1697,
+            "offset": 1750,
             "name": "id"
           },
           "typeConverter": null,
@@ -723,7 +744,7 @@
           "nameInDart": "personId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1748,
+            "offset": 1801,
             "name": "personId"
           },
           "typeConverter": null,
@@ -758,7 +779,7 @@
           "nameInDart": "totalAmountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1814,
+            "offset": 1867,
             "name": "totalAmountCents"
           },
           "typeConverter": null,
@@ -779,7 +800,7 @@
           "nameInDart": "date",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1868,
+            "offset": 1921,
             "name": "date"
           },
           "typeConverter": null,
@@ -800,7 +821,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1907,
+            "offset": 1960,
             "name": "note"
           },
           "typeConverter": null,
@@ -821,7 +842,7 @@
           "nameInDart": "status",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 1953,
+            "offset": 2006,
             "name": "status"
           },
           "typeConverter": null,
@@ -842,7 +863,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2049,
+            "offset": 2102,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -863,7 +884,7 @@
           "nameInDart": "updatedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2097,
+            "offset": 2150,
             "name": "updatedAt"
           },
           "typeConverter": null,
@@ -896,7 +917,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 2171,
+        "offset": 2224,
         "name": "LentRecords"
       },
       "references": [
@@ -916,7 +937,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2215,
+            "offset": 2268,
             "name": "id"
           },
           "typeConverter": null,
@@ -942,7 +963,7 @@
           "nameInDart": "personId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2266,
+            "offset": 2319,
             "name": "personId"
           },
           "typeConverter": null,
@@ -977,7 +998,7 @@
           "nameInDart": "totalAmountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2332,
+            "offset": 2385,
             "name": "totalAmountCents"
           },
           "typeConverter": null,
@@ -998,7 +1019,7 @@
           "nameInDart": "date",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2386,
+            "offset": 2439,
             "name": "date"
           },
           "typeConverter": null,
@@ -1019,7 +1040,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2425,
+            "offset": 2478,
             "name": "note"
           },
           "typeConverter": null,
@@ -1040,7 +1061,7 @@
           "nameInDart": "status",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2471,
+            "offset": 2524,
             "name": "status"
           },
           "typeConverter": null,
@@ -1061,7 +1082,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2567,
+            "offset": 2620,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -1082,7 +1103,7 @@
           "nameInDart": "updatedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2615,
+            "offset": 2668,
             "name": "updatedAt"
           },
           "typeConverter": null,
@@ -1115,7 +1136,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 2688,
+        "offset": 2741,
         "name": "Repayments"
       },
       "references": [],
@@ -1130,7 +1151,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2731,
+            "offset": 2784,
             "name": "id"
           },
           "typeConverter": null,
@@ -1156,7 +1177,7 @@
           "nameInDart": "recordType",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2783,
+            "offset": 2836,
             "name": "recordType"
           },
           "typeConverter": null,
@@ -1177,7 +1198,7 @@
           "nameInDart": "recordId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2847,
+            "offset": 2900,
             "name": "recordId"
           },
           "typeConverter": null,
@@ -1198,7 +1219,7 @@
           "nameInDart": "amountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2934,
+            "offset": 2987,
             "name": "amountCents"
           },
           "typeConverter": null,
@@ -1219,7 +1240,7 @@
           "nameInDart": "entryType",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 2979,
+            "offset": 3032,
             "name": "entryType"
           },
           "typeConverter": null,
@@ -1249,7 +1270,7 @@
           "nameInDart": "date",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3093,
+            "offset": 3146,
             "name": "date"
           },
           "typeConverter": null,
@@ -1270,7 +1291,7 @@
           "nameInDart": "note",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3132,
+            "offset": 3185,
             "name": "note"
           },
           "typeConverter": null,
@@ -1291,7 +1312,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3182,
+            "offset": 3235,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -1324,7 +1345,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 3258,
+        "offset": 3311,
         "name": "WishlistItems"
       },
       "references": [],
@@ -1339,7 +1360,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3305,
+            "offset": 3358,
             "name": "id"
           },
           "typeConverter": null,
@@ -1360,7 +1381,7 @@
           "nameInDart": "name",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3338,
+            "offset": 3391,
             "name": "name"
           },
           "typeConverter": null,
@@ -1381,7 +1402,7 @@
           "nameInDart": "priceCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3372,
+            "offset": 3425,
             "name": "priceCents"
           },
           "typeConverter": null,
@@ -1402,7 +1423,7 @@
           "nameInDart": "category",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3416,
+            "offset": 3469,
             "name": "category"
           },
           "typeConverter": null,
@@ -1423,7 +1444,7 @@
           "nameInDart": "priority",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3455,
+            "offset": 3508,
             "name": "priority"
           },
           "typeConverter": null,
@@ -1444,7 +1465,7 @@
           "nameInDart": "notes",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3521,
+            "offset": 3574,
             "name": "notes"
           },
           "typeConverter": null,
@@ -1465,7 +1486,7 @@
           "nameInDart": "isPurchased",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3568,
+            "offset": 3621,
             "name": "isPurchased"
           },
           "typeConverter": null,
@@ -1495,7 +1516,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3652,
+            "offset": 3705,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -1516,7 +1537,7 @@
           "nameInDart": "purchasedAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3700,
+            "offset": 3753,
             "name": "purchasedAt"
           },
           "typeConverter": null,
@@ -1556,7 +1577,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 3836,
+        "offset": 3889,
         "name": "Purchases"
       },
       "references": [],
@@ -1571,7 +1592,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3879,
+            "offset": 3932,
             "name": "id"
           },
           "typeConverter": null,
@@ -1592,7 +1613,7 @@
           "nameInDart": "name",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3912,
+            "offset": 3965,
             "name": "name"
           },
           "typeConverter": null,
@@ -1613,7 +1634,7 @@
           "nameInDart": "amountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3946,
+            "offset": 3999,
             "name": "amountCents"
           },
           "typeConverter": null,
@@ -1634,7 +1655,7 @@
           "nameInDart": "category",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 3991,
+            "offset": 4044,
             "name": "category"
           },
           "typeConverter": null,
@@ -1655,7 +1676,7 @@
           "nameInDart": "purchaseDate",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4034,
+            "offset": 4087,
             "name": "purchaseDate"
           },
           "typeConverter": null,
@@ -1676,7 +1697,7 @@
           "nameInDart": "linkedWishlistItemId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4081,
+            "offset": 4134,
             "name": "linkedWishlistItemId"
           },
           "typeConverter": null,
@@ -1697,7 +1718,7 @@
           "nameInDart": "linkedExpenseId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4143,
+            "offset": 4196,
             "name": "linkedExpenseId"
           },
           "typeConverter": null,
@@ -1718,7 +1739,7 @@
           "nameInDart": "notes",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4200,
+            "offset": 4253,
             "name": "notes"
           },
           "typeConverter": null,
@@ -1739,7 +1760,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4251,
+            "offset": 4304,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -1779,7 +1800,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 4372,
+        "offset": 4425,
         "name": "Budgets"
       },
       "references": [],
@@ -1794,7 +1815,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4413,
+            "offset": 4466,
             "name": "id"
           },
           "typeConverter": null,
@@ -1815,7 +1836,7 @@
           "nameInDart": "category",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4446,
+            "offset": 4499,
             "name": "category"
           },
           "typeConverter": null,
@@ -1836,7 +1857,7 @@
           "nameInDart": "monthlyLimitCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4484,
+            "offset": 4537,
             "name": "monthlyLimitCents"
           },
           "typeConverter": null,
@@ -1857,7 +1878,7 @@
           "nameInDart": "month",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4534,
+            "offset": 4587,
             "name": "month"
           },
           "typeConverter": null,
@@ -1878,7 +1899,7 @@
           "nameInDart": "year",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4572,
+            "offset": 4625,
             "name": "year"
           },
           "typeConverter": null,
@@ -1899,7 +1920,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4614,
+            "offset": 4667,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -1939,7 +1960,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 4740,
+        "offset": 4793,
         "name": "SavingsGoals"
       },
       "references": [],
@@ -1954,7 +1975,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4786,
+            "offset": 4839,
             "name": "id"
           },
           "typeConverter": null,
@@ -1975,7 +1996,7 @@
           "nameInDart": "name",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4819,
+            "offset": 4872,
             "name": "name"
           },
           "typeConverter": null,
@@ -1996,7 +2017,7 @@
           "nameInDart": "targetAmountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4853,
+            "offset": 4906,
             "name": "targetAmountCents"
           },
           "typeConverter": null,
@@ -2017,7 +2038,7 @@
           "nameInDart": "targetDate",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4908,
+            "offset": 4961,
             "name": "targetDate"
           },
           "typeConverter": null,
@@ -2038,7 +2059,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 4968,
+            "offset": 5021,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -2059,7 +2080,7 @@
           "nameInDart": "isCompleted",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5012,
+            "offset": 5065,
             "name": "isCompleted"
           },
           "typeConverter": null,
@@ -2108,7 +2129,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 5182,
+        "offset": 5235,
         "name": "SavingsContributions"
       },
       "references": [],
@@ -2123,7 +2144,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5236,
+            "offset": 5289,
             "name": "id"
           },
           "typeConverter": null,
@@ -2144,7 +2165,7 @@
           "nameInDart": "savingsGoalId",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5269,
+            "offset": 5322,
             "name": "savingsGoalId"
           },
           "typeConverter": null,
@@ -2165,7 +2186,7 @@
           "nameInDart": "amountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5312,
+            "offset": 5365,
             "name": "amountCents"
           },
           "typeConverter": null,
@@ -2186,7 +2207,7 @@
           "nameInDart": "contributionDate",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5361,
+            "offset": 5414,
             "name": "contributionDate"
           },
           "typeConverter": null,
@@ -2207,7 +2228,7 @@
           "nameInDart": "notes",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5412,
+            "offset": 5465,
             "name": "notes"
           },
           "typeConverter": null,
@@ -2247,7 +2268,7 @@
       },
       "declaration": {
         "source_uri": "package:apnabatwa/data/local/tables.dart",
-        "offset": 5550,
+        "offset": 5603,
         "name": "RecurringTransactions"
       },
       "references": [],
@@ -2262,7 +2283,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5605,
+            "offset": 5658,
             "name": "id"
           },
           "typeConverter": null,
@@ -2283,7 +2304,7 @@
           "nameInDart": "type",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5638,
+            "offset": 5691,
             "name": "type"
           },
           "typeConverter": null,
@@ -2304,7 +2325,7 @@
           "nameInDart": "name",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5698,
+            "offset": 5751,
             "name": "name"
           },
           "typeConverter": null,
@@ -2325,7 +2346,7 @@
           "nameInDart": "amountCents",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5732,
+            "offset": 5785,
             "name": "amountCents"
           },
           "typeConverter": null,
@@ -2346,7 +2367,7 @@
           "nameInDart": "category",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5777,
+            "offset": 5830,
             "name": "category"
           },
           "typeConverter": null,
@@ -2367,7 +2388,7 @@
           "nameInDart": "frequency",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5816,
+            "offset": 5869,
             "name": "frequency"
           },
           "typeConverter": null,
@@ -2388,7 +2409,7 @@
           "nameInDart": "startDate",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5892,
+            "offset": 5945,
             "name": "startDate"
           },
           "typeConverter": null,
@@ -2409,7 +2430,7 @@
           "nameInDart": "nextDueDate",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5940,
+            "offset": 5993,
             "name": "nextDueDate"
           },
           "typeConverter": null,
@@ -2430,7 +2451,7 @@
           "nameInDart": "isActive",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 5986,
+            "offset": 6039,
             "name": "isActive"
           },
           "typeConverter": null,
@@ -2460,7 +2481,7 @@
           "nameInDart": "lastGeneratedDate",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 6066,
+            "offset": 6119,
             "name": "lastGeneratedDate"
           },
           "typeConverter": null,
@@ -2481,7 +2502,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:apnabatwa/data/local/tables.dart",
-            "offset": 6133,
+            "offset": 6186,
             "name": "createdAt"
           },
           "typeConverter": null,

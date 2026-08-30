@@ -1,7 +1,7 @@
 name: apnabatwa
 description: "Apna Batwa - Offline-first personal finance app for students."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.1.0+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -29,6 +29,8 @@ dependencies:
   pdf: ^3.10.8
   printing: ^5.13.0
   csv: ^6.0.0
+  url_launcher: ^6.3.0
+  package_info_plus: ^8.0.0
 
 dev_dependencies:
   flutter_test:

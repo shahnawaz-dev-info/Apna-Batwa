@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/borrowed_record.dart';
@@ -19,6 +20,51 @@ class KhataDetailScreen extends ConsumerWidget {
     required this.recordId,
   });
 
+  Future<void> _launchWhatsAppReminder({
+    required BuildContext context,
+    required String rawPhone,
+    required String personName,
+    required int remainingCents,
+    required bool isBorrowed,
+  }) async {
+    String digitsOnly = rawPhone.replaceAll(RegExp(r'\D'), '');
+    if (digitsOnly.startsWith('0')) {
+      digitsOnly = '92${digitsOnly.substring(1)}';
+    }
+
+    final formattedAmount = CurrencyFormatter.formatCents(remainingCents.abs());
+
+    final message = !isBorrowed
+        ? "Hi $personName, just a friendly reminder — your remaining balance on our Khata is $formattedAmount. Let me know when you get a chance to settle it. Thanks!"
+        : "Hi $personName, just a quick note regarding our Khata balance — my remaining balance owed to you is $formattedAmount. Let me know when is a good time to settle it. Thanks!";
+
+    final url = Uri.parse("https://wa.me/$digitsOnly?text=${Uri.encodeComponent(message)}");
+
+    try {
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('WhatsApp is not installed on this device'),
+            backgroundColor: AppColors.expenseRed,
+          ),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('WhatsApp is not installed on this device'),
+            backgroundColor: AppColors.expenseRed,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -26,6 +72,7 @@ class KhataDetailScreen extends ConsumerWidget {
 
     final borrowedAsync = isBorrowed ? ref.watch(watchAllBorrowedRecordsProvider) : null;
     final lentAsync = !isBorrowed ? ref.watch(watchAllLentRecordsProvider) : null;
+    final personsAsync = ref.watch(watchAllPersonsProvider);
 
     final repaymentsAsync = ref.watch(
       watchRepaymentsForRecordProvider(
@@ -47,6 +94,12 @@ class KhataDetailScreen extends ConsumerWidget {
         orElse: () => null,
       );
     }
+
+    final personId = borrowedRecord?.personId ?? lentRecord?.personId;
+    final person = personsAsync.maybeWhen(
+      data: (list) => list.firstWhere((p) => p.id == personId, orElse: () => list.first),
+      orElse: () => null,
+    );
 
     final personName = borrowedRecord?.personName ?? lentRecord?.personName ?? 'Khata Detail';
     final totalCents = borrowedRecord?.totalAmountCents ?? lentRecord?.totalAmountCents ?? 0;
@@ -183,6 +236,33 @@ class KhataDetailScreen extends ConsumerWidget {
                         fontSize: 13,
                         fontStyle: FontStyle.italic,
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      ),
+                    ),
+                  ],
+
+                  if (person?.phoneNumber != null && person!.phoneNumber!.trim().isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF25D366),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        icon: const Icon(Icons.chat_bubble_outline, size: 18),
+                        label: const Text(
+                          'Send Reminder via WhatsApp',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                        onPressed: () => _launchWhatsAppReminder(
+                          context: context,
+                          rawPhone: person.phoneNumber!,
+                          personName: personName,
+                          remainingCents: remainingCents,
+                          isBorrowed: isBorrowed,
+                        ),
                       ),
                     ),
                   ],

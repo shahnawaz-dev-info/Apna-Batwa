@@ -25,6 +25,7 @@ class AddPersonModal extends ConsumerStatefulWidget {
 class _AddPersonModalState extends ConsumerState<AddPersonModal> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _noteController = TextEditingController();
   bool _isSaving = false;
 
@@ -33,6 +34,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
     super.initState();
     if (widget.existingPerson != null) {
       _nameController.text = widget.existingPerson!.name;
+      _phoneController.text = widget.existingPerson!.phoneNumber ?? '';
       _noteController.text = widget.existingPerson!.note ?? '';
     }
   }
@@ -40,6 +42,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
   @override
   void dispose() {
     _nameController.dispose();
+    _phoneController.dispose();
     _noteController.dispose();
     super.dispose();
   }
@@ -48,6 +51,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
     if (!_formKey.currentState!.validate()) return;
 
     final name = _nameController.text.trim();
+    final phone = _phoneController.text.trim();
     final note = _noteController.text.trim();
 
     // Check duplicate name case-insensitive
@@ -71,10 +75,15 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
     setState(() => _isSaving = true);
     try {
       if (widget.existingPerson == null) {
-        final newId = await repo.addPerson(name: name, note: note.isEmpty ? null : note);
+        final newId = await repo.addPerson(
+          name: name,
+          phoneNumber: phone.isEmpty ? null : phone,
+          note: note.isEmpty ? null : note,
+        );
         final createdPerson = PersonEntity(
           id: newId,
           name: name,
+          phoneNumber: phone.isEmpty ? null : phone,
           note: note.isEmpty ? null : note,
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
@@ -85,6 +94,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
         final updatedPerson = PersonEntity(
           id: widget.existingPerson!.id,
           name: name,
+          phoneNumber: phone.isEmpty ? null : phone,
           note: note.isEmpty ? null : note,
           createdAt: widget.existingPerson!.createdAt,
           updatedAt: DateTime.now(),
@@ -155,6 +165,16 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _phoneController,
+                keyboardType: TextInputType.phone,
+                decoration: const InputDecoration(
+                  labelText: 'Phone Number (Optional)',
+                  hintText: 'e.g. 03001234567 or +923001234567',
+                  prefixIcon: Icon(Icons.phone_outlined),
+                ),
               ),
               const SizedBox(height: 16),
               TextFormField(

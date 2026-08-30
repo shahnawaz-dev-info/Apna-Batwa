@@ -34,7 +34,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No Recurring Rules',
+                      'No Recurring Transactions 🔄',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -43,7 +43,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'When adding Income or Expense entries, enable "Make this recurring" to set up automatic future entries.',
+                      'Set up auto-recurring salary, pocket money, or bill rules!',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
