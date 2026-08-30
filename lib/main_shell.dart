@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers/navigation_providers.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'features/khata/presentation/screens/khata_screen.dart';
-import 'features/transactions/presentation/screens/transactions_screen.dart';
-import 'features/wishlist/presentation/screens/wishlist_screen.dart';
 import 'features/more/presentation/screens/more_screen.dart';
+import 'features/reports/presentation/screens/reports_screen.dart';
+import 'features/transactions/presentation/screens/transactions_screen.dart';
 
 class MainShell extends ConsumerWidget {
   const MainShell({super.key});
@@ -14,7 +14,7 @@ class MainShell extends ConsumerWidget {
     DashboardScreen(),
     TransactionsScreen(),
     KhataScreen(),
-    WishlistScreen(),
+    ReportsScreen(),
     MoreScreen(),
   ];
 
@@ -48,9 +48,9 @@ class MainShell extends ConsumerWidget {
             label: 'Khata',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
-            activeIcon: Icon(Icons.favorite),
-            label: 'Wishlist',
+            icon: Icon(Icons.pie_chart_outline),
+            activeIcon: Icon(Icons.pie_chart),
+            label: 'Reports',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.more_horiz_outlined),
@@ -62,5 +62,3 @@ class MainShell extends ConsumerWidget {
     );
   }
 }
-
-

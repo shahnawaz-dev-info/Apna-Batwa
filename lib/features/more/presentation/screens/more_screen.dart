@@ -7,7 +7,7 @@ import '../../../../core/providers/theme_providers.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../budgets/presentation/screens/budget_management_screen.dart';
 import '../../../recurring/presentation/screens/recurring_management_screen.dart';
-import '../../../reports/presentation/screens/reports_screen.dart';
+import '../../../wishlist/presentation/screens/wishlist_screen.dart';
 import '../../../savings/presentation/screens/savings_goals_screen.dart';
 import '../../../security/presentation/screens/security_settings_screen.dart';
 import 'about_screen.dart';
@@ -85,15 +85,15 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
           ),
           _buildMenuTile(
             context,
-            icon: Icons.pie_chart_outline,
-            title: 'Reports & Analytics',
-            subtitle: 'Category breakdowns, trends & Khata charts',
+            icon: Icons.favorite_border,
+            title: 'Wishlist & Shopping',
+            subtitle: 'Track desired items & purchase history',
             color: AppColors.primaryBlue,
             isDark: isDark,
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const ReportsScreen()),
+                MaterialPageRoute(builder: (_) => const WishlistScreen()),
               );
             },
           ),

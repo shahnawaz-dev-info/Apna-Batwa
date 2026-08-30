@@ -340,11 +340,26 @@ Widget _buildRecordCard(BuildContext context, dynamic record, bool isBorrowed, b
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
+                Text(
+                  DateFormatters.formatDate(date),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              'Total: ${CurrencyFormatter.formatCents(totalCents)} • Paid: ${CurrencyFormatter.formatCents(paidCents)}\n${DateFormatters.formatDate(date)}',
+              'Total: ${CurrencyFormatter.formatCents(totalCents)}',
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              ),
+            ),
+            Text(
+              'Paid: ${CurrencyFormatter.formatCents(paidCents)}',
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

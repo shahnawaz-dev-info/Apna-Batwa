@@ -72,10 +72,15 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final totalActiveSavingsCents = ref.watch(totalActiveSavingsCentsProvider);
     final recentTransactions = ref.watch(recentTransactionsProvider);
 
+    final isCurrentRoute = ModalRoute.of(context)?.isCurrent ?? false;
+    final isHomeTab = ref.watch(selectedMainTabProvider) == 0;
+    final shouldInterceptExit = isCurrentRoute && isHomeTab;
+
     return PopScope(
-      canPop: false,
+      canPop: !shouldInterceptExit,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
+        if (!shouldInterceptExit) return;
         final shouldExit = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(

@@ -228,35 +228,38 @@ class ReportsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            savingsRate.savingsRatePercentage != null
-                                ? '${savingsRate.savingsRatePercentage!.toStringAsFixed(1)}%'
-                                : 'N/A',
-                            style: TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: savingsRate.savingsRatePercentage == null
-                                  ? (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)
-                                  : (savingsRate.savingsRatePercentage! >= 0
-                                      ? AppColors.successGreen
-                                      : AppColors.expenseRed),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              savingsRate.savingsRatePercentage != null
+                                  ? '${savingsRate.savingsRatePercentage!.toStringAsFixed(1)}%'
+                                  : 'N/A',
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: savingsRate.savingsRatePercentage == null
+                                    ? (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)
+                                    : (savingsRate.savingsRatePercentage! >= 0
+                                        ? AppColors.successGreen
+                                        : AppColors.expenseRed),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            savingsRate.labelSentence,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            const SizedBox(height: 4),
+                            Text(
+                              savingsRate.labelSentence,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 12),
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
