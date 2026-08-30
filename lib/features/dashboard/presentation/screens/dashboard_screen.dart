@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../income/presentation/providers/income_providers.dart';
@@ -10,6 +11,7 @@ import '../../../expenses/presentation/widgets/add_expense_modal.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
 import '../../../khata/presentation/providers/khata_providers.dart';
 import '../../../savings/presentation/providers/savings_providers.dart';
+import '../../../savings/presentation/screens/savings_goals_screen.dart';
 import '../../../recurring/presentation/providers/recurring_providers.dart';
 import '../providers/dashboard_providers.dart';
 
@@ -45,15 +47,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         title: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.1),
+                color: isDark ? Colors.white.withOpacity(0.1) : AppColors.primaryBlue.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Icon(
-                Icons.account_balance_wallet,
-                color: AppColors.primaryBlue,
-                size: 24,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: Image.asset(
+                  'assets/icon/app_icon.png',
+                  width: 26,
+                  height: 26,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
             const SizedBox(width: 12),
@@ -75,8 +81,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          ref.refresh(watchAllIncomeProvider);
-          ref.refresh(watchAllExpensesProvider);
+          ref.invalidate(watchAllIncomeProvider);
+          ref.invalidate(watchAllExpensesProvider);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -145,7 +151,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             onPressed: () => AddIncomeModal.show(context),
                             icon: const Icon(Icons.add_circle, size: 18),
-                            label: const Text('+ Money In', style: TextStyle(fontWeight: FontWeight.bold)),
+                            label: const Text('Money In', style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -162,7 +168,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             onPressed: () => AddExpenseModal.show(context),
                             icon: const Icon(Icons.remove_circle, size: 18),
-                            label: const Text('− Expense', style: TextStyle(fontWeight: FontWeight.bold)),
+                            label: const Text('Expense', style: TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ],
@@ -173,10 +179,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              // 2. Summary Grid (Income, Expense, Placeholders)
+              // 2. Summary Grid (Income, Expense, You Owe, Others Owe, Savings)
               Row(
                 children: [
-                  // Total Income Card
+                  // Total Income Card -> Transactions (Income sub-tab)
                   Expanded(
                     child: _buildSummaryCard(
                       context,
@@ -184,10 +190,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       amount: CurrencyFormatter.formatCents(totalIncomeCents),
                       icon: Icons.arrow_downward_rounded,
                       color: AppColors.successGreen,
+                      onTap: () {
+                        ref.read(transactionsSubTabProvider.notifier).state = 1;
+                        ref.read(selectedMainTabProvider.notifier).state = 1;
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
-                  // Total Expense Card
+                  // Total Expense Card -> Transactions (Expenses sub-tab)
                   Expanded(
                     child: _buildSummaryCard(
                       context,
@@ -195,6 +205,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       amount: CurrencyFormatter.formatCents(totalExpensesCents),
                       icon: Icons.arrow_upward_rounded,
                       color: AppColors.expenseRed,
+                      onTap: () {
+                        ref.read(transactionsSubTabProvider.notifier).state = 2;
+                        ref.read(selectedMainTabProvider.notifier).state = 1;
+                      },
                     ),
                   ),
                 ],
@@ -204,6 +218,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
               Row(
                 children: [
+                  // You Owe Card -> Khata (I Borrowed tab)
                   Expanded(
                     child: _buildSummaryCard(
                       context,
@@ -211,10 +226,14 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       amount: CurrencyFormatter.formatCents(totalYouOweCents),
                       icon: Icons.handshake_outlined,
                       color: AppColors.expenseRed,
-                      isPlaceholder: false,
+                      onTap: () {
+                        ref.read(khataSubTabProvider.notifier).state = 0;
+                        ref.read(selectedMainTabProvider.notifier).state = 2;
+                      },
                     ),
                   ),
                   const SizedBox(width: 12),
+                  // Others Owe You Card -> Khata (I Lent tab)
                   Expanded(
                     child: _buildSummaryCard(
                       context,
@@ -222,7 +241,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       amount: CurrencyFormatter.formatCents(totalOthersOweYouCents),
                       icon: Icons.account_balance_outlined,
                       color: AppColors.successGreen,
-                      isPlaceholder: false,
+                      onTap: () {
+                        ref.read(khataSubTabProvider.notifier).state = 1;
+                        ref.read(selectedMainTabProvider.notifier).state = 2;
+                      },
                     ),
                   ),
                 ],
@@ -239,7 +261,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       amount: CurrencyFormatter.formatCents(totalActiveSavingsCents),
                       icon: Icons.savings_outlined,
                       color: AppColors.primaryBlue,
-                      isPlaceholder: false,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SavingsGoalsScreen()),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -336,57 +363,71 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required IconData icon,
     required Color color,
     bool isPlaceholder = false,
+    VoidCallback? onTap,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? AppColors.borderDark : AppColors.borderLight,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.cardDark : AppColors.cardLight,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, color: color, size: 16),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                    fontWeight: FontWeight.w500,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(icon, color: color, size: 16),
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (onTap != null)
+                    Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                amount,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isPlaceholder
+                      ? (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)
+                      : (isDark ? AppColors.textMainDark : AppColors.textMainLight),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
-          Text(
-            amount,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isPlaceholder
-                  ? (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)
-                  : (isDark ? AppColors.textMainDark : AppColors.textMainLight),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -15,9 +15,6 @@ class BudgetManagementScreen extends ConsumerWidget {
     final selectedMonthYear = ref.watch(selectedBudgetMonthYearProvider);
     final budgetProgressList = ref.watch(categoryBudgetProgressListProvider);
 
-    final now = DateTime.now();
-    final isCurrentMonth = selectedMonthYear.month == now.month && selectedMonthYear.year == now.year;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Budget Management'),

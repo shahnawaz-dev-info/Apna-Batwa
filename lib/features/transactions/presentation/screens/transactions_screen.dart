@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/services/csv_export_service.dart';
 import '../../../../core/services/pdf_export_service.dart';
 import '../../../../core/theme/colors.dart';
@@ -27,7 +28,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: ref.read(transactionsSubTabProvider),
+    );
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        ref.read(transactionsSubTabProvider.notifier).state = _tabController.index;
+      }
+    });
   }
 
   @override
@@ -38,6 +48,12 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<int>(transactionsSubTabProvider, (prev, next) {
+      if (_tabController.index != next) {
+        _tabController.animateTo(next);
+      }
+    });
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final filterState = ref.watch(transactionFilterProvider);
     final filterNotifier = ref.read(transactionFilterProvider.notifier);
@@ -234,7 +250,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   ),
                   child: const Icon(Icons.arrow_downward, color: AppColors.successGreen),
                 ),
-                title: const Text('+ Add Income / Money In', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Add Income / Money In', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Pocket money, salary, gifts, scholarship'),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -251,7 +267,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   ),
                   child: const Icon(Icons.arrow_upward, color: AppColors.expenseRed),
                 ),
-                title: const Text('− Add Expense', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Add Expense', style: TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: const Text('Food, transport, hostel, shopping, etc.'),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -288,74 +304,71 @@ class _AllTransactionsTab extends ConsumerWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final item = recentTransactions[index];
-        return Dismissible(
-          key: Key(item.id),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 20),
-            decoration: BoxDecoration(
-              color: AppColors.expenseRed,
-              borderRadius: BorderRadius.circular(14),
+        return Container(
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.cardDark : AppColors.cardLight,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark ? AppColors.borderDark : AppColors.borderLight,
             ),
-            child: const Icon(Icons.delete, color: Colors.white),
           ),
-          confirmDismiss: (_) => _confirmDeleteDialog(context),
-          onDismissed: (_) async {
-            if (item.isIncome) {
-              await ref.read(incomeRepositoryProvider).deleteIncome(item.id);
-            } else {
-              await ref.read(expenseRepositoryProvider).deleteExpense(item.id);
-            }
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: isDark ? AppColors.cardDark : AppColors.cardLight,
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(
-                color: isDark ? AppColors.borderDark : AppColors.borderLight,
+          child: ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: (item.isIncome ? AppColors.successGreen : AppColors.expenseRed)
+                    .withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                item.isIncome ? Icons.arrow_downward : Icons.arrow_upward,
+                color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
               ),
             ),
-            child: ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: (item.isIncome ? AppColors.successGreen : AppColors.expenseRed)
-                      .withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  item.isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-                  color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
-                ),
-              ),
-              title: Text(
-                item.title,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-              ),
-              subtitle: Text(
-                '${DateFormatters.formatDate(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                ),
-              ),
-              trailing: Text(
-                '${item.isIncome ? "+" : "-"}${CurrencyFormatter.formatCents(item.amountCents)}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
-                ),
-              ),
-              onTap: () {
-                if (item.isIncome) {
-                  AddIncomeModal.show(context, existingEntry: item.rawEntity as IncomeEntryEntity);
-                } else {
-                  AddExpenseModal.show(context, existingEntry: item.rawEntity as ExpenseEntryEntity);
-                }
-              },
+            title: Text(
+              item.title,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
+            subtitle: Text(
+              '${DateFormatters.formatDate(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${item.isIncome ? "+" : "-"}${CurrencyFormatter.formatCents(item.amountCents)}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                    color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
+                  onPressed: () async {
+                    final confirmed = await _confirmDeleteDialog(context);
+                    if (confirmed == true) {
+                      if (item.isIncome) {
+                        await ref.read(incomeRepositoryProvider).deleteIncome(item.id);
+                      } else {
+                        await ref.read(expenseRepositoryProvider).deleteExpense(item.id);
+                      }
+                    }
+                  },
+                ),
+              ],
+            ),
+            onTap: () {
+              if (item.isIncome) {
+                AddIncomeModal.show(context, existingEntry: item.rawEntity as IncomeEntryEntity);
+              } else {
+                AddExpenseModal.show(context, existingEntry: item.rawEntity as ExpenseEntryEntity);
+              }
+            },
           ),
         );
       },
@@ -387,57 +400,54 @@ class _IncomeTransactionsTab extends ConsumerWidget {
           separatorBuilder: (_, __) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final item = incomes[index];
-            return Dismissible(
-              key: Key(item.id),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20),
-                decoration: BoxDecoration(
-                  color: AppColors.expenseRed,
-                  borderRadius: BorderRadius.circular(14),
+            return Container(
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isDark ? AppColors.borderDark : AppColors.borderLight,
                 ),
-                child: const Icon(Icons.delete, color: Colors.white),
               ),
-              confirmDismiss: (_) => _confirmDeleteDialog(context),
-              onDismissed: (_) async {
-                await ref.read(incomeRepositoryProvider).deleteIncome(item.id);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.cardDark : AppColors.cardLight,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.successGreen.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.account_balance_wallet, color: AppColors.successGreen),
+                ),
+                title: Text(item.source, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  '${DateFormatters.formatDate(item.date)}${item.note != null ? " • ${item.note}" : ""}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                   ),
                 ),
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.successGreen.withOpacity(0.1),
-                      shape: BoxShape.circle,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '+${CurrencyFormatter.formatCents(item.amountCents)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: AppColors.successGreen,
+                      ),
                     ),
-                    child: const Icon(Icons.account_balance_wallet, color: AppColors.successGreen),
-                  ),
-                  title: Text(item.source, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(
-                    '${DateFormatters.formatDate(item.date)}${item.note != null ? " • ${item.note}" : ""}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
+                      onPressed: () async {
+                        final confirmed = await _confirmDeleteDialog(context);
+                        if (confirmed == true) {
+                          await ref.read(incomeRepositoryProvider).deleteIncome(item.id);
+                        }
+                      },
                     ),
-                  ),
-                  trailing: Text(
-                    '+${CurrencyFormatter.formatCents(item.amountCents)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: AppColors.successGreen,
-                    ),
-                  ),
-                  onTap: () => AddIncomeModal.show(context, existingEntry: item),
+                  ],
                 ),
+                onTap: () => AddIncomeModal.show(context, existingEntry: item),
               ),
             );
           },
@@ -473,60 +483,57 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
           separatorBuilder: (_, __) => const SizedBox(height: 8),
           itemBuilder: (context, index) {
             final item = expenses[index];
-            return Dismissible(
-              key: Key(item.id),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 20),
-                decoration: BoxDecoration(
-                  color: AppColors.expenseRed,
-                  borderRadius: BorderRadius.circular(14),
+            return Container(
+              decoration: BoxDecoration(
+                color: isDark ? AppColors.cardDark : AppColors.cardLight,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(
+                  color: isDark ? AppColors.borderDark : AppColors.borderLight,
                 ),
-                child: const Icon(Icons.delete, color: Colors.white),
               ),
-              confirmDismiss: (_) => _confirmDeleteDialog(context),
-              onDismissed: (_) async {
-                await ref.read(expenseRepositoryProvider).deleteExpense(item.id);
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDark ? AppColors.cardDark : AppColors.cardLight,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.expenseRed.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.shopping_bag_outlined, color: AppColors.expenseRed),
+                ),
+                title: Text(
+                  item.categoryName ?? 'Expense',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  '${DateFormatters.formatDate(item.date)}${item.paymentMethod != null ? " [${item.paymentMethod}]" : ""}${item.note != null ? " • ${item.note}" : ""}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                   ),
                 ),
-                child: ListTile(
-                  leading: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: AppColors.expenseRed.withOpacity(0.1),
-                      shape: BoxShape.circle,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '-${CurrencyFormatter.formatCents(item.amountCents)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: AppColors.expenseRed,
+                      ),
                     ),
-                    child: const Icon(Icons.shopping_bag_outlined, color: AppColors.expenseRed),
-                  ),
-                  title: Text(
-                    item.categoryName ?? 'Expense',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    '${DateFormatters.formatDate(item.date)}${item.paymentMethod != null ? " [${item.paymentMethod}]" : ""}${item.note != null ? " • ${item.note}" : ""}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
+                      onPressed: () async {
+                        final confirmed = await _confirmDeleteDialog(context);
+                        if (confirmed == true) {
+                          await ref.read(expenseRepositoryProvider).deleteExpense(item.id);
+                        }
+                      },
                     ),
-                  ),
-                  trailing: Text(
-                    '-${CurrencyFormatter.formatCents(item.amountCents)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: AppColors.expenseRed,
-                    ),
-                  ),
-                  onTap: () => AddExpenseModal.show(context, existingEntry: item),
+                  ],
                 ),
+                onTap: () => AddExpenseModal.show(context, existingEntry: item),
               ),
             );
           },

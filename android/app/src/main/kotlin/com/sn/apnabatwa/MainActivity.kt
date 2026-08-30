@@ -1,4 +1,4 @@
-package com.example.apnabatwa
+package com.sn.apnabatwa
 
 import io.flutter.embedding.android.FlutterActivity
 

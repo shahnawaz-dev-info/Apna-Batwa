@@ -56,17 +56,13 @@ class KhataDetailScreen extends ConsumerWidget {
     final date = borrowedRecord?.date ?? lentRecord?.date ?? DateTime.now();
     final note = borrowedRecord?.note ?? lentRecord?.note;
 
-    final statusColor = status == DebtStatus.overpaid
-        ? AppColors.primaryBlue
-        : (status == DebtStatus.fullyPaid
-            ? AppColors.successGreen
-            : (status == DebtStatus.partiallyPaid ? AppColors.primaryBlue : AppColors.warningAmber));
+    final statusColor = (remainingCents <= 0 || status == DebtStatus.fullyPaid)
+        ? AppColors.successGreen
+        : (status == DebtStatus.partiallyPaid ? AppColors.primaryBlue : AppColors.warningAmber);
 
-    final statusLabel = status == DebtStatus.overpaid
-        ? 'Overpaid by ${CurrencyFormatter.formatCents(remainingCents.abs())}'
-        : (status == DebtStatus.fullyPaid
-            ? 'Fully Paid'
-            : (status == DebtStatus.partiallyPaid ? 'Partially Paid' : 'Pending'));
+    final statusLabel = (remainingCents <= 0 || status == DebtStatus.fullyPaid)
+        ? 'Fully Paid'
+        : (status == DebtStatus.partiallyPaid ? 'Partially Paid' : 'Pending');
 
     return Scaffold(
       appBar: AppBar(
@@ -222,11 +218,13 @@ class KhataDetailScreen extends ConsumerWidget {
                       context,
                       recordType: recordType,
                       recordId: recordId,
+                      personId: borrowedRecord?.personId ?? lentRecord?.personId ?? 0,
+                      personName: personName,
                       remainingCents: remainingCents,
                     );
                   },
                   icon: const Icon(Icons.add_circle_outline, size: 18),
-                  label: Text(isBorrowed ? '+ Return Money' : '+ Receive Money'),
+                  label: Text(isBorrowed ? 'Return Money' : 'Receive Money'),
                 ),
               ],
             ),

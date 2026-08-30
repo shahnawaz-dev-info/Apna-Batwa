@@ -140,7 +140,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
                   ),
                   onPressed: () => AddSavingsContributionModal.show(context, goalId: goal.id, goalName: goal.name),
                   icon: const Icon(Icons.add_circle_outline, size: 18),
-                  label: const Text('+ Add Money', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  label: const Text('Add Money', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 ),
               ],
             ),

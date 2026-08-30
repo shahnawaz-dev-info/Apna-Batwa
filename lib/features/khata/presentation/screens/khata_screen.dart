@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/borrowed_record.dart';
@@ -22,8 +23,17 @@ class _KhataScreenState extends ConsumerState<KhataScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() => setState(() {}));
+    _tabController = TabController(
+      length: 2,
+      vsync: this,
+      initialIndex: ref.read(khataSubTabProvider),
+    );
+    _tabController.addListener(() {
+      setState(() {});
+      if (!_tabController.indexIsChanging) {
+        ref.read(khataSubTabProvider.notifier).state = _tabController.index;
+      }
+    });
   }
 
   @override
@@ -34,6 +44,12 @@ class _KhataScreenState extends ConsumerState<KhataScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<int>(khataSubTabProvider, (prev, next) {
+      if (_tabController.index != next) {
+        _tabController.animateTo(next);
+      }
+    });
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isBorrowedTab = _tabController.index == 0;
 
@@ -71,16 +87,19 @@ class _KhataScreenState extends ConsumerState<KhataScreen>
           _LentTab(isDark: isDark),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: isBorrowedTab ? AppColors.warningAmber : AppColors.primaryBlue,
-        foregroundColor: Colors.white,
-        onPressed: () {
-          AddBorrowedLentModal.show(context, isBorrowed: isBorrowedTab);
-        },
-        icon: const Icon(Icons.add),
-        label: Text(
-          isBorrowedTab ? '+ Borrowed' : '+ Lent',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+      floatingActionButton: SizedBox(
+        width: 140,
+        child: FloatingActionButton.extended(
+          backgroundColor: isBorrowedTab ? AppColors.warningAmber : AppColors.primaryBlue,
+          foregroundColor: Colors.white,
+          onPressed: () {
+            AddBorrowedLentModal.show(context, isBorrowed: isBorrowedTab);
+          },
+          icon: const Icon(Icons.add),
+          label: Text(
+            isBorrowedTab ? 'Borrowed' : 'Lent',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
         ),
       ),
     );
@@ -265,17 +284,13 @@ Widget _buildRecordCard(BuildContext context, dynamic record, bool isBorrowed, b
   final DebtStatus status = record.status;
   final DateTime date = record.date;
 
-  final statusColor = status == DebtStatus.overpaid
-      ? AppColors.primaryBlue
-      : (status == DebtStatus.fullyPaid
-          ? AppColors.successGreen
-          : (status == DebtStatus.partiallyPaid ? AppColors.primaryBlue : AppColors.warningAmber));
+  final statusColor = (remainingCents <= 0 || status == DebtStatus.fullyPaid)
+      ? AppColors.successGreen
+      : (status == DebtStatus.partiallyPaid ? AppColors.primaryBlue : AppColors.warningAmber);
 
-  final statusLabel = status == DebtStatus.overpaid
-      ? 'Overpaid by ${CurrencyFormatter.formatCents(remainingCents.abs())}'
-      : (status == DebtStatus.fullyPaid
-          ? 'Fully Paid'
-          : (status == DebtStatus.partiallyPaid ? 'Partially Paid' : 'Pending'));
+  final statusLabel = (remainingCents <= 0 || status == DebtStatus.fullyPaid)
+      ? 'Fully Paid'
+      : (status == DebtStatus.partiallyPaid ? 'Partially Paid' : 'Pending');
 
   return Container(
     margin: const EdgeInsets.only(bottom: 10),

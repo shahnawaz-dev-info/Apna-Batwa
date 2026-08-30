@@ -239,16 +239,48 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEdit ? 'Edit Expense' : '− Add Expense',
+                    isEdit ? 'Edit Expense' : 'Add Expense',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
+                  Row(
+                    children: [
+                      if (isEdit)
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed),
+                          onPressed: () async {
+                            final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Delete Expense Entry'),
+                                content: const Text('Are you sure you want to delete this expense entry?'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              ),
+                            );
+                            if (confirmed == true && widget.existingEntry != null) {
+                              await ref.read(expenseRepositoryProvider).deleteExpense(widget.existingEntry!.id);
+                              if (mounted) Navigator.pop(context);
+                            }
+                          },
+                        ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
                   ),
                 ],
               ),

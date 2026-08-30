@@ -1,39 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/providers/navigation_providers.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'features/khata/presentation/screens/khata_screen.dart';
 import 'features/transactions/presentation/screens/transactions_screen.dart';
-
 import 'features/wishlist/presentation/screens/wishlist_screen.dart';
 import 'features/more/presentation/screens/more_screen.dart';
 
-class MainShell extends StatefulWidget {
+class MainShell extends ConsumerWidget {
   const MainShell({super.key});
 
-  @override
-  State<MainShell> createState() => _MainShellState();
-}
-
-class _MainShellState extends State<MainShell> {
-  int _currentIndex = 0;
-
-  final List<Widget> _screens = [
-    const DashboardScreen(),
-    const TransactionsScreen(),
-    const KhataScreen(),
-    const WishlistScreen(),
-    const MoreScreen(),
+  static const List<Widget> _screens = [
+    DashboardScreen(),
+    TransactionsScreen(),
+    KhataScreen(),
+    WishlistScreen(),
+    MoreScreen(),
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentIndex = ref.watch(selectedMainTabProvider);
+
     return Scaffold(
       body: IndexedStack(
-        index: _currentIndex,
+        index: currentIndex,
         children: _screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        currentIndex: currentIndex,
+        onTap: (index) => ref.read(selectedMainTabProvider.notifier).state = index,
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(

@@ -7,12 +7,16 @@ import '../providers/khata_providers.dart';
 class AddRepaymentModal extends ConsumerStatefulWidget {
   final String recordType; // 'borrowed' or 'lent'
   final int recordId;
+  final int personId;
+  final String personName;
   final int remainingCents;
 
   const AddRepaymentModal({
     super.key,
     required this.recordType,
     required this.recordId,
+    required this.personId,
+    required this.personName,
     required this.remainingCents,
   });
 
@@ -20,6 +24,8 @@ class AddRepaymentModal extends ConsumerStatefulWidget {
     BuildContext context, {
     required String recordType,
     required int recordId,
+    required int personId,
+    required String personName,
     required int remainingCents,
   }) {
     return showModalBottomSheet(
@@ -29,6 +35,8 @@ class AddRepaymentModal extends ConsumerStatefulWidget {
       builder: (context) => AddRepaymentModal(
         recordType: recordType,
         recordId: recordId,
+        personId: personId,
+        personName: personName,
         remainingCents: remainingCents,
       ),
     );
@@ -74,23 +82,61 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
     setState(() => _isSaving = true);
     try {
       final repo = ref.read(khataRepositoryProvider);
-      await repo.addRepayment(
-        recordType: widget.recordType,
-        recordId: widget.recordId,
-        amountCents: amountCents,
-        date: _selectedDate,
-        note: note.isEmpty ? null : note,
-      );
+      final currentRemaining = widget.remainingCents;
 
-      final overpaidCents = amountCents - widget.remainingCents;
-      if (overpaidCents > 0 && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'This payment exceeds remaining balance by ${CurrencyFormatter.formatCents(overpaidCents)} — the record will show as overpaid.',
+      if (amountCents > currentRemaining) {
+        final repaymentOnCurrent = currentRemaining > 0 ? currentRemaining : 0;
+        final overageCents = amountCents - repaymentOnCurrent;
+
+        // Log remaining balance payoff on current record if needed
+        if (repaymentOnCurrent > 0) {
+          await repo.addRepayment(
+            recordType: widget.recordType,
+            recordId: widget.recordId,
+            amountCents: repaymentOnCurrent,
+            date: _selectedDate,
+            note: note.isEmpty ? null : note,
+          );
+        }
+
+        // Move excess overage amount to opposite ledger side for the person
+        if (widget.recordType == 'borrowed') {
+          await repo.addLentRecord(
+            personId: widget.personId,
+            totalAmountCents: overageCents,
+            date: _selectedDate,
+            note: note.isEmpty ? 'Overpayment flip from borrowed record' : note,
+          );
+        } else {
+          await repo.addBorrowedRecord(
+            personId: widget.personId,
+            totalAmountCents: overageCents,
+            date: _selectedDate,
+            note: note.isEmpty ? 'Overpayment flip from lent record' : note,
+          );
+        }
+
+        if (mounted) {
+          final targetDesc = widget.recordType == 'borrowed'
+              ? 'moved to what ${widget.personName} owes you'
+              : 'moved to what you owe ${widget.personName}';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Payment exceeded amount owed — ${CurrencyFormatter.formatCents(overageCents)} $targetDesc.',
+              ),
+              duration: const Duration(seconds: 4),
+              backgroundColor: AppColors.primaryBlue,
             ),
-            duration: const Duration(seconds: 4),
-          ),
+          );
+        }
+      } else {
+        await repo.addRepayment(
+          recordType: widget.recordType,
+          recordId: widget.recordId,
+          amountCents: amountCents,
+          date: _selectedDate,
+          note: note.isEmpty ? null : note,
         );
       }
 
@@ -113,7 +159,7 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isBorrowed = widget.recordType == 'borrowed';
-    final actionTitle = isBorrowed ? '+ Log Payment (Money Returned)' : '+ Log Receipt (Money Received)';
+    final actionTitle = isBorrowed ? 'Log Payment (Money Returned)' : 'Log Receipt (Money Received)';
     final primaryColor = isBorrowed ? AppColors.successGreen : AppColors.primaryBlue;
 
     return Padding(
