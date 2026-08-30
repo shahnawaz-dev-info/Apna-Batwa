@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/services/csv_export_service.dart';
 import '../../../../core/services/pdf_export_service.dart';
@@ -55,13 +57,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
     });
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
     final filterState = ref.watch(transactionFilterProvider);
     final filterNotifier = ref.read(transactionFilterProvider.notifier);
     final filteredTransactions = ref.watch(filteredTransactionsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Transactions'),
+        title: Text(tr('transactions_title')),
         actions: [
           IconButton(
             icon: Badge(
@@ -72,7 +75,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.ios_share_rounded),
-            tooltip: 'Export Transactions',
+            tooltip: tr('transactions_export_tooltip'),
             onSelected: (value) async {
               final list = filteredTransactions;
               if (value == 'pdf') {
@@ -86,14 +89,14 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 );
               }
             },
-            itemBuilder: (context) => const [
+            itemBuilder: (context) => [
               PopupMenuItem(
                 value: 'pdf',
                 child: Row(
                   children: [
-                    Icon(Icons.picture_as_pdf_outlined, color: AppColors.expenseRed),
-                    SizedBox(width: 10),
-                    Text('Export as PDF'),
+                    const Icon(Icons.picture_as_pdf_outlined, color: AppColors.expenseRed),
+                    const SizedBox(width: 10),
+                    Text(tr('transactions_export_pdf')),
                   ],
                 ),
               ),
@@ -101,9 +104,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 value: 'csv',
                 child: Row(
                   children: [
-                    Icon(Icons.table_chart_outlined, color: AppColors.successGreen),
-                    SizedBox(width: 10),
-                    Text('Export as CSV'),
+                    const Icon(Icons.table_chart_outlined, color: AppColors.successGreen),
+                    const SizedBox(width: 10),
+                    Text(tr('transactions_export_csv')),
                   ],
                 ),
               ),
@@ -116,10 +119,10 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           labelColor: AppColors.primaryBlue,
           unselectedLabelColor:
               isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-          tabs: const [
-            Tab(text: 'All History'),
-            Tab(text: 'Income'),
-            Tab(text: 'Expenses'),
+          tabs: [
+            Tab(text: tr('transactions_tab_all')),
+            Tab(text: tr('transactions_tab_income')),
+            Tab(text: tr('transactions_tab_expenses')),
           ],
         ),
       ),
@@ -131,7 +134,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
             child: TextField(
               onChanged: (val) => filterNotifier.setSearchQuery(val),
               decoration: InputDecoration(
-                hintText: 'Search transactions by name, note, or category...',
+                hintText: tr('transactions_search_hint'),
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: filterState.searchQuery.isNotEmpty
                     ? IconButton(
@@ -156,7 +159,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                 scrollDirection: Axis.horizontal,
                 children: [
                   ActionChip(
-                    label: const Text('Clear All', style: TextStyle(color: AppColors.expenseRed, fontWeight: FontWeight.bold)),
+                    label: Text(tr('transactions_clear_all'), style: const TextStyle(color: AppColors.expenseRed, fontWeight: FontWeight.bold)),
                     onPressed: () => filterNotifier.clearAll(),
                     avatar: const Icon(Icons.close, size: 16, color: AppColors.expenseRed),
                     backgroundColor: AppColors.expenseRed.withOpacity(0.1),
@@ -170,7 +173,7 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   for (final cat in filterState.selectedCategories) ...[
                     const SizedBox(width: 6),
                     Chip(
-                      label: Text('Cat: $cat'),
+                      label: Text('${tr('transactions_filter_category')}: ${AppTranslations.translateCategory(cat, ref.watch(appLanguageProvider))}'),
                       onDeleted: () => filterNotifier.toggleCategory(cat),
                     ),
                   ],
@@ -215,16 +218,16 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           } else if (_tabController.index == 2) {
             AddExpenseModal.show(context);
           } else {
-            _showAddChoiceDialog(context);
+            _showAddChoiceDialog(context, tr);
           }
         },
         icon: const Icon(Icons.add),
-        label: const Text('Add Entry', style: TextStyle(fontWeight: FontWeight.bold)),
+        label: Text(tr('transactions_add_entry'), style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
 
-  void _showAddChoiceDialog(BuildContext context) {
+  void _showAddChoiceDialog(BuildContext context, String Function(String) tr) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -236,9 +239,9 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Choose Transaction Type',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                tr('transactions_choose_type'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               ListTile(
@@ -250,8 +253,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   ),
                   child: const Icon(Icons.arrow_downward, color: AppColors.successGreen),
                 ),
-                title: const Text('Add Income / Money In', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Pocket money, salary, gifts, scholarship'),
+                title: Text(tr('transactions_add_income_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(tr('transactions_add_income_sub')),
                 onTap: () {
                   Navigator.pop(ctx);
                   AddIncomeModal.show(context);
@@ -267,8 +270,8 @@ class _TransactionsScreenState extends ConsumerState<TransactionsScreen>
                   ),
                   child: const Icon(Icons.arrow_upward, color: AppColors.expenseRed),
                 ),
-                title: const Text('Add Expense', style: TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: const Text('Food, transport, hostel, shopping, etc.'),
+                title: Text(tr('transactions_add_expense_title'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(tr('transactions_add_expense_sub')),
                 onTap: () {
                   Navigator.pop(ctx);
                   AddExpenseModal.show(context);
@@ -289,12 +292,13 @@ class _AllTransactionsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recentTransactions = ref.watch(filteredTransactionsProvider);
+    final tr = ref.watch(translationsProvider);
 
     if (recentTransactions.isEmpty) {
       return _buildEmptyState(
         isDark,
-        title: 'No Transactions Yet 📝',
-        subtitle: 'Apna pehla income ya kharcha log karein!',
+        title: tr('transactions_empty_all_title'),
+        subtitle: tr('transactions_empty_all_sub'),
       );
     }
 
@@ -350,7 +354,7 @@ class _AllTransactionsTab extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
                   onPressed: () async {
-                    final confirmed = await _confirmDeleteDialog(context);
+                    final confirmed = await _confirmDeleteDialog(context, tr);
                     if (confirmed == true) {
                       if (item.isIncome) {
                         await ref.read(incomeRepositoryProvider).deleteIncome(item.id);
@@ -383,14 +387,15 @@ class _IncomeTransactionsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final incomeAsync = ref.watch(watchAllIncomeProvider);
+    final tr = ref.watch(translationsProvider);
 
     return incomeAsync.when(
       data: (incomes) {
         if (incomes.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'No Income Entries 💰',
-            subtitle: 'Apna pehla income add karein!',
+            title: tr('transactions_empty_income_title'),
+            subtitle: tr('transactions_empty_income_sub'),
           );
         }
 
@@ -417,7 +422,7 @@ class _IncomeTransactionsTab extends ConsumerWidget {
                   ),
                   child: const Icon(Icons.account_balance_wallet, color: AppColors.successGreen),
                 ),
-                title: Text(item.source, style: const TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(AppTranslations.translateCategory(item.source, ref.watch(appLanguageProvider)), style: const TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(
                   '${DateFormatters.formatDate(item.date)}${item.note != null ? " • ${item.note}" : ""}',
                   style: TextStyle(
@@ -439,7 +444,7 @@ class _IncomeTransactionsTab extends ConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
                       onPressed: () async {
-                        final confirmed = await _confirmDeleteDialog(context);
+                        final confirmed = await _confirmDeleteDialog(context, tr);
                         if (confirmed == true) {
                           await ref.read(incomeRepositoryProvider).deleteIncome(item.id);
                         }
@@ -466,14 +471,15 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final expenseAsync = ref.watch(watchAllExpensesProvider);
+    final tr = ref.watch(translationsProvider);
 
     return expenseAsync.when(
       data: (expenses) {
         if (expenses.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'No Expenses Recorded 🛒',
-            subtitle: 'Koi kharcha nahi hai — sub set hai!',
+            title: tr('transactions_empty_expense_title'),
+            subtitle: tr('transactions_empty_expense_sub'),
           );
         }
 
@@ -501,11 +507,11 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
                   child: const Icon(Icons.shopping_bag_outlined, color: AppColors.expenseRed),
                 ),
                 title: Text(
-                  item.categoryName ?? 'Expense',
+                  AppTranslations.translateCategory(item.categoryName, ref.watch(appLanguageProvider)),
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  '${DateFormatters.formatDate(item.date)}${item.paymentMethod != null ? " [${item.paymentMethod}]" : ""}${item.note != null ? " • ${item.note}" : ""}',
+                  '${DateFormatters.formatDate(item.date)}${item.paymentMethod != null ? " [${AppTranslations.translatePaymentMethod(item.paymentMethod, ref.watch(appLanguageProvider))}]" : ""}${item.note != null ? " • ${item.note}" : ""}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -525,7 +531,7 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
                     IconButton(
                       icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
                       onPressed: () async {
-                        final confirmed = await _confirmDeleteDialog(context);
+                        final confirmed = await _confirmDeleteDialog(context, tr);
                         if (confirmed == true) {
                           await ref.read(expenseRepositoryProvider).deleteExpense(item.id);
                         }
@@ -581,21 +587,21 @@ Widget _buildEmptyState(bool isDark, {required String title, required String sub
   );
 }
 
-Future<bool?> _confirmDeleteDialog(BuildContext context) {
+Future<bool?> _confirmDeleteDialog(BuildContext context, String Function(String) tr) {
   return showDialog<bool>(
     context: context,
     builder: (ctx) => AlertDialog(
-      title: const Text('Delete Entry'),
-      content: const Text('Are you sure you want to delete this transaction entry?'),
+      title: Text(tr('transactions_delete_title')),
+      content: Text(tr('transactions_delete_msg')),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
+          child: Text(tr('common_cancel')),
         ),
         TextButton(
           style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
           onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Delete'),
+          child: Text(tr('common_delete')),
         ),
       ],
     ),

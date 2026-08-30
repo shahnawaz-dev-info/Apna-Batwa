@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/purchase.dart';
@@ -37,27 +39,28 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Wishlist & Shopping'),
+        title: Text(tr('wishlist_title')),
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: AppColors.primaryBlue,
           labelColor: AppColors.primaryBlue,
           unselectedLabelColor: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
           labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-          tabs: const [
-            Tab(text: 'Wishlist'),
-            Tab(text: 'Purchase History'),
+          tabs: [
+            Tab(text: tr('wishlist_tab_wishlist')),
+            Tab(text: tr('wishlist_tab_purchases')),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          _buildWishlistTab(context, isDark),
-          _buildPurchaseHistoryTab(context, isDark),
+          _buildWishlistTab(context, isDark, tr),
+          _buildPurchaseHistoryTab(context, isDark, tr),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
@@ -71,12 +74,12 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
           }
         },
         icon: const Icon(Icons.add),
-        label: Text(_tabController.index == 0 ? 'Add Wish' : 'Log Purchase'),
+        label: Text(_tabController.index == 0 ? tr('wishlist_add_wish') : tr('wishlist_log_purchase')),
       ),
     );
   }
 
-  Widget _buildWishlistTab(BuildContext context, bool isDark) {
+  Widget _buildWishlistTab(BuildContext context, bool isDark, String Function(String) tr) {
     final activeItems = ref.watch(activeWishlistItemsProvider);
     final purchasedItems = ref.watch(purchasedWishlistItemsProvider);
     final totalWishlistCents = ref.watch(totalWishlistCentsProvider);
@@ -97,7 +100,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
           TextField(
             onChanged: (val) => setState(() => _wishlistSearchQuery = val),
             decoration: InputDecoration(
-              hintText: 'Search wishlist by name or category...',
+              hintText: tr('wishlist_search_hint'),
               prefixIcon: const Icon(Icons.search),
               suffixIcon: _wishlistSearchQuery.isNotEmpty
                   ? IconButton(
@@ -124,7 +127,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Total Wishlist Value', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                    Text(tr('wishlist_total_value'), style: const TextStyle(color: Colors.white70, fontSize: 12)),
                     const SizedBox(height: 4),
                     Text(
                       CurrencyFormatter.formatCents(totalWishlistCents),
@@ -150,17 +153,17 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
             children: [
               FilterChip(
                 selected: _wishlistFilterIndex == 0,
-                label: Text('Active (${activeItems.length})'),
+                label: Text('${tr('wishlist_tab_active')} (${activeItems.length})'),
                 onSelected: (val) => setState(() => _wishlistFilterIndex = 0),
-                selectedColor: AppColors.primaryBlue.withOpacity(0.2),
+                selectedColor: AppColors.primaryBlue.withValues(alpha: 0.2),
                 checkmarkColor: AppColors.primaryBlue,
               ),
               const SizedBox(width: 8),
               FilterChip(
                 selected: _wishlistFilterIndex == 1,
-                label: Text('Purchased (${purchasedItems.length})'),
+                label: Text('${tr('wishlist_tab_purchased')} (${purchasedItems.length})'),
                 onSelected: (val) => setState(() => _wishlistFilterIndex = 1),
-                selectedColor: AppColors.successGreen.withOpacity(0.2),
+                selectedColor: AppColors.successGreen.withValues(alpha: 0.2),
                 checkmarkColor: AppColors.successGreen,
               ),
             ],
@@ -172,10 +175,8 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
             _buildEmptyState(
               context,
               icon: _wishlistFilterIndex == 0 ? Icons.favorite_border : Icons.shopping_bag_outlined,
-              title: _wishlistFilterIndex == 0 ? 'Your wishlist is empty' : 'No purchased wishlist items',
-              subtitle: _wishlistFilterIndex == 0
-                  ? 'Tap "+ Add Wish" to start tracking things you want to buy.'
-                  : 'Items you mark as purchased will appear here.',
+              title: _wishlistFilterIndex == 0 ? tr('wishlist_empty_active_title') : tr('wishlist_empty_purchased_title'),
+              subtitle: _wishlistFilterIndex == 0 ? tr('wishlist_empty_active_sub') : tr('wishlist_empty_purchased_sub'),
               isDark: isDark,
             )
           else
@@ -186,7 +187,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
               separatorBuilder: (_, __) => const SizedBox(height: 10),
               itemBuilder: (context, index) {
                 final item = displayedItems[index];
-                return _buildWishlistItemCard(context, item, isDark);
+                return _buildWishlistItemCard(context, item, isDark, tr);
               },
             ),
           const SizedBox(height: 80),
@@ -195,17 +196,21 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
     );
   }
 
-  Widget _buildWishlistItemCard(BuildContext context, WishlistItemEntity item, bool isDark) {
+  Widget _buildWishlistItemCard(BuildContext context, WishlistItemEntity item, bool isDark, String Function(String) tr) {
     Color priorityColor;
+    String priorityText;
     switch (item.priority) {
       case WishlistPriority.high:
         priorityColor = AppColors.expenseRed;
+        priorityText = tr('wishlist_priority_high');
         break;
       case WishlistPriority.medium:
         priorityColor = AppColors.warningAmber;
+        priorityText = tr('wishlist_priority_medium');
         break;
       case WishlistPriority.low:
         priorityColor = AppColors.primaryBlue;
+        priorityText = tr('wishlist_priority_low');
         break;
     }
 
@@ -246,20 +251,16 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '${item.priority.name.toUpperCase()} PRIORITY',
+                            priorityText,
                             style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: priorityColor),
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryBlue.withOpacity(0.08),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            item.category,
-                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: AppColors.primaryBlue),
+                        const SizedBox(width: 8),
+                        Text(
+                          AppTranslations.translateCategory(item.category, ref.watch(appLanguageProvider)),
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                           ),
                         ),
                       ],
@@ -267,21 +268,9 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    CurrencyFormatter.formatCents(item.priceCents),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
-                    ),
-                  ),
-                  if (item.isPurchased)
-                    const Text('Purchased', style: TextStyle(fontSize: 11, color: AppColors.successGreen, fontWeight: FontWeight.bold)),
-                ],
+              Text(
+                CurrencyFormatter.formatCents(item.priceCents),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
               ),
             ],
           ),
@@ -289,38 +278,37 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
             const SizedBox(height: 8),
             Text(
               item.notes!,
-              style: TextStyle(fontSize: 12, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+              style: TextStyle(
+                fontSize: 12,
+                color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              ),
             ),
           ],
           const SizedBox(height: 12),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (!item.isPurchased)
                 ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.successGreen,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                   ),
+                  icon: const Icon(Icons.check, size: 16),
+                  label: Text(tr('wishlist_mark_purchased_btn'), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                   onPressed: () => MarkPurchasedModal.show(context, item),
-                  icon: const Icon(Icons.check_circle_outline, size: 16),
-                  label: const Text('Mark as Purchased', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                )
-              else
-                const SizedBox.shrink(),
-              Row(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.edit_outlined, size: 20),
-                    onPressed: () => AddWishlistModal.show(context, existingItem: item),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
-                    onPressed: () => _confirmDeleteWishlistItem(context, item),
-                  ),
-                ],
+                ),
+              IconButton(
+                icon: const Icon(Icons.edit_outlined, size: 18),
+                onPressed: () => AddWishlistModal.show(context, existingItem: item),
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 18),
+                onPressed: () async {
+                  await ref.read(wishlistRepositoryProvider).deleteWishlistItem(item.id);
+                },
               ),
             ],
           ),
@@ -329,25 +317,31 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
     );
   }
 
-  Widget _buildPurchaseHistoryTab(BuildContext context, bool isDark) {
+  Widget _buildPurchaseHistoryTab(BuildContext context, bool isDark, String Function(String) tr) {
     final purchasesAsync = ref.watch(watchAllPurchasesProvider);
 
     return purchasesAsync.when(
-      data: (allPurchases) {
-        final purchases = allPurchases.where((p) {
+      data: (purchases) {
+        final totalSpentCents = purchases.fold<int>(0, (sum, item) => sum + item.amountCents);
+
+        final filteredPurchases = purchases.where((p) {
           if (_purchaseSearchQuery.isEmpty) return true;
           final q = _purchaseSearchQuery.toLowerCase();
-          return p.name.toLowerCase().contains(q) || p.category.toLowerCase().contains(q);
+          return p.name.toLowerCase().contains(q) ||
+              p.category.toLowerCase().contains(q) ||
+              (p.notes != null && p.notes!.toLowerCase().contains(q));
         }).toList();
 
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: TextField(
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Search Bar
+              TextField(
                 onChanged: (val) => setState(() => _purchaseSearchQuery = val),
                 decoration: InputDecoration(
-                  hintText: 'Search purchase history by item name or category...',
+                  hintText: tr('wishlist_history_search_hint'),
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: _purchaseSearchQuery.isNotEmpty
                       ? IconButton(
@@ -359,32 +353,69 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
-            ),
-            Expanded(
-              child: purchases.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: _buildEmptyState(
-                        context,
-                        icon: Icons.shopping_cart_outlined,
-                        title: 'No purchases found',
-                        subtitle: _purchaseSearchQuery.isNotEmpty
-                            ? 'No purchase history matching "$_purchaseSearchQuery"'
-                            : 'Log direct purchases or mark wishlist items as purchased to build history.',
-                        isDark: isDark,
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: purchases.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
-                      itemBuilder: (context, index) {
-                        final purchase = purchases[index];
-                        return _buildPurchaseCard(context, purchase, isDark);
-                      },
+              const SizedBox(height: 14),
+
+              // Total Purchase History Value Banner
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.cardDark : AppColors.cardLight,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          tr('wishlist_total_spent'),
+                          style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          CurrencyFormatter.formatCents(totalSpentCents),
+                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.successGreen),
+                        ),
+                      ],
                     ),
-            ),
-          ],
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.successGreen.withOpacity(0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.shopping_bag, color: AppColors.successGreen, size: 24),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              if (filteredPurchases.isEmpty)
+                _buildEmptyState(
+                  context,
+                  icon: Icons.receipt_long_outlined,
+                  title: tr('wishlist_empty_history_title'),
+                  subtitle: tr('wishlist_empty_history_sub'),
+                  isDark: isDark,
+                )
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: filteredPurchases.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (context, index) {
+                    final p = filteredPurchases[index];
+                    return _buildPurchaseCard(context, p, isDark);
+                  },
+                ),
+              const SizedBox(height: 80),
+            ],
+          ),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -392,71 +423,71 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
     );
   }
 
-  Widget _buildPurchaseCard(BuildContext context, PurchaseEntity purchase, bool isDark) {
-    final isFromWishlist = purchase.linkedWishlistItemId != null;
-
+  Widget _buildPurchaseCard(BuildContext context, PurchaseEntity p, bool isDark) {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: (isFromWishlist ? AppColors.warningAmber : AppColors.primaryBlue).withOpacity(0.12),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            isFromWishlist ? Icons.card_giftcard : Icons.shopping_bag_outlined,
-            color: isFromWishlist ? AppColors.warningAmber : AppColors.primaryBlue,
-            size: 20,
-          ),
-        ),
-        title: Row(
-          children: [
-            Expanded(
-              child: Text(
-                purchase.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (isFromWishlist)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.warningAmber.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(6),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  p.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                child: const Text('Wishlist', style: TextStyle(fontSize: 10, color: AppColors.warningAmber, fontWeight: FontWeight.bold)),
               ),
-          ],
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 4),
-          child: Text(
-            '${DateFormatters.formatDate(purchase.purchaseDate)} • ${purchase.category}${purchase.notes != null ? " • ${purchase.notes}" : ""}',
-            style: TextStyle(fontSize: 12, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
-            overflow: TextOverflow.ellipsis,
+              Text(
+                CurrencyFormatter.formatCents(p.amountCents),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.successGreen),
+              ),
+            ],
           ),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              CurrencyFormatter.formatCents(purchase.amountCents),
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.expenseRed),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 20),
-              onPressed: () => _confirmDeletePurchase(context, purchase),
-            ),
-          ],
-        ),
-        onTap: () => AddPurchaseModal.show(context, existingPurchase: purchase),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Text(
+                DateFormatters.formatDate(p.purchaseDate),
+                style: TextStyle(fontSize: 12, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+              ),
+              if (p.notes != null && p.notes!.isNotEmpty) ...[
+                Text(' • ', style: TextStyle(color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)),
+                Text(
+                  p.notes!,
+                  style: TextStyle(fontSize: 12, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Chip(
+                label: Text(AppTranslations.translateCategory(p.category, ref.watch(appLanguageProvider)), style: const TextStyle(fontSize: 11)),
+                padding: EdgeInsets.zero,
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline, color: AppColors.expenseRed, size: 18),
+                onPressed: () async {
+                  await ref.read(wishlistRepositoryProvider).deletePurchase(p.id);
+                },
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -468,68 +499,25 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
     required String subtitle,
     required bool isDark,
   }) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(32),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.borderDark : AppColors.borderLight),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, size: 48, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
-          const SizedBox(height: 12),
-          Text(title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isDark ? AppColors.textMainDark : AppColors.textMainLight)),
-          const SizedBox(height: 4),
-          Text(subtitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)),
-        ],
-      ),
-    );
-  }
-
-  void _confirmDeleteWishlistItem(BuildContext context, WishlistItemEntity item) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Wishlist Item'),
-        content: Text('Are you sure you want to delete "${item.name}" from your wishlist?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final repo = ref.read(wishlistRepositoryProvider);
-              await repo.deleteWishlistItem(item.id);
-            },
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmDeletePurchase(BuildContext context, PurchaseEntity purchase) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Purchase Record'),
-        content: Text(
-          'Are you sure you want to delete "${purchase.name}"? This will also remove the linked expense from your total balance.',
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+        child: Column(
+          children: [
+            Icon(icon, size: 64, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: isDark ? AppColors.textMainDark : AppColors.textMainLight),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          TextButton(
-            style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              final repo = ref.read(wishlistRepositoryProvider);
-              await repo.deletePurchase(purchase.id);
-            },
-            child: const Text('Delete'),
-          ),
-        ],
       ),
     );
   }

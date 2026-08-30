@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../income/presentation/providers/income_providers.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../income/domain/entities/income_entry.dart';
@@ -56,12 +58,14 @@ final recentTransactionsProvider = Provider<List<CombinedTransactionItem>>((ref)
 
   final List<CombinedTransactionItem> items = [];
 
+  final lang = ref.watch(appLanguageProvider);
+
   for (final inc in incomes) {
     items.add(
       CombinedTransactionItem(
         id: inc.id,
         amountCents: inc.amountCents,
-        title: inc.source,
+        title: AppTranslations.translateCategory(inc.source, lang),
         subtitle: inc.note,
         date: inc.date,
         isIncome: true,
@@ -75,8 +79,8 @@ final recentTransactionsProvider = Provider<List<CombinedTransactionItem>>((ref)
       CombinedTransactionItem(
         id: exp.id,
         amountCents: exp.amountCents,
-        title: exp.categoryName ?? 'Expense',
-        subtitle: exp.note ?? exp.paymentMethod,
+        title: AppTranslations.translateCategory(exp.categoryName, lang),
+        subtitle: exp.note ?? (exp.paymentMethod != null ? AppTranslations.translatePaymentMethod(exp.paymentMethod, lang) : null),
         date: exp.date,
         isIncome: false,
         rawEntity: exp,

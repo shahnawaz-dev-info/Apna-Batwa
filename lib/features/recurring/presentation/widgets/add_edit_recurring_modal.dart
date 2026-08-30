@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/id_generator.dart';
@@ -59,6 +61,7 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final categoriesAsync = ref.watch(watchCategoriesProvider);
 
     return Padding(
@@ -79,7 +82,7 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.existingRule != null ? 'Edit Recurring Rule' : 'Add Recurring Rule',
+                    widget.existingRule != null ? tr('recurring_modal_edit_title') : tr('recurring_modal_add_title'),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
@@ -92,9 +95,9 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
 
               // Type Selector (Income vs Expense)
               SegmentedButton<String>(
-                segments: const [
-                  ButtonSegment(value: 'income', label: Text('Income'), icon: Icon(Icons.arrow_downward)),
-                  ButtonSegment(value: 'expense', label: Text('Expense'), icon: Icon(Icons.arrow_upward)),
+                segments: [
+                  ButtonSegment(value: 'income', label: Text(tr('tab_income')), icon: const Icon(Icons.arrow_downward)),
+                  ButtonSegment(value: 'expense', label: Text(tr('tab_expenses')), icon: const Icon(Icons.arrow_upward)),
                 ],
                 selected: {_type},
                 onSelectionChanged: (val) => setState(() => _type = val.first),
@@ -104,10 +107,10 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
               // Name Field
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name / Source',
+                decoration: InputDecoration(
+                  labelText: tr('recurring_name_label'),
                   hintText: 'e.g. Monthly Salary, Wifi Bill, Pocket Money',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (val) => val == null || val.trim().isEmpty ? 'Please enter a name' : null,
               ),
@@ -117,10 +120,10 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Amount',
+                decoration: InputDecoration(
+                  labelText: tr('recurring_amount_label'),
                   prefixText: 'Rs. ',
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Please enter amount';
@@ -140,14 +143,14 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
                   }
                   return DropdownButtonFormField<String>(
                     initialValue: _category,
-                    decoration: const InputDecoration(
-                      labelText: 'Category',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: tr('expense_category_label'),
+                      border: const OutlineInputBorder(),
                     ),
                     items: (_type == 'income'
                             ? ['Salary', 'Pocket Money', 'Gift', 'Scholarship', 'General']
                             : (expenseCats.isEmpty ? ['General'] : expenseCats))
-                        .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                        .map((c) => DropdownMenuItem(value: c, child: Text(AppTranslations.translateCategory(c, ref.watch(appLanguageProvider)))))
                         .toList(),
                     onChanged: (val) {
                       if (val != null) setState(() => _category = val);
@@ -162,12 +165,12 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
               // Frequency Field
               DropdownButtonFormField<RecurringFrequency>(
                 initialValue: _frequency,
-                decoration: const InputDecoration(
-                  labelText: 'Frequency',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: tr('recurring_frequency_label'),
+                  border: const OutlineInputBorder(),
                 ),
                 items: RecurringFrequency.values
-                    .map((f) => DropdownMenuItem(value: f, child: Text(f.name)))
+                    .map((f) => DropdownMenuItem(value: f, child: Text(tr('freq_${f.name}'))))
                     .toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _frequency = val);
@@ -178,7 +181,7 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
               // Start Date Picker
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Start Date', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: Text(tr('recurring_start_date_label'), style: const TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(DateFormatters.formatDate(_startDate)),
                 trailing: const Icon(Icons.calendar_today),
                 onTap: () async {
@@ -207,7 +210,7 @@ class _AddEditRecurringModalState extends ConsumerState<AddEditRecurringModal> {
                   ),
                   onPressed: _save,
                   child: Text(
-                    widget.existingRule != null ? 'Update Rule' : 'Save Rule',
+                    widget.existingRule != null ? tr('recurring_update_rule_btn') : tr('recurring_save_rule_btn'),
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),

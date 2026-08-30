@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../providers/savings_providers.dart';
@@ -90,6 +91,7 @@ class _AddSavingsContributionModalState extends ConsumerState<AddSavingsContribu
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
@@ -110,7 +112,7 @@ class _AddSavingsContributionModalState extends ConsumerState<AddSavingsContribu
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '+ Add Money to Goal',
+                    tr('savings_modal_add_money_title'),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.successGreen),
                   ),
                   IconButton(
@@ -128,10 +130,10 @@ class _AddSavingsContributionModalState extends ConsumerState<AddSavingsContribu
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Contribution Amount (Rs.) *',
+                decoration: InputDecoration(
+                  labelText: tr('savings_contrib_amount_label'),
                   hintText: '0.00',
-                  prefixIcon: Icon(Icons.savings_outlined),
+                  prefixIcon: const Icon(Icons.savings_outlined),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter contribution amount';
@@ -145,9 +147,9 @@ class _AddSavingsContributionModalState extends ConsumerState<AddSavingsContribu
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(12),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Date *',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  decoration: InputDecoration(
+                    labelText: '${tr('purchase_date_label')} *',
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
                   ),
                   child: Text(DateFormatters.formatDate(_selectedDate)),
                 ),
@@ -155,10 +157,10 @@ class _AddSavingsContributionModalState extends ConsumerState<AddSavingsContribu
               const SizedBox(height: 14),
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Note (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('purchase_notes_label'),
                   hintText: 'e.g. Pocket money savings, bonus',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
+                  prefixIcon: const Icon(Icons.note_alt_outlined),
                 ),
               ),
               const SizedBox(height: 24),
@@ -178,9 +180,9 @@ class _AddSavingsContributionModalState extends ConsumerState<AddSavingsContribu
                           width: 20,
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : const Text(
-                          'Save Contribution',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      : Text(
+                          tr('savings_save_contribution'),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),
               ),

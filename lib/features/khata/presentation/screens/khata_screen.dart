@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
@@ -52,14 +53,15 @@ class _KhataScreenState extends ConsumerState<KhataScreen>
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isBorrowedTab = _tabController.index == 0;
+    final tr = ref.watch(translationsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Khata (Borrow & Lend)'),
+        title: Text(tr('khata_title')),
         actions: [
           IconButton(
             icon: const Icon(Icons.people_alt_outlined),
-            tooltip: 'Manage People',
+            tooltip: tr('khata_manage_people'),
             onPressed: () {
               Navigator.push(
                 context,
@@ -74,9 +76,9 @@ class _KhataScreenState extends ConsumerState<KhataScreen>
           labelColor: isBorrowedTab ? AppColors.warningAmber : AppColors.primaryBlue,
           unselectedLabelColor:
               isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-          tabs: const [
-            Tab(text: 'I Borrowed (I Owe)'),
-            Tab(text: 'I Lent (Others Owe Me)'),
+          tabs: [
+            Tab(text: tr('khata_tab_borrowed')),
+            Tab(text: tr('khata_tab_lent')),
           ],
         ),
       ),
@@ -97,7 +99,7 @@ class _KhataScreenState extends ConsumerState<KhataScreen>
           },
           icon: const Icon(Icons.add),
           label: Text(
-            isBorrowedTab ? 'Borrowed' : 'Lent',
+            isBorrowedTab ? tr('khata_btn_borrowed') : tr('khata_btn_lent'),
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
@@ -113,14 +115,15 @@ class _BorrowedTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final borrowedAsync = ref.watch(watchAllBorrowedRecordsProvider);
+    final tr = ref.watch(translationsProvider);
 
     return borrowedAsync.when(
       data: (records) {
         if (records.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'Koi Udhaar Record Nahi 🎉',
-            subtitle: 'Apka koi udhaar record nahi hai — sab clear hai!',
+            title: tr('khata_empty_borrowed_title'),
+            subtitle: tr('khata_empty_borrowed_sub'),
             icon: Icons.handshake_outlined,
           );
         }
@@ -149,7 +152,7 @@ class _BorrowedTab extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total You Owe',
+                        tr('khata_total_you_owe'),
                         style: TextStyle(
                           fontSize: 13,
                           color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -181,7 +184,7 @@ class _BorrowedTab extends ConsumerWidget {
             const SizedBox(height: 16),
 
             // Record Cards List
-            ...records.map((r) => _buildRecordCard(context, r, true, isDark)),
+            ...records.map((r) => _buildRecordCard(context, ref, r, true, isDark)),
           ],
         );
       },
@@ -198,14 +201,15 @@ class _LentTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lentAsync = ref.watch(watchAllLentRecordsProvider);
+    final tr = ref.watch(translationsProvider);
 
     return lentAsync.when(
       data: (records) {
         if (records.isEmpty) {
           return _buildEmptyState(
             isDark,
-            title: 'No Lent Money Records 🤝',
-            subtitle: 'Kisi ko pese diye hain? Log them here!',
+            title: tr('khata_empty_lent_title'),
+            subtitle: tr('khata_empty_lent_sub'),
             icon: Icons.savings_outlined,
           );
         }
@@ -234,7 +238,7 @@ class _LentTab extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Total Others Owe You',
+                        tr('khata_total_others_owe'),
                         style: TextStyle(
                           fontSize: 13,
                           color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -266,7 +270,7 @@ class _LentTab extends ConsumerWidget {
             const SizedBox(height: 16),
 
             // Record Cards List
-            ...records.map((r) => _buildRecordCard(context, r, false, isDark)),
+            ...records.map((r) => _buildRecordCard(context, ref, r, false, isDark)),
           ],
         );
       },
@@ -276,7 +280,8 @@ class _LentTab extends ConsumerWidget {
   }
 }
 
-Widget _buildRecordCard(BuildContext context, dynamic record, bool isBorrowed, bool isDark) {
+Widget _buildRecordCard(BuildContext context, WidgetRef ref, dynamic record, bool isBorrowed, bool isDark) {
+  final tr = ref.watch(translationsProvider);
   final String personName = record.personName;
   final int totalCents = record.totalAmountCents;
   final int paidCents = record.paidAmountCents;
@@ -289,8 +294,8 @@ Widget _buildRecordCard(BuildContext context, dynamic record, bool isBorrowed, b
       : (status == DebtStatus.partiallyPaid ? AppColors.primaryBlue : AppColors.warningAmber);
 
   final statusLabel = (remainingCents <= 0 || status == DebtStatus.fullyPaid)
-      ? 'Fully Paid'
-      : (status == DebtStatus.partiallyPaid ? 'Partially Paid' : 'Pending');
+      ? tr('khata_status_fully_paid')
+      : (status == DebtStatus.partiallyPaid ? tr('khata_status_partially_paid') : tr('khata_status_pending'));
 
   return Container(
     margin: const EdgeInsets.only(bottom: 10),
@@ -352,14 +357,14 @@ Widget _buildRecordCard(BuildContext context, dynamic record, bool isBorrowed, b
             ),
             const SizedBox(height: 4),
             Text(
-              'Total: ${CurrencyFormatter.formatCents(totalCents)}',
+              '${tr('khata_total')}: ${CurrencyFormatter.formatCents(totalCents)}',
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
               ),
             ),
             Text(
-              'Paid: ${CurrencyFormatter.formatCents(paidCents)}',
+              '${tr('khata_paid')}: ${CurrencyFormatter.formatCents(paidCents)}',
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -381,9 +386,9 @@ Widget _buildRecordCard(BuildContext context, dynamic record, bool isBorrowed, b
             ),
           ),
           const SizedBox(height: 2),
-          const Text(
-            'Remaining',
-            style: TextStyle(fontSize: 10, color: AppColors.textSecondaryLight),
+          Text(
+            tr('khata_remaining'),
+            style: const TextStyle(fontSize: 10, color: AppColors.textSecondaryLight),
           ),
         ],
       ),

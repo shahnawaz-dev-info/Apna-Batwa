@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../providers/budget_providers.dart';
@@ -11,13 +13,14 @@ class BudgetManagementScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final selectedMonthYear = ref.watch(selectedBudgetMonthYearProvider);
     final budgetProgressList = ref.watch(categoryBudgetProgressListProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Budget Management'),
+        title: Text(tr('budget_title')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -73,7 +76,7 @@ class BudgetManagementScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Category Budgets',
+                  tr('budget_category_budgets'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -89,7 +92,7 @@ class BudgetManagementScreen extends ConsumerWidget {
                   ),
                   onPressed: () => SetBudgetModal.show(context),
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('Set Budget', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  label: Text(tr('budget_set_button'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 ),
               ],
             ),
@@ -114,7 +117,7 @@ class BudgetManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Koi Budget Set Nahi 🎯',
+                      tr('budget_empty_title'),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -123,7 +126,7 @@ class BudgetManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Tap "Set Budget" to set monthly spending limits for categories!',
+                      tr('budget_empty_sub'),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
                     ),
@@ -178,14 +181,14 @@ class BudgetManagementScreen extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: progressColor.withOpacity(0.12),
+                      color: progressColor.withValues(alpha: 0.12),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(Icons.pie_chart_outline, color: progressColor, size: 18),
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    progress.budget.category,
+                    AppTranslations.translateCategory(progress.budget.category, ref.watch(appLanguageProvider)),
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -219,7 +222,7 @@ class BudgetManagementScreen extends ConsumerWidget {
             child: LinearProgressIndicator(
               value: (pct / 100).clamp(0.0, 1.0),
               minHeight: 10,
-              backgroundColor: progressColor.withOpacity(0.15),
+              backgroundColor: progressColor.withValues(alpha: 0.15),
               valueColor: AlwaysStoppedAnimation<Color>(progressColor),
             ),
           ),
@@ -230,7 +233,7 @@ class BudgetManagementScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${CurrencyFormatter.formatCents(progress.spentCents)} spent of ${CurrencyFormatter.formatCents(progress.budget.monthlyLimitCents)}',
+                '${CurrencyFormatter.formatCents(progress.spentCents)} / ${CurrencyFormatter.formatCents(progress.budget.monthlyLimitCents)}',
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w500,
@@ -251,7 +254,7 @@ class BudgetManagementScreen extends ConsumerWidget {
           if (progress.isOverBudget) ...[
             const SizedBox(height: 6),
             Text(
-              '⚠️ Over budget by ${CurrencyFormatter.formatCents(progress.spentCents - progress.budget.monthlyLimitCents)}',
+              '⚠️ ${CurrencyFormatter.formatCents(progress.spentCents - progress.budget.monthlyLimitCents)}',
               style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.expenseRed),
             ),
           ],

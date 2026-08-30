@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/providers/notification_providers.dart';
 import '../../../../core/services/notification_service.dart';
 import '../../../../core/theme/colors.dart';
@@ -9,12 +10,13 @@ class NotificationSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final settingsAsync = ref.watch(notificationSettingsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notification Settings'),
+        title: Text(tr('notif_title')),
       ),
       body: settingsAsync.when(
         data: (settings) => ListView(
@@ -23,18 +25,18 @@ class NotificationSettingsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primaryBlue.withOpacity(0.1),
+                color: AppColors.primaryBlue.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.primaryBlue.withOpacity(0.2)),
+                border: Border.all(color: AppColors.primaryBlue.withValues(alpha: 0.2)),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.shield_outlined, color: AppColors.primaryBlue),
-                  SizedBox(width: 12),
+                  const Icon(Icons.shield_outlined, color: AppColors.primaryBlue),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'All notifications run 100% offline on your device. No cloud or Firebase server required.',
-                      style: TextStyle(fontSize: 13, height: 1.4),
+                      tr('notif_offline_banner'),
+                      style: const TextStyle(fontSize: 13, height: 1.4),
                     ),
                   ),
                 ],
@@ -48,7 +50,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
             _buildToggleCard(
               context,
               isDark: isDark,
-              title: 'Budget Limit Warnings',
+              title: tr('notif_budget_warnings'),
               subtitle: 'Get notified when spending reaches 90%+ or 100% of category monthly budget limit',
               icon: Icons.pie_chart_outline,
               color: AppColors.warningAmber,
@@ -65,7 +67,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
             _buildToggleCard(
               context,
               isDark: isDark,
-              title: 'Khata Repayment Reminders',
+              title: tr('notif_khata_reminders'),
               subtitle: 'Receive scheduled alerts for borrowed and lent money due dates',
               icon: Icons.menu_book_outlined,
               color: AppColors.primaryBlue,
@@ -82,7 +84,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
             _buildToggleCard(
               context,
               isDark: isDark,
-              title: 'Savings Goal Reminders',
+              title: tr('notif_savings_reminders'),
               subtitle: 'Get reminded 3 days before a savings target date approaches',
               icon: Icons.savings_outlined,
               color: AppColors.successGreen,
@@ -133,7 +135,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
         secondary: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.12),
+            color: color.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, color: color, size: 22),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../providers/security_providers.dart';
 import '../widgets/pin_setup_modal.dart';
@@ -24,6 +25,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
   }
 
   Future<void> _verifyCurrentPinThen(VoidCallback onSuccess) async {
+    final tr = ref.read(translationsProvider);
     final controller = TextEditingController();
     String? errorText;
 
@@ -32,7 +34,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
       builder: (ctx) => StatefulBuilder(
         builder: (context, setDialogState) {
           return AlertDialog(
-            title: const Text('Enter Current PIN'),
+            title: Text(tr('sec_enter_current_pin')),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -52,7 +54,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Cancel'),
+                child: Text(tr('common_cancel')),
               ),
               ElevatedButton(
                 onPressed: () async {
@@ -66,7 +68,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                     });
                   }
                 },
-                child: const Text('Confirm'),
+                child: Text(ref.read(translationsProvider)('common_confirm')),
               ),
             ],
           );
@@ -86,7 +88,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
       await ref.read(securityProvider.notifier).removePin();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PIN protection removed.')),
+          SnackBar(content: Text(ref.read(translationsProvider)('sec_pin_removed'))),
         );
       }
     });
@@ -94,12 +96,13 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final secState = ref.watch(securityProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Security & Lock'),
+        title: Text(tr('sec_title')),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -127,7 +130,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          secState.isPinSet ? 'App Lock Enabled' : 'App Lock Disabled',
+                          secState.isPinSet ? tr('sec_status_enabled') : tr('sec_status_disabled'),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -171,24 +174,24 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                 if (!secState.isPinSet)
                   ListTile(
                     leading: const Icon(Icons.pin_rounded, color: AppColors.primaryBlue),
-                    title: const Text('Set 4-Digit PIN'),
-                    subtitle: const Text('Create a new PIN code'),
+                    title: Text(tr('sec_set_pin')),
+                    subtitle: Text(tr('sec_create_pin_sub')),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: _openSetPinModal,
                   )
                 else ...[
                   ListTile(
                     leading: const Icon(Icons.edit_rounded, color: AppColors.primaryBlue),
-                    title: const Text('Change PIN'),
+                    title: Text(tr('sec_change_pin')),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: _onChangePin,
                   ),
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.delete_outline_rounded, color: AppColors.expenseRed),
-                    title: const Text(
-                      'Remove PIN',
-                      style: TextStyle(color: AppColors.expenseRed),
+                    title: Text(
+                      tr('sec_remove_pin'),
+                      style: const TextStyle(color: AppColors.expenseRed),
                     ),
                     trailing: const Icon(Icons.chevron_right_rounded, color: AppColors.expenseRed),
                     onTap: _onRemovePin,
@@ -218,7 +221,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                 children: [
                   SwitchListTile(
                     secondary: const Icon(Icons.fingerprint_rounded, color: AppColors.primaryBlue),
-                    title: const Text('Biometric Unlock'),
+                    title: Text(tr('sec_biometrics')),
                     subtitle: Text(
                       secState.isBiometricSupported
                           ? 'Use Fingerprint or Face ID'
@@ -234,7 +237,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                   const Divider(height: 1),
                   ListTile(
                     leading: const Icon(Icons.timer_outlined, color: AppColors.primaryBlue),
-                    title: const Text('Auto-Lock Duration'),
+                    title: Text(tr('sec_auto_lock')),
                     subtitle: Text('Lock app after: ${secState.autoLockDuration}'),
                     trailing: DropdownButton<String>(
                       value: secState.autoLockDuration,

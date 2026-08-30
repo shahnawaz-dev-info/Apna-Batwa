@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/wishlist_item.dart';
@@ -88,6 +89,7 @@ class _MarkPurchasedModalState extends ConsumerState<MarkPurchasedModal> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
@@ -107,9 +109,9 @@ class _MarkPurchasedModalState extends ConsumerState<MarkPurchasedModal> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    '🎉 Mark as Purchased',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.successGreen),
+                  Text(
+                    tr('wishlist_modal_mark_purchased'),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.successGreen),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -127,10 +129,10 @@ class _MarkPurchasedModalState extends ConsumerState<MarkPurchasedModal> {
               TextFormField(
                 controller: _priceController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Actual Purchase Price (Rs.) *',
+                decoration: InputDecoration(
+                  labelText: tr('wishlist_actual_price_label'),
                   hintText: '0.00',
-                  prefixIcon: Icon(Icons.shopping_bag_outlined),
+                  prefixIcon: const Icon(Icons.shopping_bag_outlined),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter actual price';
@@ -145,9 +147,9 @@ class _MarkPurchasedModalState extends ConsumerState<MarkPurchasedModal> {
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(12),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Purchase Date *',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  decoration: InputDecoration(
+                    labelText: '${tr('purchase_date_label')} *',
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
                   ),
                   child: Text(DateFormatters.formatDate(_selectedDate)),
                 ),
@@ -170,9 +172,9 @@ class _MarkPurchasedModalState extends ConsumerState<MarkPurchasedModal> {
                           width: 20,
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : const Text(
-                          'Confirm & Log Expense',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      : Text(
+                          tr('wishlist_confirm_purchased_btn'),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),
               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/borrowed_record.dart';
@@ -437,15 +438,17 @@ class KhataDetailScreen extends ConsumerWidget {
   }
 
   void _confirmDeleteRecord(BuildContext context, WidgetRef ref) {
+    final tr = ref.read(translationsProvider);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Khata Entry'),
-        content: const Text('Are you sure you want to delete this record and all its transaction logs?'),
+        title: Text(tr('khata_delete_entry_title')),
+        content: Text(tr('khata_delete_entry_msg')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(tr('common_cancel')),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
@@ -459,7 +462,7 @@ class KhataDetailScreen extends ConsumerWidget {
               }
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text('Delete'),
+            child: Text(tr('common_delete')),
           ),
         ],
       ),
@@ -467,6 +470,8 @@ class KhataDetailScreen extends ConsumerWidget {
   }
 
   void _confirmDeleteRepayment(BuildContext context, WidgetRef ref, RepaymentEntity item) {
+    final tr = ref.read(translationsProvider);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -477,7 +482,7 @@ class KhataDetailScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(tr('common_cancel')),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
@@ -486,7 +491,7 @@ class KhataDetailScreen extends ConsumerWidget {
               final repo = ref.read(khataRepositoryProvider);
               await repo.deleteRepayment(item.id);
             },
-            child: const Text('Delete'),
+            child: Text(tr('common_delete')),
           ),
         ],
       ),

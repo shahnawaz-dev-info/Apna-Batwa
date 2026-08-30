@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/services/backup_service.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../data/local/app_database.dart';
@@ -33,22 +34,22 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   }
 
   Future<void> _handleRestoreBackup() async {
+    final tr = ref.read(translationsProvider);
+
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Restore Backup Data?'),
-        content: const Text(
-          'WARNING: Restoring a backup will erase and replace ALL current app data (income, expenses, khata, wishlist, budgets, savings goals). This cannot be undone.\n\nAre you sure you want to continue?',
-        ),
+        title: Text(tr('backup_restore_dialog_title')),
+        content: Text(tr('backup_restore_dialog_msg')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(tr('common_cancel')),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.expenseRed),
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Erase & Restore', style: TextStyle(color: Colors.white)),
+            child: Text(tr('backup_erase_confirm_btn'), style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -70,7 +71,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('OK'),
+              child: Text(tr('common_ok')),
             ),
           ],
         ),
@@ -80,20 +81,21 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Backup & Restore'),
+        title: Text(tr('backup_title')),
       ),
       body: _isLoading
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Processing backup operation...'),
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(tr('backup_processing')),
                 ],
               ),
             )
@@ -122,9 +124,9 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Offline Data Portability',
-                                style: TextStyle(
+                              Text(
+                                tr('backup_header_title'),
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -154,13 +156,13 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.upload_file_rounded, color: AppColors.successGreen),
-                            SizedBox(width: 10),
+                            const Icon(Icons.upload_file_rounded, color: AppColors.successGreen),
+                            const SizedBox(width: 10),
                             Text(
-                              'Create Backup',
-                              style: TextStyle(
+                              tr('backup_create_title'),
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -185,7 +187,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             icon: const Icon(Icons.share_rounded),
-                            label: const Text('Export & Share Backup'),
+                            label: Text(tr('backup_create_btn')),
                             onPressed: _handleCreateBackup,
                           ),
                         ),
@@ -203,13 +205,13 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                        Row(
                           children: [
-                            Icon(Icons.download_for_offline_rounded, color: AppColors.warningAmber),
-                            SizedBox(width: 10),
+                            const Icon(Icons.download_for_offline_rounded, color: AppColors.warningAmber),
+                            const SizedBox(width: 10),
                             Text(
-                              'Restore Backup',
-                              style: TextStyle(
+                              tr('backup_restore_title'),
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -234,7 +236,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                             icon: const Icon(Icons.file_open_outlined),
-                            label: const Text('Restore from Backup File'),
+                            label: Text(tr('backup_restore_btn')),
                             onPressed: _handleRestoreBackup,
                           ),
                         ),

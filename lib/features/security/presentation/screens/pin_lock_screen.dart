@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../providers/security_providers.dart';
 
@@ -60,17 +61,17 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
   }
 
   void _showForgotPinDialog() {
+    final tr = ref.read(translationsProvider);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Reset Security PIN?'),
-        content: const Text(
-          'Apna Batwa is a 100% offline personal app. If you have forgotten your PIN, resetting it will remove the PIN lock so you can access your finances.\n\nDo you wish to remove the PIN lock?',
-        ),
+        title: Text(tr('pin_reset_title')),
+        content: Text(tr('pin_reset_msg')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(tr('common_cancel')),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
@@ -79,11 +80,11 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
               await ref.read(securityProvider.notifier).removePin();
               if (mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('PIN lock has been removed.')),
+                  SnackBar(content: Text(tr('pin_removed_snackbar'))),
                 );
               }
             },
-            child: const Text('Reset PIN & Unlock'),
+            child: Text(tr('pin_reset_unlock_btn')),
           ),
         ],
       ),
@@ -92,6 +93,7 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final secState = ref.watch(securityProvider);
 
@@ -128,7 +130,7 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter your 4-digit PIN',
+                tr('sec_enter_pin_prompt'),
                 style: TextStyle(
                   fontSize: 15,
                   color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -224,7 +226,7 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
               TextButton(
                 onPressed: _showForgotPinDialog,
                 child: Text(
-                  'Forgot PIN?',
+                  tr('sec_forgot_pin'),
                   style: TextStyle(
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
                     fontSize: 14,

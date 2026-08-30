@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/providers/theme_providers.dart';
 import '../../../../core/theme/colors.dart';
@@ -61,9 +63,59 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     } catch (_) {}
   }
 
+  void _showLanguageDialog(BuildContext context, WidgetRef ref, AppLanguage currentLang, String Function(String) tr) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                tr('more_app_language'),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.translate, color: AppColors.primaryBlue),
+                title: Text(tr('more_lang_english'), style: const TextStyle(fontWeight: FontWeight.w600)),
+                trailing: currentLang == AppLanguage.english
+                    ? const Icon(Icons.check_circle, color: AppColors.primaryBlue)
+                    : null,
+                onTap: () {
+                  ref.read(appLanguageProvider.notifier).setLanguage(AppLanguage.english);
+                  Navigator.pop(ctx);
+                },
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.text_fields, color: AppColors.primaryBlue),
+                title: Text(tr('more_lang_roman_urdu'), style: const TextStyle(fontWeight: FontWeight.w600)),
+                trailing: currentLang == AppLanguage.romanUrdu
+                    ? const Icon(Icons.check_circle, color: AppColors.primaryBlue)
+                    : null,
+                onTap: () {
+                  ref.read(appLanguageProvider.notifier).setLanguage(AppLanguage.romanUrdu);
+                  Navigator.pop(ctx);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
+
     final currentBalanceCents = ref.watch(currentBalanceCentsProvider);
     final totalIncomeCents = ref.watch(totalIncomeCentsProvider);
     final totalExpensesCents = ref.watch(totalExpensesCentsProvider);
@@ -84,12 +136,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         final shouldExit = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Exit Apna Batwa?'),
-            content: const Text('Are you sure you want to close the application?'),
+            title: Text(tr('dashboard_exit_title')),
+            content: Text(tr('dashboard_exit_message')),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
+                child: Text(tr('common_cancel')),
               ),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(true),
@@ -97,7 +149,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   backgroundColor: AppColors.expenseRed,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Exit'),
+                child: Text(tr('dashboard_exit_button')),
               ),
             ],
           ),
@@ -127,16 +179,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
               const SizedBox(width: 12),
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Apna Batwa',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    tr('app_name'),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    'Student Personal Finance',
-                    style: TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
+                    tr('app_tagline'),
+                    style: const TextStyle(fontSize: 11, color: AppColors.textSecondaryLight),
                   ),
                 ],
               ),
@@ -145,10 +197,21 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           actions: [
             IconButton(
               icon: Icon(
+                Icons.language_outlined,
+                color: isDark ? Colors.white : AppColors.primaryBlue,
+              ),
+              tooltip: tr('more_app_language'),
+              onPressed: () {
+                final currentLang = ref.read(appLanguageProvider);
+                _showLanguageDialog(context, ref, currentLang, tr);
+              },
+            ),
+            IconButton(
+              icon: Icon(
                 isDark ? Icons.wb_sunny_outlined : Icons.dark_mode_outlined,
                 color: isDark ? Colors.amber : AppColors.primaryBlue,
               ),
-              tooltip: 'Toggle Light/Dark Theme',
+              tooltip: tr('dashboard_tooltip_theme'),
               onPressed: () {
                 ref.read(themeModeProvider.notifier).toggleTheme(context);
               },
@@ -186,18 +249,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Total Balance',
-                          style: TextStyle(
+                          tr('dashboard_total_balance'),
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        Icon(Icons.shield_outlined, color: Colors.white70, size: 18),
+                        const Icon(Icons.shield_outlined, color: Colors.white70, size: 18),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -227,7 +290,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             onPressed: () => AddIncomeModal.show(context),
                             icon: const Icon(Icons.add_circle, size: 18),
-                            label: const Text('Money In', style: TextStyle(fontWeight: FontWeight.bold)),
+                            label: Text(tr('dashboard_money_in'), style: const TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -244,7 +307,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             ),
                             onPressed: () => AddExpenseModal.show(context),
                             icon: const Icon(Icons.remove_circle, size: 18),
-                            label: const Text('Expense', style: TextStyle(fontWeight: FontWeight.bold)),
+                            label: Text(tr('dashboard_expense'), style: const TextStyle(fontWeight: FontWeight.bold)),
                           ),
                         ),
                       ],
@@ -262,7 +325,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _buildSummaryCard(
                       context,
-                      title: 'Money In',
+                      title: tr('dashboard_money_in'),
                       amount: CurrencyFormatter.formatCents(totalIncomeCents),
                       icon: Icons.arrow_downward_rounded,
                       color: AppColors.successGreen,
@@ -277,7 +340,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _buildSummaryCard(
                       context,
-                      title: 'Total Expenses',
+                      title: tr('dashboard_total_expenses'),
                       amount: CurrencyFormatter.formatCents(totalExpensesCents),
                       icon: Icons.arrow_upward_rounded,
                       color: AppColors.expenseRed,
@@ -298,7 +361,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _buildSummaryCard(
                       context,
-                      title: 'You Owe',
+                      title: tr('dashboard_you_owe'),
                       amount: CurrencyFormatter.formatCents(totalYouOweCents),
                       icon: Icons.handshake_outlined,
                       color: AppColors.expenseRed,
@@ -313,7 +376,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _buildSummaryCard(
                       context,
-                      title: 'Others Owe You',
+                      title: tr('dashboard_others_owe_you'),
                       amount: CurrencyFormatter.formatCents(totalOthersOweYouCents),
                       icon: Icons.account_balance_outlined,
                       color: AppColors.successGreen,
@@ -333,7 +396,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   Expanded(
                     child: _buildSummaryCard(
                       context,
-                      title: 'Active Savings Set Aside',
+                      title: tr('dashboard_active_savings'),
                       amount: CurrencyFormatter.formatCents(totalActiveSavingsCents),
                       icon: Icons.savings_outlined,
                       color: AppColors.primaryBlue,
@@ -355,7 +418,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Recent Transactions',
+                    tr('dashboard_recent_transactions'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -363,7 +426,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                     ),
                   ),
                   Text(
-                    'Latest 10',
+                    tr('dashboard_latest_10'),
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -395,7 +458,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'No transactions recorded yet',
+                        tr('dashboard_no_transactions'),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -404,7 +467,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'Tap "+ Money In" or "− Expense" to start tracking.',
+                        tr('dashboard_no_transactions_sub'),
                         style: TextStyle(
                           fontSize: 13,
                           color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

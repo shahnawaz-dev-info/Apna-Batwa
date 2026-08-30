@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
@@ -53,6 +55,7 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
     final categoriesAsync = ref.watch(watchCategoriesProvider);
 
     return Container(
@@ -74,26 +77,26 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Filter Transactions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(tr('filter_title'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 TextButton(
                   onPressed: () {
                     ref.read(transactionFilterProvider.notifier).clearAll();
                     Navigator.pop(context);
                   },
-                  child: const Text('Reset All', style: TextStyle(color: AppColors.expenseRed)),
+                  child: Text(tr('filter_reset_all'), style: const TextStyle(color: AppColors.expenseRed)),
                 ),
               ],
             ),
             const SizedBox(height: 16),
 
             // Type Filter
-            const Text('Transaction Type', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(tr('filter_type'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             const SizedBox(height: 8),
             SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'all', label: Text('All')),
-                ButtonSegment(value: 'income', label: Text('Income Only')),
-                ButtonSegment(value: 'expense', label: Text('Expense Only')),
+              segments: [
+                ButtonSegment(value: 'all', label: Text(tr('filter_type_all'))),
+                ButtonSegment(value: 'income', label: Text(tr('filter_type_income'))),
+                ButtonSegment(value: 'expense', label: Text(tr('filter_type_expense'))),
               ],
               selected: {_typeFilter},
               onSelectionChanged: (val) => setState(() => _typeFilter = val.first),
@@ -101,7 +104,7 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
             const SizedBox(height: 20),
 
             // Category Multi-select Filter
-            const Text('Categories', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(tr('filter_categories'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             const SizedBox(height: 8),
             categoriesAsync.when(
               data: (cats) {
@@ -113,8 +116,8 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
                     final isSelected = _selectedCategories.contains(catName);
                     return FilterChip(
                       selected: isSelected,
-                      label: Text(catName),
-                      selectedColor: AppColors.primaryBlue.withOpacity(0.2),
+                      label: Text(AppTranslations.translateCategory(catName, ref.watch(appLanguageProvider))),
+                      selectedColor: AppColors.primaryBlue.withValues(alpha: 0.2),
                       checkmarkColor: AppColors.primaryBlue,
                       onSelected: (val) {
                         setState(() {
@@ -135,7 +138,7 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
             const SizedBox(height: 20),
 
             // Date Range Filter
-            const Text('Date Range', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(tr('filter_date_range'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             const SizedBox(height: 8),
             InkWell(
               onTap: () async {
@@ -164,14 +167,14 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
                 child: Text(
                   _dateRange != null
                       ? '${DateFormatters.formatDate(_dateRange!.start)} – ${DateFormatters.formatDate(_dateRange!.end)}'
-                      : 'Select Date Range',
+                      : tr('filter_select_date_range'),
                 ),
               ),
             ),
             const SizedBox(height: 20),
 
             // Amount Range Filter
-            const Text('Amount Range (Rs.)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(tr('filter_amount_range'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -179,10 +182,10 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
                   child: TextField(
                     controller: _minAmountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Min Amount',
+                    decoration: InputDecoration(
+                      labelText: tr('filter_min_amount'),
                       prefixText: 'Rs. ',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -191,10 +194,10 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
                   child: TextField(
                     controller: _maxAmountController,
                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Max Amount',
+                    decoration: InputDecoration(
+                      labelText: tr('filter_max_amount'),
                       prefixText: 'Rs. ',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -237,7 +240,7 @@ class _TransactionFilterModalState extends ConsumerState<TransactionFilterModal>
 
                   Navigator.pop(context);
                 },
-                child: const Text('Apply Filters', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(tr('filter_apply'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
           ],

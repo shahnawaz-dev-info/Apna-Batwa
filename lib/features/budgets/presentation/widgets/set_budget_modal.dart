@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../domain/entities/budget.dart';
@@ -83,6 +85,7 @@ class _SetBudgetModalState extends ConsumerState<SetBudgetModal> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final categoriesAsync = ref.watch(watchCategoriesProvider);
     final selectedMonthYear = ref.watch(selectedBudgetMonthYearProvider);
@@ -105,7 +108,7 @@ class _SetBudgetModalState extends ConsumerState<SetBudgetModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.existingBudget != null ? 'Edit Budget' : 'Set Category Budget',
+                    widget.existingBudget != null ? tr('budget_modal_edit_title') : tr('budget_modal_set_title'),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
@@ -122,12 +125,15 @@ class _SetBudgetModalState extends ConsumerState<SetBudgetModal> {
                   final catNames = cats.map((c) => c.name).toList();
                   return DropdownButtonFormField<String>(
                     value: catNames.contains(_selectedCategory) ? _selectedCategory : null,
-                    decoration: const InputDecoration(
-                      labelText: 'Category *',
-                      prefixIcon: Icon(Icons.category_outlined),
+                    decoration: InputDecoration(
+                      labelText: '${tr('expense_category_label')} *',
+                      prefixIcon: const Icon(Icons.category_outlined),
                     ),
                     items: catNames.map((name) {
-                      return DropdownMenuItem<String>(value: name, child: Text(name));
+                      return DropdownMenuItem<String>(
+                        value: name,
+                        child: Text(AppTranslations.translateCategory(name, ref.watch(appLanguageProvider))),
+                      );
                     }).toList(),
                     onChanged: (val) => setState(() => _selectedCategory = val),
                     validator: (val) {
@@ -141,7 +147,7 @@ class _SetBudgetModalState extends ConsumerState<SetBudgetModal> {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (_, __) => TextFormField(
                   controller: _customCategoryController,
-                  decoration: const InputDecoration(labelText: 'Category Name *', prefixIcon: Icon(Icons.category_outlined)),
+                  decoration: InputDecoration(labelText: '${tr('expense_category_label')} *', prefixIcon: const Icon(Icons.category_outlined)),
                   validator: (val) => val == null || val.trim().isEmpty ? 'Enter category' : null,
                 ),
               ),
@@ -150,10 +156,10 @@ class _SetBudgetModalState extends ConsumerState<SetBudgetModal> {
               TextFormField(
                 controller: _limitController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Monthly Limit (Rs.) *',
+                decoration: InputDecoration(
+                  labelText: tr('budget_monthly_limit_label'),
                   hintText: '0.00',
-                  prefixIcon: Icon(Icons.account_balance_outlined),
+                  prefixIcon: const Icon(Icons.account_balance_outlined),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter monthly limit';
@@ -181,7 +187,7 @@ class _SetBudgetModalState extends ConsumerState<SetBudgetModal> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
-                          'Set Budget for ${selectedMonthYear.month}/${selectedMonthYear.year}',
+                          '${tr('budget_set_button')} (${selectedMonthYear.month}/${selectedMonthYear.year})',
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

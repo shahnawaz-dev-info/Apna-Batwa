@@ -1,6 +1,8 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/services/pdf_export_service.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
@@ -25,7 +27,9 @@ class ReportsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
     final activeDateRange = ref.watch(analyticsDateRangeProvider);
+    final lang = ref.watch(appLanguageProvider);
 
     final spendingTrends = ref.watch(spendingTrendsProvider);
     final categoryInsight = ref.watch(categoryInsightsProvider);
@@ -41,11 +45,11 @@ class ReportsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reports & Analytics'),
+        title: Text(tr('reports_title')),
         actions: [
           IconButton(
             icon: const Icon(Icons.picture_as_pdf_outlined),
-            tooltip: 'Export PDF Report',
+            tooltip: tr('reports_export_tooltip'),
             onPressed: () async {
               final summaryData = khataSummary.maybeWhen(
                 data: (d) => d,
@@ -69,7 +73,7 @@ class ReportsScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // FEATURE 7: Custom Date Range Selector Bar
+            // Custom Date Range Selector Bar
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -80,7 +84,7 @@ class ReportsScreen extends ConsumerWidget {
                       padding: const EdgeInsets.only(right: 8),
                       child: ChoiceChip(
                         selected: isSelected,
-                        label: Text(type.label),
+                        label: Text(tr(type.getTranslationKey())),
                         selectedColor: AppColors.primaryBlue.withOpacity(0.2),
                         labelStyle: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -163,7 +167,7 @@ class ReportsScreen extends ConsumerWidget {
             ],
             const SizedBox(height: 20),
 
-            // FEATURE 6: Predictive Insight Banner
+            // Predictive Insight Banner
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -193,9 +197,9 @@ class ReportsScreen extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'PREDICTIVE INSIGHT (MOVING AVG)',
-                          style: TextStyle(
+                        Text(
+                          tr('reports_predictive_title'),
+                          style: const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primaryBlue,
@@ -219,12 +223,12 @@ class ReportsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // FEATURE 5: Savings Rate Section
+            // Savings Rate Section
             _buildSectionCard(
               context,
               isDark: isDark,
-              title: 'Savings Rate',
-              subtitle: 'Percentage of income saved for ${activeDateRange.type.label}',
+              title: tr('reports_savings_rate_title'),
+              subtitle: '${tr("reports_savings_rate_sub")} ${tr(activeDateRange.type.getTranslationKey())}',
               child: Column(
                 children: [
                   Row(
@@ -286,16 +290,15 @@ class ReportsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // FEATURE 1: Spending Trends (6-Month Monthly Comparison)
+            // Spending Trends
             _buildSectionCard(
               context,
               isDark: isDark,
-              title: 'Spending Trends (Monthly Comparison)',
-              subtitle: 'Expense history over last 6 months',
+              title: tr('reports_spending_trends_title'),
+              subtitle: tr('reports_spending_trends_sub'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Callout badge
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -377,18 +380,17 @@ class ReportsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // FEATURE 2: Category Breakdown Insights
+            // Category Breakdown Insights
             _buildSectionCard(
               context,
               isDark: isDark,
-              title: 'Category Breakdown Insights',
-              subtitle: 'Expense distribution for ${activeDateRange.type.label}',
+              title: tr('reports_category_breakdown_title'),
+              subtitle: 'Expense distribution for ${tr(activeDateRange.type.getTranslationKey())}',
               child: categoryInsight.items.isEmpty
-                  ? _buildEmptyState(isDark, 'No expense data available for this period.')
+                  ? _buildEmptyState(isDark, tr('reports_no_expense_data'))
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Auto-written insight banner
                         Container(
                           width: double.infinity,
                           padding: const EdgeInsets.all(12),
@@ -457,7 +459,7 @@ class ReportsScreen extends ConsumerWidget {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    item.categoryName,
+                                    AppTranslations.translateCategory(item.categoryName, lang),
                                     style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -483,12 +485,12 @@ class ReportsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // FEATURE 3: Income vs Expense Pattern (by day of week)
+            // Weekday Pattern
             _buildSectionCard(
               context,
               isDark: isDark,
-              title: 'Spending Pattern by Day of Week',
-              subtitle: 'Daily expense volume analysis',
+              title: tr('reports_weekday_pattern_title'),
+              subtitle: tr('reports_weekday_pattern_sub'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -528,13 +530,12 @@ class ReportsScreen extends ConsumerWidget {
                             sideTitles: SideTitles(
                               showTitles: true,
                               getTitlesWidget: (val, meta) {
-                                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
                                 final index = val.toInt();
                                 if (index >= 0 && index < 7) {
                                   return Padding(
                                     padding: const EdgeInsets.only(top: 6),
                                     child: Text(
-                                      days[index],
+                                      AppTranslations.translateWeekdayShort(index, lang),
                                       style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                                     ),
                                   );
@@ -569,12 +570,12 @@ class ReportsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 20),
 
-            // FEATURE 4: Khata Insights Summary
+            // Khata Insights Summary
             _buildSectionCard(
               context,
               isDark: isDark,
-              title: 'Khata Insights Summary',
-              subtitle: 'Overall borrowing, lending, and contact activity',
+              title: tr('reports_khata_analytics_title'),
+              subtitle: tr('reports_khata_analytics_sub'),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -590,7 +591,7 @@ class ReportsScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Total Borrowed', style: TextStyle(fontSize: 11, color: AppColors.expenseRed)),
+                              Text(tr('khata_total_you_owe'), style: const TextStyle(fontSize: 11, color: AppColors.expenseRed)),
                               const SizedBox(height: 4),
                               Text(
                                 CurrencyFormatter.formatCents(khataAnalytics.totalBorrowedCents),
@@ -598,7 +599,7 @@ class ReportsScreen extends ConsumerWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Repaid: ${CurrencyFormatter.formatCents(khataAnalytics.totalRepaidCents)}',
+                                '${tr("khata_paid")}: ${CurrencyFormatter.formatCents(khataAnalytics.totalRepaidCents)}',
                                 style: TextStyle(fontSize: 11, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
                               ),
                             ],
@@ -616,7 +617,7 @@ class ReportsScreen extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Total Lent', style: TextStyle(fontSize: 11, color: AppColors.successGreen)),
+                              Text(tr('khata_total_others_owe'), style: const TextStyle(fontSize: 11, color: AppColors.successGreen)),
                               const SizedBox(height: 4),
                               Text(
                                 CurrencyFormatter.formatCents(khataAnalytics.totalLentCents),
@@ -643,7 +644,7 @@ class ReportsScreen extends ConsumerWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Net Khata Position', style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(tr('reports_net_khata_pos'), style: const TextStyle(fontWeight: FontWeight.bold)),
                         Text(
                           '${khataAnalytics.netPositionCents >= 0 ? "+" : ""}${CurrencyFormatter.formatCents(khataAnalytics.netPositionCents)}',
                           style: TextStyle(

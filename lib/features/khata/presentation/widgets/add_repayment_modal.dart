@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../providers/khata_providers.dart';
@@ -72,7 +73,7 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(String Function(String) tr) async {
     if (!_formKey.currentState!.validate()) return;
 
     final doubleAmount = double.parse(_amountController.text.trim());
@@ -88,7 +89,6 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
         final repaymentOnCurrent = currentRemaining > 0 ? currentRemaining : 0;
         final overageCents = amountCents - repaymentOnCurrent;
 
-        // Log remaining balance payoff on current record if needed
         if (repaymentOnCurrent > 0) {
           await repo.addRepayment(
             recordType: widget.recordType,
@@ -99,7 +99,6 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
           );
         }
 
-        // Move excess overage amount to opposite ledger side for the person
         if (widget.recordType == 'borrowed') {
           await repo.addLentRecord(
             personId: widget.personId,
@@ -146,7 +145,7 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error adding repayment: $e'),
+          content: Text('${tr("common_error")}: $e'),
           backgroundColor: AppColors.expenseRed,
         ),
       );
@@ -158,8 +157,9 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
     final isBorrowed = widget.recordType == 'borrowed';
-    final actionTitle = isBorrowed ? 'Log Payment (Money Returned)' : 'Log Receipt (Money Received)';
+    final actionTitle = isBorrowed ? tr('khata_log_repayment_borrowed') : tr('khata_log_repayment_lent');
     final primaryColor = isBorrowed ? AppColors.successGreen : AppColors.primaryBlue;
 
     return Padding(
@@ -208,9 +208,9 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Current Remaining Balance:',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                    Text(
+                      tr('khata_current_remaining_balance'),
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                     ),
                     Text(
                       CurrencyFormatter.formatCents(widget.remainingCents),
@@ -230,7 +230,7 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
-                  labelText: 'Repayment Amount (Rs.) *',
+                  labelText: tr('khata_repayment_amount_label'),
                   hintText: '0.00',
                   prefixIcon: const Icon(Icons.payments_outlined),
                   suffixIcon: widget.remainingCents > 0
@@ -238,7 +238,7 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
                           onPressed: () {
                             _amountController.text = (widget.remainingCents / 100).toStringAsFixed(2);
                           },
-                          child: const Text('Pay Full'),
+                          child: Text(tr('khata_pay_full')),
                         )
                       : null,
                 ),
@@ -256,9 +256,9 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(12),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Date *',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  decoration: InputDecoration(
+                    labelText: tr('khata_date_label'),
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
                   ),
                   child: Text(DateFormatters.formatDate(_selectedDate)),
                 ),
@@ -268,10 +268,10 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
               // Note
               TextFormField(
                 controller: _noteController,
-                decoration: const InputDecoration(
-                  labelText: 'Note (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('khata_note_label'),
                   hintText: 'e.g. Cash payment, Google Pay',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
+                  prefixIcon: const Icon(Icons.note_alt_outlined),
                 ),
               ),
               const SizedBox(height: 24),
@@ -287,16 +287,16 @@ class _AddRepaymentModalState extends ConsumerState<AddRepaymentModal> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: _isSaving ? null : _submit,
+                  onPressed: _isSaving ? null : () => _submit(tr),
                   child: _isSaving
                       ? const SizedBox(
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : const Text(
-                          'Save Repayment',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      : Text(
+                          tr('khata_save_repayment'),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),
               ),

@@ -1,42 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../main_shell.dart';
 
-class OnboardingScreen extends StatefulWidget {
+class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
-
-  final List<OnboardingItem> _items = const [
-    OnboardingItem(
-      icon: Icons.account_balance_wallet_outlined,
-      title: 'Track Your Money',
-      description: 'Keep track of all your income, expenses, and current net balance effortlessly in one place.',
-    ),
-    OnboardingItem(
-      icon: Icons.menu_book_outlined,
-      title: 'Never Forget a Loan',
-      description: 'Manage Khata records seamlessly — know exactly who owes you and who you owe with WhatsApp reminders.',
-    ),
-    OnboardingItem(
-      icon: Icons.savings_outlined,
-      title: 'Save For Your Goals',
-      description: 'Set monthly category budgets and build custom savings goals to stay in full control of your finance.',
-    ),
-    OnboardingItem(
-      icon: Icons.security_outlined,
-      title: '100% Offline & Private',
-      description: 'No internet required, no login accounts, and zero cloud tracking. Your financial data stays strictly on your device.',
-    ),
-  ];
 
   Future<void> _completeOnboarding() async {
     try {
@@ -55,8 +34,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isLastPage = _currentIndex == _items.length - 1;
+
+    final items = [
+      OnboardingItem(
+        icon: Icons.account_balance_wallet_outlined,
+        title: tr('onboarding_p1_title'),
+        description: tr('onboarding_p1_desc'),
+      ),
+      OnboardingItem(
+        icon: Icons.menu_book_outlined,
+        title: tr('onboarding_p2_title'),
+        description: tr('onboarding_p2_desc'),
+      ),
+      OnboardingItem(
+        icon: Icons.savings_outlined,
+        title: tr('onboarding_p3_title'),
+        description: tr('onboarding_p3_desc'),
+      ),
+      OnboardingItem(
+        icon: Icons.security_outlined,
+        title: tr('onboarding_p4_title'),
+        description: tr('onboarding_p4_desc'),
+      ),
+    ];
+
+    final isLastPage = _currentIndex == items.length - 1;
 
     return Scaffold(
       body: SafeArea(
@@ -72,7 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     TextButton(
                       onPressed: _completeOnboarding,
                       child: Text(
-                        'Skip',
+                        tr('onboarding_skip'),
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.bold,
@@ -90,14 +94,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
-                itemCount: _items.length,
+                itemCount: items.length,
                 onPageChanged: (index) {
                   setState(() {
                     _currentIndex = index;
                   });
                 },
                 itemBuilder: (context, index) {
-                  final item = _items[index];
+                  final item = items[index];
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
@@ -106,7 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Container(
                           padding: const EdgeInsets.all(28),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryBlue.withOpacity(0.12),
+                            color: AppColors.primaryBlue.withValues(alpha: 0.12),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -151,7 +155,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   // Page Indicators
                   Row(
                     children: List.generate(
-                      _items.length,
+                      items.length,
                       (index) => AnimatedContainer(
                         duration: const Duration(milliseconds: 250),
                         margin: const EdgeInsets.only(right: 6),
@@ -188,7 +192,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ),
                     ),
                     child: Text(
-                      isLastPage ? 'Get Started 🚀' : 'Next',
+                      isLastPage ? tr('onboarding_get_started') : tr('onboarding_next'),
                       style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
                   ),

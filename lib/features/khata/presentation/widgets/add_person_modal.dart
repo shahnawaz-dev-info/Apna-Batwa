@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../providers/khata_providers.dart';
 import '../../domain/entities/person.dart';
@@ -47,14 +48,13 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(String Function(String) tr) async {
     if (!_formKey.currentState!.validate()) return;
 
     final name = _nameController.text.trim();
     final phone = _phoneController.text.trim();
     final note = _noteController.text.trim();
 
-    // Check duplicate name case-insensitive
     final repo = ref.read(khataRepositoryProvider);
     final existingList = await repo.getAllPersons();
     final isDuplicate = existingList.any(
@@ -107,7 +107,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error saving person: $e'),
+          content: Text('${tr("common_error")}: $e'),
           backgroundColor: AppColors.expenseRed,
         ),
       );
@@ -119,6 +119,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
 
     return Padding(
       padding: EdgeInsets.only(
@@ -140,7 +141,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    widget.existingPerson == null ? 'Add New Person' : 'Edit Person',
+                    widget.existingPerson == null ? tr('khata_add_person_title') : tr('khata_edit_person_title'),
                     style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
@@ -154,10 +155,10 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
                 controller: _nameController,
                 autofocus: true,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Person Name *',
+                decoration: InputDecoration(
+                  labelText: tr('khata_person_name_label'),
                   hintText: 'e.g. Ali, Ahmed, Roommate',
-                  prefixIcon: Icon(Icons.person_outline),
+                  prefixIcon: const Icon(Icons.person_outline),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) {
@@ -170,19 +171,19 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
               TextFormField(
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('khata_phone_label'),
                   hintText: 'e.g. 03001234567 or +923001234567',
-                  prefixIcon: Icon(Icons.phone_outlined),
+                  prefixIcon: const Icon(Icons.phone_outlined),
                 ),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _noteController,
-                decoration: const InputDecoration(
-                  labelText: 'Note (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('khata_note_label'),
                   hintText: 'e.g. Cousin, Hostel Room 204',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
+                  prefixIcon: const Icon(Icons.note_alt_outlined),
                 ),
               ),
               const SizedBox(height: 24),
@@ -197,7 +198,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: _isSaving ? null : _submit,
+                  onPressed: _isSaving ? null : () => _submit(tr),
                   child: _isSaving
                       ? const SizedBox(
                           height: 20,
@@ -205,7 +206,7 @@ class _AddPersonModalState extends ConsumerState<AddPersonModal> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
-                          widget.existingPerson == null ? 'Save Person' : 'Update Person',
+                          widget.existingPerson == null ? tr('khata_save_person') : tr('khata_update_person'),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

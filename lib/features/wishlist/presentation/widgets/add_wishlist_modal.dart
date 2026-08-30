@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../domain/entities/wishlist_item.dart';
 import '../providers/wishlist_providers.dart';
@@ -52,7 +53,7 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(String Function(String) tr) async {
     if (!_formKey.currentState!.validate()) return;
 
     final name = _nameController.text.trim();
@@ -92,7 +93,7 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving wishlist item: $e'), backgroundColor: AppColors.expenseRed),
+        SnackBar(content: Text('${tr("common_error")}: $e'), backgroundColor: AppColors.expenseRed),
       );
     } finally {
       if (mounted) setState(() => _isSaving = false);
@@ -102,6 +103,7 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
     final isEditing = widget.existingItem != null;
 
     return Padding(
@@ -122,7 +124,7 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEditing ? 'Edit Wishlist Item' : '+ Add to Wishlist',
+                    isEditing ? tr('wishlist_edit_modal_title') : tr('wishlist_add_modal_title'),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
@@ -134,10 +136,10 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Item Name *',
+                decoration: InputDecoration(
+                  labelText: tr('wishlist_item_name_label'),
                   hintText: 'e.g. Wireless Earbuds, Books',
-                  prefixIcon: Icon(Icons.favorite_outline),
+                  prefixIcon: const Icon(Icons.favorite_outline),
                 ),
                 validator: (val) => val == null || val.trim().isEmpty ? 'Enter item name' : null,
               ),
@@ -145,10 +147,10 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
               TextFormField(
                 controller: _priceController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Estimated Price (Rs.) *',
+                decoration: InputDecoration(
+                  labelText: tr('wishlist_est_price_label'),
                   hintText: '0.00',
-                  prefixIcon: Icon(Icons.payments_outlined),
+                  prefixIcon: const Icon(Icons.attach_money),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter estimated price';
@@ -160,61 +162,36 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
               const SizedBox(height: 14),
               TextFormField(
                 controller: _categoryController,
-                decoration: const InputDecoration(
-                  labelText: 'Category *',
-                  hintText: 'e.g. Tech, Electronics, Books, Clothes',
-                  prefixIcon: Icon(Icons.category_outlined),
+                decoration: InputDecoration(
+                  labelText: tr('wishlist_category_label'),
+                  hintText: 'e.g. Electronics, Books, Fashion',
+                  prefixIcon: const Icon(Icons.category_outlined),
                 ),
-                validator: (val) => val == null || val.trim().isEmpty ? 'Enter category' : null,
               ),
-              const SizedBox(height: 16),
-              const Text('Priority Level *', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
-              const SizedBox(height: 8),
-              Row(
-                children: WishlistPriority.values.map((priority) {
-                  final isSelected = _selectedPriority == priority;
-                  Color priorityColor;
-                  switch (priority) {
-                    case WishlistPriority.high:
-                      priorityColor = AppColors.expenseRed;
-                      break;
-                    case WishlistPriority.medium:
-                      priorityColor = AppColors.warningAmber;
-                      break;
-                    case WishlistPriority.low:
-                      priorityColor = AppColors.primaryBlue;
-                      break;
-                  }
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: ChoiceChip(
-                        label: Text(
-                          priority.name.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: isSelected ? Colors.white : priorityColor,
-                          ),
-                        ),
-                        selected: isSelected,
-                        selectedColor: priorityColor,
-                        backgroundColor: priorityColor.withOpacity(0.12),
-                        onSelected: (selected) {
-                          if (selected) setState(() => _selectedPriority = priority);
-                        },
-                      ),
-                    ),
-                  );
+              const SizedBox(height: 14),
+              DropdownButtonFormField<WishlistPriority>(
+                value: _selectedPriority,
+                decoration: InputDecoration(
+                  labelText: tr('wishlist_priority_label'),
+                  prefixIcon: const Icon(Icons.flag_outlined),
+                ),
+                items: WishlistPriority.values.map((p) {
+                  String label = tr('wishlist_priority_medium');
+                  if (p == WishlistPriority.high) label = tr('wishlist_priority_high');
+                  if (p == WishlistPriority.low) label = tr('wishlist_priority_low');
+                  return DropdownMenuItem(value: p, child: Text(label));
                 }).toList(),
+                onChanged: (val) {
+                  if (val != null) setState(() => _selectedPriority = val);
+                },
               ),
               const SizedBox(height: 14),
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Notes (Optional)',
-                  hintText: 'Link, brand, or store details',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
+                decoration: InputDecoration(
+                  labelText: tr('wishlist_notes_label'),
+                  hintText: 'e.g. Wait for sale, link to store',
+                  prefixIcon: const Icon(Icons.note_alt_outlined),
                 ),
               ),
               const SizedBox(height: 24),
@@ -227,15 +204,11 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  onPressed: _isSaving ? null : _submit,
+                  onPressed: _isSaving ? null : () => _submit(tr),
                   child: _isSaving
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                        )
+                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                       : Text(
-                          isEditing ? 'Save Changes' : 'Add to Wishlist',
+                          isEditing ? tr('wishlist_update_item') : tr('wishlist_save_item'),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/id_generator.dart';
@@ -163,6 +165,7 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEdit = widget.existingEntry != null;
 
@@ -188,7 +191,7 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEdit ? 'Edit Income' : 'Add Money In (Income)',
+                    isEdit ? tr('income_modal_edit_title') : tr('income_modal_add_title'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -204,17 +207,17 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
                             final confirmed = await showDialog<bool>(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                title: const Text('Delete Income Entry'),
-                                content: const Text('Are you sure you want to delete this income entry?'),
+                                title: Text(tr('income_delete_title')),
+                                content: Text(tr('income_delete_msg')),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(ctx, false),
-                                    child: const Text('Cancel'),
+                                    child: Text(tr('common_cancel')),
                                   ),
                                   TextButton(
                                     style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
                                     onPressed: () => Navigator.pop(ctx, true),
-                                    child: const Text('Delete'),
+                                    child: Text(tr('common_delete')),
                                   ),
                                 ],
                               ),
@@ -238,8 +241,8 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Amount (PKR)',
+                decoration: InputDecoration(
+                  labelText: tr('income_amount_label'),
                   hintText: 'e.g. 5000',
                   prefixText: 'Rs. ',
                 ),
@@ -258,9 +261,9 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
               // Source dropdown
               DropdownButtonFormField<String>(
                 value: _selectedSource,
-                decoration: const InputDecoration(labelText: 'Income Source'),
+                decoration: InputDecoration(labelText: tr('income_source_label')),
                 items: AppConstants.incomeSources
-                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .map((s) => DropdownMenuItem(value: s, child: Text(AppTranslations.translateCategory(s, ref.watch(appLanguageProvider)))))
                     .toList(),
                 onChanged: (val) {
                   if (val != null) setState(() => _selectedSource = val);
@@ -283,8 +286,8 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
               // Note field
               TextFormField(
                 controller: _noteController,
-                decoration: const InputDecoration(
-                  labelText: 'Note (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('purchase_notes_label'),
                   hintText: 'e.g. Monthly stipend from parents',
                 ),
               ),
@@ -292,8 +295,8 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
                 const SizedBox(height: 16),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Make this recurring', style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: const Text('Auto-generate future income entries'),
+                  title: Text(tr('income_make_recurring'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(tr('income_recurring_sub')),
                   value: _isRecurring,
                   onChanged: (val) => setState(() => _isRecurring = val),
                   activeColor: AppColors.successGreen,
@@ -302,9 +305,9 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<RecurringFrequency>(
                     value: _recurringFrequency,
-                    decoration: const InputDecoration(
-                      labelText: 'Frequency',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: tr('recurring_frequency_label'),
+                      border: const OutlineInputBorder(),
                     ),
                     items: RecurringFrequency.values
                         .map((f) => DropdownMenuItem(value: f, child: Text(f.name)))
@@ -332,7 +335,7 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
                   child: _isSubmitting
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          isEdit ? 'Update Income' : 'Save Income',
+                          isEdit ? tr('income_update_btn') : tr('income_save_btn'),
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                 ),

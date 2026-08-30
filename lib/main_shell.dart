@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/localization/app_translations.dart';
 import 'core/providers/navigation_providers.dart';
 import 'features/dashboard/presentation/screens/dashboard_screen.dart';
 import 'features/khata/presentation/screens/khata_screen.dart';
@@ -21,6 +22,7 @@ class MainShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentIndex = ref.watch(selectedMainTabProvider);
+    final tr = ref.watch(translationsProvider);
 
     return Scaffold(
       body: IndexedStack(
@@ -31,31 +33,31 @@ class MainShell extends ConsumerWidget {
         currentIndex: currentIndex,
         onTap: (index) => ref.read(selectedMainTabProvider.notifier).state = index,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: tr('tab_home'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            activeIcon: Icon(Icons.receipt_long),
-            label: 'Transactions',
+            icon: const Icon(Icons.receipt_long_outlined),
+            activeIcon: const Icon(Icons.receipt_long),
+            label: tr('tab_transactions'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.menu_book_outlined),
-            activeIcon: Icon(Icons.menu_book),
-            label: 'Khata',
+            icon: const Icon(Icons.menu_book_outlined),
+            activeIcon: const Icon(Icons.menu_book),
+            label: tr('tab_khata'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.pie_chart_outline),
-            activeIcon: Icon(Icons.pie_chart),
-            label: 'Reports',
+            icon: const Icon(Icons.pie_chart_outline),
+            activeIcon: const Icon(Icons.pie_chart),
+            label: tr('tab_reports'),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.more_horiz_outlined),
-            activeIcon: Icon(Icons.more_horiz),
-            label: 'More',
+            icon: const Icon(Icons.more_horiz_outlined),
+            activeIcon: const Icon(Icons.more_horiz),
+            label: tr('tab_more'),
           ),
         ],
       ),

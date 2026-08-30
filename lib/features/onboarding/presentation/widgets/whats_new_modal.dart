@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 
-class WhatsNewModal extends StatelessWidget {
+class WhatsNewModal extends ConsumerWidget {
   final String version;
   final VoidCallback onDismiss;
 
@@ -21,10 +23,11 @@ class WhatsNewModal extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final highlights = const [
+    final highlights = [
       WhatsNewHighlight(
         icon: Icons.analytics_outlined,
         title: 'Advanced Analytics & Insights',
@@ -74,7 +77,7 @@ class WhatsNewModal extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.primaryBlue.withOpacity(0.12),
+                    color: AppColors.primaryBlue.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.stars, color: AppColors.primaryBlue, size: 24),
@@ -85,7 +88,7 @@ class WhatsNewModal extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "What's New in Version $version",
+                        "${tr('whats_new_title')} $version",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -94,7 +97,7 @@ class WhatsNewModal extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Apna Batwa V1.1 Feature Update',
+                        tr('whats_new_subtitle'),
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -162,9 +165,9 @@ class WhatsNewModal extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: const Text(
-                  'Got it! 🎉',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                child: Text(
+                  tr('whats_new_got_it'),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                 ),
               ),
             ),

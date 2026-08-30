@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../providers/savings_providers.dart';
@@ -12,12 +13,13 @@ class SavingsGoalsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final goalsProgress = ref.watch(goalWithProgressListProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Savings Goals'),
+        title: Text(tr('savings_title')),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -28,7 +30,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Your Goals',
+                  tr('savings_your_goals'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -44,7 +46,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                   ),
                   onPressed: () => AddSavingsGoalModal.show(context),
                   icon: const Icon(Icons.add, size: 18),
-                  label: const Text('New Goal', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  label: Text(tr('savings_new_goal_btn'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 ),
               ],
             ),
@@ -68,7 +70,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'No Active Savings Goals 🐖',
+                      tr('savings_empty_title'),
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -77,7 +79,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Apna pehla savings goal banayein aur bachat shuru karein!',
+                      tr('savings_empty_sub'),
                       textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
                     ),
@@ -102,6 +104,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
   }
 
   Widget _buildGoalCard(BuildContext context, WidgetRef ref, GoalWithProgress progress, bool isDark) {
+    final tr = ref.watch(translationsProvider);
     final goal = progress.goal;
     final savedCents = progress.savedCents;
     final pct = progress.percentage;
@@ -114,13 +117,13 @@ class SavingsGoalsScreen extends ConsumerWidget {
       final now = DateTime.now();
       final diffDays = goal.targetDate!.difference(DateTime(now.year, now.month, now.day)).inDays;
       if (diffDays < 0) {
-        deadlineText = 'Overdue by ${diffDays.abs()} days';
+        deadlineText = '${diffDays.abs()} d';
         deadlineColor = AppColors.expenseRed;
       } else if (diffDays == 0) {
-        deadlineText = 'Due Today!';
+        deadlineText = tr('savings_due_today');
         deadlineColor = AppColors.warningAmber;
       } else {
-        deadlineText = '$diffDays days left';
+        deadlineText = '$diffDays d';
         deadlineColor = AppColors.primaryBlue;
       }
     }
@@ -152,7 +155,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: (isAchieved ? AppColors.successGreen : AppColors.primaryBlue).withOpacity(0.12),
+                          color: (isAchieved ? AppColors.successGreen : AppColors.primaryBlue).withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -176,10 +179,10 @@ class SavingsGoalsScreen extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: AppColors.successGreen.withOpacity(0.12),
+                        color: AppColors.successGreen.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text('Goal Achieved! 🎉', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.successGreen)),
+                      child: Text(tr('savings_goal_achieved'), style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.successGreen)),
                     )
                   else if (deadlineText.isNotEmpty)
                     Text(deadlineText, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: deadlineColor)),
@@ -191,7 +194,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Saved: ${CurrencyFormatter.formatCents(savedCents)}',
+                    '${tr('savings_saved')}: ${CurrencyFormatter.formatCents(savedCents)}',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -199,7 +202,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                     ),
                   ),
                   Text(
-                    'Target: ${CurrencyFormatter.formatCents(goal.targetAmountCents)}',
+                    '${tr('savings_target')}: ${CurrencyFormatter.formatCents(goal.targetAmountCents)}',
                     style: TextStyle(
                       fontSize: 13,
                       color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -215,7 +218,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                 child: LinearProgressIndicator(
                   value: (pct / 100).clamp(0.0, 1.0),
                   minHeight: 10,
-                  backgroundColor: AppColors.primaryBlue.withOpacity(0.12),
+                  backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.12),
                   valueColor: AlwaysStoppedAnimation<Color>(isAchieved ? AppColors.successGreen : AppColors.primaryBlue),
                 ),
               ),
@@ -242,7 +245,7 @@ class SavingsGoalsScreen extends ConsumerWidget {
                     ),
                     onPressed: () => AddSavingsContributionModal.show(context, goalId: goal.id, goalName: goal.name),
                     icon: const Icon(Icons.add, size: 14),
-                    label: const Text('Add Money', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                    label: Text(tr('savings_add_money_btn'), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),

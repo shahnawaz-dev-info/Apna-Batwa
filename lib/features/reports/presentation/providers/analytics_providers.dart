@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
@@ -34,6 +36,23 @@ extension AnalyticsTimeRangeTypeExtension on AnalyticsTimeRangeType {
         return 'All Time';
       case AnalyticsTimeRangeType.custom:
         return 'Custom';
+    }
+  }
+
+  String getTranslationKey() {
+    switch (this) {
+      case AnalyticsTimeRangeType.thisMonth:
+        return 'reports_range_this_month';
+      case AnalyticsTimeRangeType.last3Months:
+        return 'reports_range_last_3_months';
+      case AnalyticsTimeRangeType.last6Months:
+        return 'reports_range_last_6_months';
+      case AnalyticsTimeRangeType.thisYear:
+        return 'reports_range_this_year';
+      case AnalyticsTimeRangeType.allTime:
+        return 'reports_range_all_time';
+      case AnalyticsTimeRangeType.custom:
+        return 'reports_range_custom';
     }
   }
 }
@@ -77,17 +96,17 @@ class SpendingTrendData {
 }
 
 final spendingTrendsProvider = Provider<SpendingTrendData>((ref) {
+  final lang = ref.watch(appLanguageProvider);
   final expensesAsync = ref.watch(watchAllExpensesProvider);
   final List<ExpenseEntryEntity> allExpenses = expensesAsync.maybeWhen(data: (l) => l, orElse: () => <ExpenseEntryEntity>[]);
 
   final now = DateTime.now();
   final List<MonthlyTrendPoint> points = [];
-  final monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-  // Last 6 months (including current month)
   for (int i = 5; i >= 0; i--) {
     final mDate = DateTime(now.year, now.month - i, 1);
-    final label = '${monthNames[mDate.month - 1]} ${mDate.year.toString().substring(2)}';
+    final monthLabel = AppTranslations.translateMonthShort(mDate.month, lang);
+    final label = '$monthLabel ${mDate.year.toString().substring(2)}';
     int expSum = 0;
     for (final e in allExpenses) {
       if (e.date.year == mDate.year && e.date.month == mDate.month) {
@@ -101,23 +120,20 @@ final spendingTrendsProvider = Provider<SpendingTrendData>((ref) {
   final prevMonthExpense = points.length >= 2 ? points[points.length - 2].expenseCents : 0;
 
   double pctChange = 0.0;
-  String callout = "No data from previous month";
   bool isIncreased = false;
 
   if (prevMonthExpense > 0) {
     pctChange = ((currentMonthExpense - prevMonthExpense) / prevMonthExpense) * 100;
-    if (pctChange > 0) {
-      isIncreased = true;
-      callout = "${pctChange.abs().toStringAsFixed(1)}% more than last month";
-    } else if (pctChange < 0) {
-      isIncreased = false;
-      callout = "${pctChange.abs().toStringAsFixed(1)}% less than last month";
-    } else {
-      callout = "Same as last month";
-    }
-  } else if (currentMonthExpense > 0) {
-    callout = "First month of expense data";
+    if (pctChange > 0) isIncreased = true;
   }
+
+  final callout = AppTranslations.spendingTrendCallout(
+    lang,
+    pctChange,
+    isIncreased,
+    prevMonthExpense > 0,
+    currentMonthExpense > 0,
+  );
 
   return SpendingTrendData(
     monthlyPoints: points,
@@ -145,6 +161,7 @@ class CategoryInsightData {
 }
 
 final categoryInsightsProvider = Provider<CategoryInsightData>((ref) {
+  final lang = ref.watch(appLanguageProvider);
   final dateRange = ref.watch(analyticsDateRangeProvider);
   final expensesAsync = ref.watch(watchAllExpensesProvider);
   final List<ExpenseEntryEntity> allExpenses = expensesAsync.maybeWhen(data: (l) => l, orElse: () => <ExpenseEntryEntity>[]);
@@ -180,14 +197,18 @@ final categoryInsightsProvider = Provider<CategoryInsightData>((ref) {
       items: [],
       topCategoryPercentage: 0.0,
       topCategoryCents: 0,
-      insightSentence: "No expense records logged for this period.",
+      insightSentence: AppTranslations.tr('reports_no_expense_data', lang),
     );
   }
 
   final topItem = list.first;
   final formattedAmount = CurrencyFormatter.formatCents(topItem.totalCents);
-  final sentence =
-      "Your highest spending category for this period is ${topItem.categoryName} at ${topItem.percentage.toStringAsFixed(0)}% ($formattedAmount).";
+  final sentence = AppTranslations.highestCategorySentence(
+    lang,
+    topItem.categoryName,
+    topItem.percentage.toStringAsFixed(0),
+    formattedAmount,
+  );
 
   return CategoryInsightData(
     items: list,
@@ -214,6 +235,7 @@ class DayOfWeekPatternData {
 }
 
 final dayOfWeekPatternProvider = Provider<DayOfWeekPatternData>((ref) {
+  final lang = ref.watch(appLanguageProvider);
   final dateRange = ref.watch(analyticsDateRangeProvider);
   final expensesAsync = ref.watch(watchAllExpensesProvider);
   final List<ExpenseEntryEntity> allExpenses = expensesAsync.maybeWhen(data: (l) => l, orElse: () => <ExpenseEntryEntity>[]);
@@ -224,7 +246,6 @@ final dayOfWeekPatternProvider = Provider<DayOfWeekPatternData>((ref) {
   }).toList();
 
   final List<int> dayTotals = List.filled(7, 0); // 0=Mon, 6=Sun
-  final dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   for (final e in rangeExpenses) {
     final weekdayIndex = e.date.weekday - 1; // DateTime.weekday: 1=Mon, 7=Sun
@@ -242,14 +263,18 @@ final dayOfWeekPatternProvider = Provider<DayOfWeekPatternData>((ref) {
     }
   }
 
-  String callout = "No expense data for weekday analysis.";
+  String callout = AppTranslations.tr('reports_no_weekday_data', lang);
   if (maxCents > 0) {
-    callout = "You tend to spend most on ${dayNames[maxIndex]}s (${CurrencyFormatter.formatCents(maxCents)} total).";
+    callout = AppTranslations.weekdayPatternSentence(
+      lang,
+      AppTranslations.translateWeekdayFull(maxIndex, lang),
+      CurrencyFormatter.formatCents(maxCents),
+    );
   }
 
   return DayOfWeekPatternData(
     totalCentsPerDay: dayTotals,
-    peakDayName: dayNames[maxIndex],
+    peakDayName: AppTranslations.translateWeekdayFull(maxIndex, lang),
     peakDayTotalCents: maxCents,
     calloutSentence: callout,
   );
@@ -359,6 +384,7 @@ class SavingsRateData {
 }
 
 final savingsRateAnalyticsProvider = Provider<SavingsRateData>((ref) {
+  final lang = ref.watch(appLanguageProvider);
   final dateRange = ref.watch(analyticsDateRangeProvider);
   final incomeAsync = ref.watch(watchAllIncomeProvider);
   final expensesAsync = ref.watch(watchAllExpensesProvider);
@@ -382,16 +408,14 @@ final savingsRateAnalyticsProvider = Provider<SavingsRateData>((ref) {
   if (totalIncCents <= 0) {
     return SavingsRateData(
       savingsRatePercentage: null,
-      labelSentence: "Savings rate unavailable — no income recorded for this period.",
+      labelSentence: AppTranslations.tr('reports_savings_unavailable', lang),
       totalIncomeCents: totalIncCents,
       totalExpensesCents: totalExpCents,
     );
   }
 
   final rate = ((totalIncCents - totalExpCents) / totalIncCents) * 100;
-  final sentence = rate >= 0
-      ? "You saved ${rate.toStringAsFixed(0)}% of your income this period."
-      : "Your expenses exceeded income by ${rate.abs().toStringAsFixed(0)}% this period.";
+  final sentence = AppTranslations.savingsRateSentence(lang, rate);
 
   return SavingsRateData(
     savingsRatePercentage: rate,
@@ -414,22 +438,21 @@ class PredictiveInsightData {
   });
 }
 
-// Simple moving-average estimate (non-AI arithmetic projection)
 final predictiveInsightProvider = Provider<PredictiveInsightData>((ref) {
+  final lang = ref.watch(appLanguageProvider);
   final expensesAsync = ref.watch(watchAllExpensesProvider);
   final List<ExpenseEntryEntity> allExpenses = expensesAsync.maybeWhen(data: (l) => l, orElse: () => <ExpenseEntryEntity>[]);
 
   if (allExpenses.isEmpty) {
     return PredictiveInsightData(
       projectedExpenseCents: null,
-      insightSentence: "Not enough data yet for a projection",
+      insightSentence: AppTranslations.tr('reports_no_projection_data', lang),
       hasEnoughData: false,
     );
   }
 
   final now = DateTime.now();
 
-  // Find earliest expense date to check data history span
   DateTime earliestDate = allExpenses.first.date;
   for (final e in allExpenses) {
     if (e.date.isBefore(earliestDate)) earliestDate = e.date;
@@ -439,12 +462,11 @@ final predictiveInsightProvider = Provider<PredictiveInsightData>((ref) {
   if (daysSpan < 25) {
     return PredictiveInsightData(
       projectedExpenseCents: null,
-      insightSentence: "Not enough data yet for a projection",
+      insightSentence: AppTranslations.tr('reports_no_projection_data', lang),
       hasEnoughData: false,
     );
   }
 
-  // Calculate moving average monthly expense over last 3 full months
   int monthsCount = 0;
   int sumExpenseCents = 0;
 
@@ -465,18 +487,17 @@ final predictiveInsightProvider = Provider<PredictiveInsightData>((ref) {
   if (monthsCount == 0) {
     return PredictiveInsightData(
       projectedExpenseCents: null,
-      insightSentence: "Not enough data yet for a projection",
+      insightSentence: AppTranslations.tr('reports_no_projection_data', lang),
       hasEnoughData: false,
     );
   }
 
-  // Plain moving-average arithmetic projection
   final averageMonthlyExpenseCents = (sumExpenseCents / monthsCount).round();
   final formattedAmount = CurrencyFormatter.formatCents(averageMonthlyExpenseCents);
 
   return PredictiveInsightData(
     projectedExpenseCents: averageMonthlyExpenseCents,
-    insightSentence: "Based on your recent spending, you're on track to spend around $formattedAmount this month.",
+    insightSentence: AppTranslations.predictiveInsightSentence(lang, formattedAmount),
     hasEnoughData: true,
   );
 });

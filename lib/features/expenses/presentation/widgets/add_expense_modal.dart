@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../../core/utils/id_generator.dart';
@@ -49,7 +51,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
     );
     _noteController = TextEditingController(text: entry?.note ?? '');
     _selectedCategoryId = entry?.categoryId;
-    _selectedPaymentMethod = entry?.paymentMethod ?? AppConstants.paymentMethods.first;
+    _selectedPaymentMethod = entry?.paymentMethod;
     _selectedDate = entry?.date ?? DateTime.now();
   }
 
@@ -93,6 +95,12 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
 
     try {
       final repo = ref.read(expenseRepositoryProvider);
+      final categoriesAsync = ref.read(watchCategoriesProvider);
+      final categories = categoriesAsync.asData?.value ?? [];
+      final category = categories.firstWhere(
+        (c) => c.id == _selectedCategoryId,
+        orElse: () => categories.first,
+      );
       final now = DateTime.now();
 
       if (widget.existingEntry == null) {
@@ -100,21 +108,16 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
           id: IdGenerator.generate(),
           amountCents: amountCents,
           categoryId: _selectedCategoryId!,
+          categoryName: category.name,
+          paymentMethod: _selectedPaymentMethod,
           date: _selectedDate,
           note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
-          paymentMethod: _selectedPaymentMethod,
           createdAt: now,
           updatedAt: now,
         );
         await repo.addExpense(newEntry);
 
         if (_isRecurring) {
-          final categories = await repo.getCategories();
-          final cat = categories.firstWhere(
-            (c) => c.id == _selectedCategoryId,
-            orElse: () => categories.first,
-          );
-
           final recRepo = ref.read(recurringRepositoryProvider);
           DateTime nextDue = _selectedDate;
           if (_recurringFrequency == RecurringFrequency.daily) {
@@ -128,9 +131,9 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
           final recRule = RecurringTransactionEntity(
             id: IdGenerator.generate(),
             type: 'expense',
-            name: cat.name,
+            name: category.name,
             amountCents: amountCents,
-            category: cat.name,
+            category: category.name,
             frequency: _recurringFrequency,
             startDate: _selectedDate,
             nextDueDate: nextDue,
@@ -144,9 +147,10 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
         final updated = widget.existingEntry!.copyWith(
           amountCents: amountCents,
           categoryId: _selectedCategoryId!,
+          categoryName: category.name,
+          paymentMethod: _selectedPaymentMethod,
           date: _selectedDate,
           note: _noteController.text.trim().isEmpty ? null : _noteController.text.trim(),
-          paymentMethod: _selectedPaymentMethod,
           updatedAt: now,
         );
         await repo.updateExpense(updated);
@@ -154,18 +158,16 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
 
       // Check Budget Alert Trigger
       try {
-        final categories = await repo.getCategories();
-        final cat = categories.firstWhere((c) => c.id == _selectedCategoryId);
         final budgetRepo = ref.read(budgetRepositoryProvider);
         final budgets = await budgetRepo.getBudgetsForMonth(_selectedDate.month, _selectedDate.year);
         final matchingBudget = budgets.firstWhere(
-          (b) => b.category.toLowerCase() == cat.name.toLowerCase(),
+          (b) => b.category.toLowerCase() == category.name.toLowerCase(),
           orElse: () => throw Exception('No budget'),
         );
 
         final allExpenses = await repo.getAllExpenses();
         final monthExpenses = allExpenses.where((e) =>
-            e.categoryId == cat.id &&
+            e.categoryId == category.id &&
             e.date.month == _selectedDate.month &&
             e.date.year == _selectedDate.year);
         final totalSpent = monthExpenses.fold<int>(0, (sum, e) => sum + e.amountCents);
@@ -174,7 +176,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
         if (ratio >= 0.9) {
           final int percentage = (ratio * 100).round();
           await NotificationService.instance.triggerBudgetWarningNotification(
-            categoryName: cat.name,
+            categoryName: category.name,
             percentage: percentage,
             limitCents: matchingBudget.monthlyLimitCents,
             spentCents: totalSpent,
@@ -193,7 +195,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                   ? 'Expense added successfully!'
                   : 'Expense updated successfully!',
             ),
-            backgroundColor: AppColors.expenseRed,
+            backgroundColor: AppColors.successGreen,
           ),
         );
       }
@@ -213,6 +215,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEdit = widget.existingEntry != null;
     final categoriesAsync = ref.watch(watchCategoriesProvider);
@@ -239,7 +242,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEdit ? 'Edit Expense' : 'Add Expense',
+                    isEdit ? tr('expense_modal_edit_title') : tr('expense_modal_add_title'),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -255,17 +258,17 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                             final confirmed = await showDialog<bool>(
                               context: context,
                               builder: (ctx) => AlertDialog(
-                                title: const Text('Delete Expense Entry'),
-                                content: const Text('Are you sure you want to delete this expense entry?'),
+                                title: Text(tr('expense_delete_title')),
+                                content: Text(tr('expense_delete_msg')),
                                 actions: [
                                   TextButton(
                                     onPressed: () => Navigator.pop(ctx, false),
-                                    child: const Text('Cancel'),
+                                    child: Text(tr('common_cancel')),
                                   ),
                                   TextButton(
                                     style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
                                     onPressed: () => Navigator.pop(ctx, true),
-                                    child: const Text('Delete'),
+                                    child: Text(tr('common_delete')),
                                   ),
                                 ],
                               ),
@@ -289,8 +292,8 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Amount (PKR)',
+                decoration: InputDecoration(
+                  labelText: tr('expense_amount_label'),
                   hintText: 'e.g. 250',
                   prefixText: 'Rs. ',
                 ),
@@ -314,9 +317,9 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                   }
                   return DropdownButtonFormField<int>(
                     value: _selectedCategoryId,
-                    decoration: const InputDecoration(labelText: 'Category'),
+                    decoration: InputDecoration(labelText: tr('expense_category_label')),
                     items: categories
-                        .map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
+                        .map((c) => DropdownMenuItem(value: c.id, child: Text(AppTranslations.translateCategory(c.name, ref.watch(appLanguageProvider)))))
                         .toList(),
                     onChanged: (val) {
                       if (val != null) setState(() => _selectedCategoryId = val);
@@ -331,9 +334,9 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
               // Payment method dropdown
               DropdownButtonFormField<String>(
                 value: _selectedPaymentMethod,
-                decoration: const InputDecoration(labelText: 'Payment Method (Optional)'),
+                decoration: InputDecoration(labelText: tr('expense_payment_method_label')),
                 items: AppConstants.paymentMethods
-                    .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                    .map((m) => DropdownMenuItem(value: m, child: Text(AppTranslations.translatePaymentMethod(m, ref.watch(appLanguageProvider)))))
                     .toList(),
                 onChanged: (val) {
                   setState(() => _selectedPaymentMethod = val);
@@ -356,8 +359,8 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
               // Note field
               TextFormField(
                 controller: _noteController,
-                decoration: const InputDecoration(
-                  labelText: 'Note (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('purchase_notes_label'),
                   hintText: 'e.g. Lunch at university canteen',
                 ),
               ),
@@ -365,8 +368,8 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                 const SizedBox(height: 16),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,
-                  title: const Text('Make this recurring', style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: const Text('Auto-generate future expense entries'),
+                  title: Text(tr('expense_make_recurring'), style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(tr('expense_recurring_sub')),
                   value: _isRecurring,
                   onChanged: (val) => setState(() => _isRecurring = val),
                   activeColor: AppColors.expenseRed,
@@ -375,9 +378,9 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<RecurringFrequency>(
                     value: _recurringFrequency,
-                    decoration: const InputDecoration(
-                      labelText: 'Frequency',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: tr('recurring_frequency_label'),
+                      border: const OutlineInputBorder(),
                     ),
                     items: RecurringFrequency.values
                         .map((f) => DropdownMenuItem(value: f, child: Text(f.name)))
@@ -405,7 +408,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
                   child: _isSubmitting
                       ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
-                          isEdit ? 'Update Expense' : 'Save Expense',
+                          isEdit ? tr('expense_update_btn') : tr('expense_save_btn'),
                           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                 ),

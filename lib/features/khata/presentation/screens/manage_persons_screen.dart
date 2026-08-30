@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../domain/entities/person.dart';
 import '../providers/khata_providers.dart';
@@ -10,12 +11,13 @@ class ManagePersonsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final personsAsync = ref.watch(watchAllPersonsProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Manage People'),
+        title: Text(tr('khata_manage_people')),
       ),
       body: personsAsync.when(
         data: (persons) {
@@ -33,7 +35,7 @@ class ManagePersonsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No People Added Yet',
+                      tr('khata_no_people_title'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -42,7 +44,7 @@ class ManagePersonsScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Add people to track money borrowed or lent.',
+                      tr('khata_no_people_sub'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
@@ -71,7 +73,7 @@ class ManagePersonsScreen extends ConsumerWidget {
                 ),
                 child: ListTile(
                   leading: CircleAvatar(
-                    backgroundColor: AppColors.primaryBlue.withOpacity(0.12),
+                    backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.12),
                     child: Text(
                       person.name.isNotEmpty ? person.name[0].toUpperCase() : '?',
                       style: const TextStyle(
@@ -118,21 +120,23 @@ class ManagePersonsScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => AddPersonModal.show(context),
         icon: const Icon(Icons.add),
-        label: const Text('Add Person', style: TextStyle(fontWeight: FontWeight.bold)),
+        label: Text(tr('khata_add_person_btn'), style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref, PersonEntity person) {
+    final tr = ref.read(translationsProvider);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Person'),
-        content: Text('Are you sure you want to delete "${person.name}"?'),
+        title: Text(tr('khata_delete_person_title')),
+        content: Text(tr('khata_delete_person_msg')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(tr('common_cancel')),
           ),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
@@ -144,15 +148,15 @@ class ManagePersonsScreen extends ConsumerWidget {
               } catch (e) {
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Cannot delete person with active debt records.'),
+                    SnackBar(
+                      content: Text(tr('khata_delete_person_error')),
                       backgroundColor: AppColors.expenseRed,
                     ),
                   );
                 }
               }
             },
-            child: const Text('Delete'),
+            child: Text(tr('common_delete')),
           ),
         ],
       ),

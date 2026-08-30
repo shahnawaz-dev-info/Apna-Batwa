@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/purchase.dart';
@@ -120,6 +121,7 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEditing = widget.existingPurchase != null;
 
@@ -141,7 +143,7 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEditing ? 'Edit Purchase' : '+ Log Direct Purchase',
+                    isEditing ? tr('purchase_modal_edit_title') : tr('purchase_modal_log_title'),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
@@ -153,10 +155,10 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Item / Purchase Name *',
+                decoration: InputDecoration(
+                  labelText: tr('purchase_name_label'),
                   hintText: 'e.g. Groceries, Shoes',
-                  prefixIcon: Icon(Icons.shopping_cart_outlined),
+                  prefixIcon: const Icon(Icons.shopping_cart_outlined),
                 ),
                 validator: (val) => val == null || val.trim().isEmpty ? 'Enter purchase name' : null,
               ),
@@ -164,10 +166,10 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Amount Paid (Rs.) *',
+                decoration: InputDecoration(
+                  labelText: tr('purchase_amount_label'),
                   hintText: '0.00',
-                  prefixIcon: Icon(Icons.payments_outlined),
+                  prefixIcon: const Icon(Icons.payments_outlined),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter amount';
@@ -179,10 +181,10 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
               const SizedBox(height: 14),
               TextFormField(
                 controller: _categoryController,
-                decoration: const InputDecoration(
-                  labelText: 'Category *',
+                decoration: InputDecoration(
+                  labelText: '${tr('expense_category_label')} *',
                   hintText: 'e.g. Food, Clothing, Electronics',
-                  prefixIcon: Icon(Icons.category_outlined),
+                  prefixIcon: const Icon(Icons.category_outlined),
                 ),
                 validator: (val) => val == null || val.trim().isEmpty ? 'Enter category' : null,
               ),
@@ -191,9 +193,9 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(12),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Purchase Date *',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  decoration: InputDecoration(
+                    labelText: '${tr('purchase_date_label')} *',
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
                   ),
                   child: Text(DateFormatters.formatDate(_selectedDate)),
                 ),
@@ -201,10 +203,10 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
               const SizedBox(height: 14),
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Notes (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('purchase_notes_label'),
                   hintText: 'Store name, warranty, receipt info',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
+                  prefixIcon: const Icon(Icons.note_alt_outlined),
                 ),
               ),
               const SizedBox(height: 24),
@@ -225,7 +227,7 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
-                          isEditing ? 'Save Changes' : 'Log Purchase & Expense',
+                          isEditing ? tr('purchase_save_changes') : tr('purchase_log_btn'),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

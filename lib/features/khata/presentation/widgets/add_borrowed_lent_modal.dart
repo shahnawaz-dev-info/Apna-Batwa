@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/borrowed_record.dart';
@@ -87,12 +88,12 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
     }
   }
 
-  Future<void> _submit() async {
+  Future<void> _submit(String Function(String) tr) async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedPerson == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select or add a person.'),
+        SnackBar(
+          content: Text(tr('khata_err_select_person')),
           backgroundColor: AppColors.expenseRed,
         ),
       );
@@ -161,7 +162,7 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error saving record: $e'),
+          content: Text('${tr("common_error")}: $e'),
           backgroundColor: AppColors.expenseRed,
         ),
       );
@@ -173,11 +174,12 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tr = ref.watch(translationsProvider);
     final personsAsync = ref.watch(watchAllPersonsProvider);
 
     final titleText = widget.isBorrowed
-        ? (widget.existingBorrowed == null ? '+ Borrow Money (I Owe)' : 'Edit Borrowed Entry')
-        : (widget.existingLent == null ? '+ Lend Money (Others Owe Me)' : 'Edit Lent Entry');
+        ? (widget.existingBorrowed == null ? tr('khata_add_borrowed_title') : tr('khata_edit_borrowed_title'))
+        : (widget.existingLent == null ? tr('khata_add_lent_title') : tr('khata_edit_lent_title'));
 
     final primaryColor = widget.isBorrowed ? AppColors.warningAmber : AppColors.primaryBlue;
 
@@ -219,7 +221,6 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
               // Person Selection & Inline Add
               personsAsync.when(
                 data: (persons) {
-                  // Set initial selected person if editing or if list loaded
                   if (_selectedPerson == null && persons.isNotEmpty) {
                     final targetId = widget.existingBorrowed?.personId ?? widget.existingLent?.personId;
                     if (targetId != null) {
@@ -235,11 +236,11 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                       Expanded(
                         child: DropdownButtonFormField<PersonEntity>(
                           value: persons.contains(_selectedPerson) ? _selectedPerson : null,
-                          decoration: const InputDecoration(
-                            labelText: 'Person *',
-                            prefixIcon: Icon(Icons.person_outline),
+                          decoration: InputDecoration(
+                            labelText: tr('khata_person_label'),
+                            prefixIcon: const Icon(Icons.person_outline),
                           ),
-                          hint: const Text('Select Person'),
+                          hint: Text(tr('khata_select_person')),
                           items: persons
                               .map(
                                 (p) => DropdownMenuItem(
@@ -249,7 +250,7 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                               )
                               .toList(),
                           onChanged: (val) => setState(() => _selectedPerson = val),
-                          validator: (val) => val == null ? 'Select a person' : null,
+                          validator: (val) => val == null ? tr('khata_select_person') : null,
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -261,13 +262,13 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                           }
                         },
                         icon: const Icon(Icons.person_add_alt_1),
-                        tooltip: 'Add New Person',
+                        tooltip: tr('khata_add_new_person_tooltip'),
                       ),
                     ],
                   );
                 },
                 loading: () => const LinearProgressIndicator(),
-                error: (err, _) => Text('Error loading persons: $err'),
+                error: (err, _) => Text('${tr("common_error")}: $err'),
               ),
               const SizedBox(height: 16),
 
@@ -275,10 +276,10 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Total Amount (Rs.) *',
+                decoration: InputDecoration(
+                  labelText: tr('khata_amount_label'),
                   hintText: '0.00',
-                  prefixIcon: Icon(Icons.attach_money),
+                  prefixIcon: const Icon(Icons.attach_money),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter amount';
@@ -294,9 +295,9 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(12),
                 child: InputDecorator(
-                  decoration: const InputDecoration(
-                    labelText: 'Date *',
-                    prefixIcon: Icon(Icons.calendar_today_outlined),
+                  decoration: InputDecoration(
+                    labelText: tr('khata_date_label'),
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
                   ),
                   child: Text(DateFormatters.formatDate(_selectedDate)),
                 ),
@@ -306,10 +307,10 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
               // Note
               TextFormField(
                 controller: _noteController,
-                decoration: const InputDecoration(
-                  labelText: 'Note / Reason (Optional)',
+                decoration: InputDecoration(
+                  labelText: tr('khata_note_label'),
                   hintText: 'e.g. Hostel rent share, Lunch bill',
-                  prefixIcon: Icon(Icons.note_alt_outlined),
+                  prefixIcon: const Icon(Icons.note_alt_outlined),
                 ),
               ),
               const SizedBox(height: 16),
@@ -344,7 +345,7 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                 borderRadius: BorderRadius.circular(12),
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Remind Me On (Optional)',
+                    labelText: tr('khata_remind_me_label'),
                     prefixIcon: const Icon(Icons.alarm),
                     suffixIcon: _reminderDate != null
                         ? IconButton(
@@ -356,7 +357,7 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                   child: Text(
                     _reminderDate != null
                         ? DateFormatters.formatDateTime(_reminderDate!)
-                        : 'Tap to set reminder date & time',
+                        : tr('khata_tap_set_reminder'),
                   ),
                 ),
               ),
@@ -373,7 +374,7 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: _isSaving ? null : _submit,
+                  onPressed: _isSaving ? null : () => _submit(tr),
                   child: _isSaving
                       ? const SizedBox(
                           height: 20,
@@ -382,8 +383,8 @@ class _AddBorrowedLentModalState extends ConsumerState<AddBorrowedLentModal> {
                         )
                       : Text(
                           widget.existingBorrowed != null || widget.existingLent != null
-                              ? 'Update Entry'
-                              : 'Save Entry',
+                              ? tr('khata_update_entry')
+                              : tr('khata_save_entry'),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

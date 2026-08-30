@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_language.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/recurring_transaction.dart';
@@ -11,12 +13,13 @@ class RecurringManagementScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final recurringAsync = ref.watch(watchAllRecurringProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recurring Transactions'),
+        title: Text(tr('recurring_title')),
       ),
       body: recurringAsync.when(
         data: (rules) {
@@ -34,7 +37,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No Recurring Transactions 🔄',
+                      tr('recurring_empty_title'),
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -43,7 +46,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Set up auto-recurring salary, pocket money, or bill rules!',
+                      tr('recurring_empty_sub'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
@@ -74,7 +77,7 @@ class RecurringManagementScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         onPressed: () => AddEditRecurringModal.show(context),
         icon: const Icon(Icons.add),
-        label: const Text('Add Recurring Rule', style: TextStyle(fontWeight: FontWeight.bold)),
+        label: Text(tr('recurring_add_rule_btn'), style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -85,6 +88,7 @@ class RecurringManagementScreen extends ConsumerWidget {
     RecurringTransactionEntity rule,
     bool isDark,
   ) {
+    final tr = ref.watch(translationsProvider);
     final isIncome = rule.isIncome;
     final color = isIncome ? AppColors.successGreen : AppColors.expenseRed;
 
@@ -106,7 +110,7 @@ class RecurringManagementScreen extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withValues(alpha: 0.12),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -137,11 +141,11 @@ class RecurringManagementScreen extends ConsumerWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                           decoration: BoxDecoration(
                             color: (rule.isActive ? AppColors.successGreen : AppColors.warningAmber)
-                                .withOpacity(0.12),
+                                .withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            rule.isActive ? 'ACTIVE' : 'PAUSED',
+                            tr(rule.isActive ? 'recurring_status_active' : 'recurring_status_paused'),
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -153,7 +157,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${rule.frequency.name} • ${rule.category}',
+                      '${tr('freq_${rule.frequency.name}')} • ${AppTranslations.translateCategory(rule.category, ref.watch(appLanguageProvider))}',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -182,7 +186,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Next Due: ${DateFormatters.formatDate(rule.nextDueDate)}',
+                      '${DateFormatters.formatDate(rule.nextDueDate)}',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
@@ -192,7 +196,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                     ),
                     if (rule.lastGeneratedDate != null)
                       Text(
-                        'Last Generated: ${DateFormatters.formatDate(rule.lastGeneratedDate!)}',
+                        '${DateFormatters.formatDate(rule.lastGeneratedDate!)}',
                         style: TextStyle(
                           fontSize: 11,
                           color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -209,7 +213,7 @@ class RecurringManagementScreen extends ConsumerWidget {
                       rule.isActive ? Icons.pause_circle_outline : Icons.play_circle_outline,
                       color: rule.isActive ? AppColors.warningAmber : AppColors.successGreen,
                     ),
-                    tooltip: rule.isActive ? 'Pause Rule' : 'Resume Rule',
+                    tooltip: tr(rule.isActive ? 'recurring_pause_tooltip' : 'recurring_resume_tooltip'),
                     onPressed: () async {
                       final repo = ref.read(recurringRepositoryProvider);
                       await repo.toggleActive(rule.id, !rule.isActive);
@@ -233,22 +237,22 @@ class RecurringManagementScreen extends ConsumerWidget {
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref, RecurringTransactionEntity rule) {
+    final tr = ref.read(translationsProvider);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Recurring Rule'),
-        content: Text(
-          'Are you sure you want to delete "${rule.name}"? Past generated income/expense records will remain intact.',
-        ),
+        title: Text(tr('recurring_delete_dialog_title')),
+        content: Text(tr('recurring_delete_dialog_msg')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr('common_cancel'))),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
             onPressed: () async {
               Navigator.pop(ctx);
               await ref.read(recurringRepositoryProvider).deleteRecurring(rule.id);
             },
-            child: const Text('Delete'),
+            child: Text(tr('common_delete')),
           ),
         ],
       ),

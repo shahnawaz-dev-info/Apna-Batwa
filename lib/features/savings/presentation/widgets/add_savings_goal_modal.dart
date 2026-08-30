@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/savings_goal.dart';
@@ -113,6 +114,7 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isEditing = widget.existingGoal != null;
 
@@ -134,7 +136,7 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    isEditing ? 'Edit Savings Goal' : '+ New Savings Goal',
+                    isEditing ? tr('savings_modal_edit_title') : tr('savings_modal_add_title'),
                     style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
@@ -146,10 +148,10 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Goal Name *',
+                decoration: InputDecoration(
+                  labelText: tr('savings_goal_name_label'),
                   hintText: 'e.g. New Phone, Emergency Fund, Laptop',
-                  prefixIcon: Icon(Icons.savings_outlined),
+                  prefixIcon: const Icon(Icons.savings_outlined),
                 ),
                 validator: (val) => val == null || val.trim().isEmpty ? 'Enter goal name' : null,
               ),
@@ -157,10 +159,10 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
               TextFormField(
                 controller: _targetController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Target Amount (Rs.) *',
+                decoration: InputDecoration(
+                  labelText: tr('savings_target_amount_label'),
                   hintText: '0.00',
-                  prefixIcon: Icon(Icons.flag_outlined),
+                  prefixIcon: const Icon(Icons.flag_outlined),
                 ),
                 validator: (val) {
                   if (val == null || val.trim().isEmpty) return 'Enter target amount';
@@ -175,7 +177,7 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
                 borderRadius: BorderRadius.circular(12),
                 child: InputDecorator(
                   decoration: InputDecoration(
-                    labelText: 'Target Date (Optional)',
+                    labelText: tr('savings_target_date_label'),
                     prefixIcon: const Icon(Icons.calendar_month_outlined),
                     suffixIcon: _selectedTargetDate != null
                         ? IconButton(
@@ -187,7 +189,7 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
                   child: Text(
                     _selectedTargetDate != null
                         ? DateFormatters.formatDate(_selectedTargetDate!)
-                        : 'No target deadline set',
+                        : tr('savings_no_deadline'),
                   ),
                 ),
               ),
@@ -209,7 +211,7 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
                           child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
                       : Text(
-                          isEditing ? 'Save Goal Changes' : 'Create Savings Goal',
+                          isEditing ? tr('savings_save_goal_changes') : tr('savings_create_goal'),
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                 ),

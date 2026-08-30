@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../domain/entities/savings_contribution.dart';
@@ -13,13 +14,14 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final progressList = ref.watch(goalWithProgressListProvider);
     final match = progressList.where((p) => p.goal.id == goalId);
 
     if (match.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Savings Goal Detail')),
+        appBar: AppBar(title: Text(tr('savings_detail_title'))),
         body: const Center(child: Text('Savings goal not found')),
       );
     }
@@ -72,9 +74,9 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
                             color: AppColors.successGreen,
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Text(
-                            'Goal Achieved! 🎉',
-                            style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                          child: Text(
+                            tr('savings_goal_achieved'),
+                            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
                           ),
                         ),
                     ],
@@ -86,7 +88,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Target: ${CurrencyFormatter.formatCents(goal.targetAmountCents)}',
+                    '${tr('savings_target')}: ${CurrencyFormatter.formatCents(goal.targetAmountCents)}',
                     style: const TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                   const SizedBox(height: 16),
@@ -109,7 +111,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
                       ),
                       if (goal.targetDate != null)
                         Text(
-                          'Target Date: ${DateFormatters.formatDate(goal.targetDate!)}',
+                          '${DateFormatters.formatDate(goal.targetDate!)}',
                           style: const TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                     ],
@@ -124,7 +126,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Contribution History',
+                  tr('savings_contribution_history'),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -140,7 +142,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
                   ),
                   onPressed: () => AddSavingsContributionModal.show(context, goalId: goal.id, goalName: goal.name),
                   icon: const Icon(Icons.add_circle_outline, size: 18),
-                  label: const Text('Add Money', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  label: Text(tr('savings_add_money_btn'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                 ),
               ],
             ),
@@ -162,9 +164,9 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
                       children: [
                         Icon(Icons.savings_outlined, size: 48, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight),
                         const SizedBox(height: 12),
-                        Text('No contributions logged yet', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: isDark ? AppColors.textMainDark : AppColors.textMainLight)),
+                        Text(tr('savings_empty_contributions_title'), style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: isDark ? AppColors.textMainDark : AppColors.textMainLight)),
                         const SizedBox(height: 4),
-                        Text('Tap "+ Add Money" to start setting money aside for this goal.', textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)),
+                        Text(tr('savings_empty_contributions_sub'), textAlign: TextAlign.center, style: TextStyle(fontSize: 13, color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)),
                       ],
                     ),
                   );
@@ -182,7 +184,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(child: Text('Error loading contributions: $err')),
+              error: (err, _) => Center(child: Text('Error: $err')),
             ),
           ],
         ),
@@ -191,6 +193,8 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildContributionTile(BuildContext context, WidgetRef ref, SavingsContributionEntity contrib, bool isDark) {
+    final tr = ref.watch(translationsProvider);
+
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.cardDark : AppColors.cardLight,
@@ -202,7 +206,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.successGreen.withOpacity(0.12),
+            color: AppColors.successGreen.withValues(alpha: 0.12),
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.savings_outlined, color: AppColors.successGreen, size: 20),
@@ -217,7 +221,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
         ),
         trailing: IconButton(
           icon: const Icon(Icons.remove_circle_outline, color: AppColors.expenseRed, size: 20),
-          tooltip: 'Withdraw Contribution',
+          tooltip: tr('savings_withdraw_tooltip'),
           onPressed: () => _confirmWithdraw(context, ref, contrib),
         ),
       ),
@@ -225,15 +229,15 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
   }
 
   void _confirmWithdraw(BuildContext context, WidgetRef ref, SavingsContributionEntity contrib) {
+    final tr = ref.read(translationsProvider);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Withdraw Contribution'),
-        content: Text(
-          'Are you sure you want to withdraw ${CurrencyFormatter.formatCents(contrib.amountCents)} from this goal? This will return the money to your available balance.',
-        ),
+        title: Text(tr('savings_withdraw_dialog_title')),
+        content: Text(tr('savings_withdraw_dialog_msg')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr('common_cancel'))),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
             onPressed: () async {
@@ -241,7 +245,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
               final repo = ref.read(savingsRepositoryProvider);
               await repo.deleteSavingsContribution(contrib.id);
             },
-            child: const Text('Withdraw'),
+            child: Text(tr('savings_withdraw_btn')),
           ),
         ],
       ),
@@ -249,13 +253,15 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
   }
 
   void _confirmDeleteGoal(BuildContext context, WidgetRef ref, String id, String name) {
+    final tr = ref.read(translationsProvider);
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Savings Goal'),
-        content: Text('Are you sure you want to delete goal "$name"? All contribution logs will be removed and returned to your balance.'),
+        title: Text(tr('savings_delete_dialog_title')),
+        content: Text(tr('savings_delete_dialog_msg')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(tr('common_cancel'))),
           TextButton(
             style: TextButton.styleFrom(foregroundColor: AppColors.expenseRed),
             onPressed: () async {
@@ -264,7 +270,7 @@ class SavingsGoalDetailScreen extends ConsumerWidget {
               await repo.deleteSavingsGoal(id);
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text('Delete'),
+            child: Text(tr('common_delete')),
           ),
         ],
       ),

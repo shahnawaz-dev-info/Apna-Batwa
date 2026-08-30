@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import '../../../../core/localization/app_translations.dart';
 import '../../../../core/theme/colors.dart';
 
-class AboutScreen extends StatefulWidget {
+class AboutScreen extends ConsumerStatefulWidget {
   const AboutScreen({super.key});
 
   @override
-  State<AboutScreen> createState() => _AboutScreenState();
+  ConsumerState<AboutScreen> createState() => _AboutScreenState();
 }
 
-class _AboutScreenState extends State<AboutScreen> {
+class _AboutScreenState extends ConsumerState<AboutScreen> {
   String _version = '1.1.0';
 
   @override
@@ -29,11 +31,12 @@ class _AboutScreenState extends State<AboutScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = ref.watch(translationsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Apna Batwa'),
+        title: Text(tr('about_title')),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -50,7 +53,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   borderRadius: BorderRadius.circular(22),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -77,11 +80,11 @@ class _AboutScreenState extends State<AboutScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.primaryBlue.withOpacity(0.12),
+                  color: AppColors.primaryBlue.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  'Version $_version',
+                  '${tr('about_version')} $_version',
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
@@ -90,9 +93,9 @@ class _AboutScreenState extends State<AboutScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
-                'Developed by SN Technologies',
-                style: TextStyle(
+              Text(
+                tr('about_developer'),
+                style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF64748B),
@@ -111,7 +114,7 @@ class _AboutScreenState extends State<AboutScreen> {
                 child: Column(
                   children: [
                     Text(
-                      'Apna Batwa is a 100% offline personal finance app designed specifically for students and individuals.',
+                      tr('about_desc_p1'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
@@ -121,7 +124,7 @@ class _AboutScreenState extends State<AboutScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Track daily income and expenses, manage Khata records with WhatsApp reminders, set monthly budgets, and track savings goals with complete privacy — no internet, login, or cloud servers required.',
+                      tr('about_desc_p2'),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
@@ -141,7 +144,7 @@ class _AboutScreenState extends State<AboutScreen> {
                   const Icon(Icons.lock_outline, size: 16, color: AppColors.successGreen),
                   const SizedBox(width: 6),
                   Text(
-                    '100% Offline & Private • Zero Data Tracking',
+                    tr('about_privacy_tagline'),
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
