@@ -15,6 +15,8 @@ import '../../../expenses/presentation/providers/expense_providers.dart';
 import '../../../expenses/presentation/widgets/add_expense_modal.dart';
 import '../providers/transaction_filter_providers.dart';
 import '../widgets/transaction_filter_modal.dart';
+import '../widgets/bank_receipt_modal.dart';
+import '../../../dashboard/presentation/providers/dashboard_providers.dart';
 
 class TransactionsScreen extends ConsumerStatefulWidget {
   const TransactionsScreen({super.key});
@@ -317,6 +319,7 @@ class _AllTransactionsTab extends ConsumerWidget {
             ),
           ),
           child: ListTile(
+            onTap: () => BankReceiptModal.show(context, item),
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
@@ -334,7 +337,7 @@ class _AllTransactionsTab extends ConsumerWidget {
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
             ),
             subtitle: Text(
-              '${DateFormatters.formatDate(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
+              '${DateFormatters.formatDateTime(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
               style: TextStyle(
                 fontSize: 12,
                 color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -366,7 +369,7 @@ class _AllTransactionsTab extends ConsumerWidget {
                 ),
               ],
             ),
-            onTap: () {
+            onLongPress: () {
               if (item.isIncome) {
                 AddIncomeModal.show(context, existingEntry: item.rawEntity as IncomeEntryEntity);
               } else {
@@ -414,6 +417,19 @@ class _IncomeTransactionsTab extends ConsumerWidget {
                 ),
               ),
               child: ListTile(
+                onTap: () => BankReceiptModal.show(
+                  context,
+                  CombinedTransactionItem(
+                    id: item.id,
+                    amountCents: item.amountCents,
+                    title: AppTranslations.translateCategory(item.source, ref.watch(appLanguageProvider)),
+                    subtitle: item.note,
+                    date: item.date,
+                    createdAt: item.createdAt,
+                    isIncome: true,
+                    rawEntity: item,
+                  ),
+                ),
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -424,7 +440,7 @@ class _IncomeTransactionsTab extends ConsumerWidget {
                 ),
                 title: Text(AppTranslations.translateCategory(item.source, ref.watch(appLanguageProvider)), style: const TextStyle(fontWeight: FontWeight.bold)),
                 subtitle: Text(
-                  '${DateFormatters.formatDate(item.date)}${item.note != null ? " • ${item.note}" : ""}',
+                  '${DateFormatters.formatDateTime(item.date)}${item.note != null ? " • ${item.note}" : ""}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -452,7 +468,7 @@ class _IncomeTransactionsTab extends ConsumerWidget {
                     ),
                   ],
                 ),
-                onTap: () => AddIncomeModal.show(context, existingEntry: item),
+                onLongPress: () => AddIncomeModal.show(context, existingEntry: item),
               ),
             );
           },
@@ -498,6 +514,19 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
                 ),
               ),
               child: ListTile(
+                onTap: () => BankReceiptModal.show(
+                  context,
+                  CombinedTransactionItem(
+                    id: item.id,
+                    amountCents: item.amountCents,
+                    title: AppTranslations.translateCategory(item.categoryName, ref.watch(appLanguageProvider)),
+                    subtitle: item.note,
+                    date: item.date,
+                    createdAt: item.createdAt,
+                    isIncome: false,
+                    rawEntity: item,
+                  ),
+                ),
                 leading: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -511,7 +540,7 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 subtitle: Text(
-                  '${DateFormatters.formatDate(item.date)}${item.paymentMethod != null ? " [${AppTranslations.translatePaymentMethod(item.paymentMethod, ref.watch(appLanguageProvider))}]" : ""}${item.note != null ? " • ${item.note}" : ""}',
+                  '${DateFormatters.formatDateTime(item.date)}${item.paymentMethod != null ? " [${AppTranslations.translatePaymentMethod(item.paymentMethod, ref.watch(appLanguageProvider))}]" : ""}${item.note != null ? " • ${item.note}" : ""}',
                   style: TextStyle(
                     fontSize: 12,
                     color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -539,7 +568,7 @@ class _ExpenseTransactionsTab extends ConsumerWidget {
                     ),
                   ],
                 ),
-                onTap: () => AddExpenseModal.show(context, existingEntry: item),
+                onLongPress: () => AddExpenseModal.show(context, existingEntry: item),
               ),
             );
           },

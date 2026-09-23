@@ -261,6 +261,119 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                     },
                   ),
                 ),
+                const Divider(height: 20),
+                // Bank Themes (App Skins)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppColors.primaryBlue.withOpacity(0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.credit_card_rounded, color: AppColors.primaryBlue, size: 18),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Bank Themes (Skins)',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Text(
+                      ref.watch(activeBankConfigProvider).name,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.primaryBlue,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  height: 85,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: BankThemeConfig.allBanks.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (context, idx) {
+                      final bank = BankThemeConfig.allBanks[idx];
+                      final isSelected = ref.watch(bankThemePresetProvider) == bank.preset;
+                      return InkWell(
+                        onTap: () {
+                          ref.read(bankThemePresetProvider.notifier).setPreset(bank.preset);
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          width: 130,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            gradient: bank.cardGradient,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected ? Colors.white : Colors.transparent,
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              if (isSelected)
+                                BoxShadow(
+                                  color: bank.primaryColor.withOpacity(0.4),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Icon(bank.bankIcon, color: Colors.white, size: 18),
+                                  if (isSelected)
+                                    const Icon(Icons.check_circle, color: Colors.white, size: 16),
+                                ],
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    bank.name,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    bank.subtitle,
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.7),
+                                      fontSize: 9,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),

@@ -27,6 +27,7 @@ class CombinedTransactionItem {
   final String title;
   final String? subtitle;
   final DateTime date;
+  final DateTime createdAt;
   final bool isIncome;
   final Object rawEntity;
 
@@ -36,6 +37,7 @@ class CombinedTransactionItem {
     required this.title,
     this.subtitle,
     required this.date,
+    required this.createdAt,
     required this.isIncome,
     required this.rawEntity,
   });
@@ -70,6 +72,7 @@ final recentTransactionsProvider = Provider<List<CombinedTransactionItem>>((ref)
         title: AppTranslations.translateCategory(inc.source, lang),
         subtitle: inc.note,
         date: inc.date,
+        createdAt: inc.createdAt,
         isIncome: true,
         rawEntity: inc,
       ),
@@ -84,13 +87,18 @@ final recentTransactionsProvider = Provider<List<CombinedTransactionItem>>((ref)
         title: AppTranslations.translateCategory(exp.categoryName, lang),
         subtitle: exp.note ?? (exp.paymentMethod != null ? AppTranslations.translatePaymentMethod(exp.paymentMethod, lang) : null),
         date: exp.date,
+        createdAt: exp.createdAt,
         isIncome: false,
         rawEntity: exp,
       ),
     );
   }
 
-  items.sort((a, b) => b.date.compareTo(a.date));
+  items.sort((a, b) {
+    final dateCmp = b.date.compareTo(a.date);
+    if (dateCmp != 0) return dateCmp;
+    return b.createdAt.compareTo(a.createdAt);
+  });
 
   return items;
 });

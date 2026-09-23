@@ -10,6 +10,8 @@ import '../../domain/entities/income_entry.dart';
 import '../providers/income_providers.dart';
 import '../../../recurring/domain/entities/recurring_transaction.dart';
 import '../../../recurring/presentation/providers/recurring_providers.dart';
+import '../../../dashboard/presentation/providers/dashboard_providers.dart';
+import '../../../transactions/presentation/widgets/bank_receipt_modal.dart';
 
 class AddIncomeModal extends ConsumerStatefulWidget {
   final IncomeEntryEntity? existingEntry;
@@ -66,7 +68,15 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      setState(() => _selectedDate = picked);
+      final now = DateTime.now();
+      setState(() => _selectedDate = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        now.hour,
+        now.minute,
+        now.second,
+      ));
     }
   }
 
@@ -87,6 +97,7 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
       final repo = ref.read(incomeRepositoryProvider);
       final now = DateTime.now();
 
+      IncomeEntryEntity? createdEntry;
       if (widget.existingEntry == null) {
         final newEntry = IncomeEntryEntity(
           id: IdGenerator.generate(),
@@ -98,6 +109,7 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
           updatedAt: now,
         );
         await repo.addIncome(newEntry);
+        createdEntry = newEntry;
 
         if (_isRecurring) {
           final recRepo = ref.read(recurringRepositoryProvider);
@@ -138,16 +150,28 @@ class _AddIncomeModalState extends ConsumerState<AddIncomeModal> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.existingEntry == null
-                  ? 'Income added successfully!'
-                  : 'Income updated successfully!',
+        if (createdEntry != null) {
+          BankReceiptModal.show(
+            context,
+            CombinedTransactionItem(
+              id: createdEntry.id,
+              amountCents: createdEntry.amountCents,
+              title: AppTranslations.translateCategory(createdEntry.source, ref.watch(appLanguageProvider)),
+              subtitle: createdEntry.note,
+              date: createdEntry.date,
+              createdAt: createdEntry.createdAt,
+              isIncome: true,
+              rawEntity: createdEntry,
             ),
-            backgroundColor: AppColors.successGreen,
-          ),
-        );
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Income updated successfully!'),
+              backgroundColor: AppColors.successGreen,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {

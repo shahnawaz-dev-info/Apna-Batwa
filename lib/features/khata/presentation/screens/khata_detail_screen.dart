@@ -389,7 +389,7 @@ class KhataDetailScreen extends ConsumerWidget {
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                         ),
                         subtitle: Text(
-                          '${DateFormatters.formatDate(item.date)}${item.note != null && item.note!.isNotEmpty ? " • ${item.note}" : ""}',
+                          '${DateFormatters.formatDateTime(item.date)}${item.note != null && item.note!.isNotEmpty ? " • ${item.note}" : ""}',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,

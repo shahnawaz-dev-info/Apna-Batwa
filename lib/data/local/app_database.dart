@@ -174,13 +174,19 @@ class AppDatabase extends _$AppDatabase {
   // Income Operations
   Stream<List<IncomeEntryTableData>> watchAllIncomeEntries() {
     return (select(incomeEntries)
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .watch();
   }
 
   Future<List<IncomeEntryTableData>> getAllIncomeEntries() {
     return (select(incomeEntries)
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .get();
   }
 
@@ -199,13 +205,19 @@ class AppDatabase extends _$AppDatabase {
   // Expense Operations
   Stream<List<ExpenseEntryTableData>> watchAllExpenseEntries() {
     return (select(expenseEntries)
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .watch();
   }
 
   Future<List<ExpenseEntryTableData>> getAllExpenseEntries() {
     return (select(expenseEntries)
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .get();
   }
 
@@ -223,9 +235,19 @@ class AppDatabase extends _$AppDatabase {
 
   // Person Operations
   Stream<List<PersonTableData>> watchAllPersons() =>
-      (select(persons)..orderBy([(t) => OrderingTerm(expression: t.name, mode: OrderingMode.asc)])).watch();
+      (select(persons)
+            ..orderBy([
+              (t) => OrderingTerm(expression: t.updatedAt, mode: OrderingMode.desc),
+              (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+            ]))
+          .watch();
   Future<List<PersonTableData>> getAllPersons() =>
-      (select(persons)..orderBy([(t) => OrderingTerm(expression: t.name, mode: OrderingMode.asc)])).get();
+      (select(persons)
+            ..orderBy([
+              (t) => OrderingTerm(expression: t.updatedAt, mode: OrderingMode.desc),
+              (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+            ]))
+          .get();
   Future<int> insertPerson(PersonsCompanion entry) => into(persons).insert(entry);
   Future<bool> updatePerson(PersonsCompanion entry) => update(persons).replace(entry);
   Future<int> deletePerson(int id) => (delete(persons)..where((t) => t.id.equals(id))).go();
@@ -235,7 +257,10 @@ class AppDatabase extends _$AppDatabase {
     final query = select(borrowedRecords).join([
       innerJoin(persons, persons.id.equalsExp(borrowedRecords.personId)),
     ]);
-    query.orderBy([OrderingTerm(expression: borrowedRecords.date, mode: OrderingMode.desc)]);
+    query.orderBy([
+      OrderingTerm(expression: borrowedRecords.date, mode: OrderingMode.desc),
+      OrderingTerm(expression: borrowedRecords.createdAt, mode: OrderingMode.desc),
+    ]);
     return query.watch();
   }
 
@@ -243,7 +268,10 @@ class AppDatabase extends _$AppDatabase {
     final query = select(borrowedRecords).join([
       innerJoin(persons, persons.id.equalsExp(borrowedRecords.personId)),
     ]);
-    query.orderBy([OrderingTerm(expression: borrowedRecords.date, mode: OrderingMode.desc)]);
+    query.orderBy([
+      OrderingTerm(expression: borrowedRecords.date, mode: OrderingMode.desc),
+      OrderingTerm(expression: borrowedRecords.createdAt, mode: OrderingMode.desc),
+    ]);
     return query.get();
   }
 
@@ -259,7 +287,10 @@ class AppDatabase extends _$AppDatabase {
     final query = select(lentRecords).join([
       innerJoin(persons, persons.id.equalsExp(lentRecords.personId)),
     ]);
-    query.orderBy([OrderingTerm(expression: lentRecords.date, mode: OrderingMode.desc)]);
+    query.orderBy([
+      OrderingTerm(expression: lentRecords.date, mode: OrderingMode.desc),
+      OrderingTerm(expression: lentRecords.createdAt, mode: OrderingMode.desc),
+    ]);
     return query.watch();
   }
 
@@ -267,7 +298,10 @@ class AppDatabase extends _$AppDatabase {
     final query = select(lentRecords).join([
       innerJoin(persons, persons.id.equalsExp(lentRecords.personId)),
     ]);
-    query.orderBy([OrderingTerm(expression: lentRecords.date, mode: OrderingMode.desc)]);
+    query.orderBy([
+      OrderingTerm(expression: lentRecords.date, mode: OrderingMode.desc),
+      OrderingTerm(expression: lentRecords.createdAt, mode: OrderingMode.desc),
+    ]);
     return query.get();
   }
 
@@ -282,14 +316,20 @@ class AppDatabase extends _$AppDatabase {
   Stream<List<RepaymentTableData>> watchRepaymentsForRecord(String recordType, int recordId) {
     return (select(repayments)
           ..where((t) => t.recordType.equals(recordType) & t.recordId.equals(recordId))
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .watch();
   }
 
   Future<List<RepaymentTableData>> getRepaymentsForRecord(String recordType, int recordId) {
     return (select(repayments)
           ..where((t) => t.recordType.equals(recordType) & t.recordId.equals(recordId))
-          ..orderBy([(t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc)]))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
         .get();
   }
 

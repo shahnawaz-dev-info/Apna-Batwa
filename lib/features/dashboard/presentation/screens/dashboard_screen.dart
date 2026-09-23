@@ -21,6 +21,7 @@ import '../../../recurring/presentation/providers/recurring_providers.dart';
 import '../../../savings/presentation/providers/savings_providers.dart';
 import '../../../savings/presentation/screens/savings_goals_screen.dart';
 import '../../../budgets/presentation/providers/budget_providers.dart';
+import '../../../transactions/presentation/widgets/bank_receipt_modal.dart';
 import '../providers/dashboard_providers.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
@@ -252,113 +253,63 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ),
 
-              // 1. Prominent Current Balance Card
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(22),
-                decoration: BoxDecoration(
-                  gradient: isDark
-                      ? AppColors.balanceGradientDark
-                      : AppColors.balanceGradientLight,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryNavy.withOpacity(0.15),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
+              // 1. Bank-Grade Realistic Virtual Debit Card
+              _buildVirtualDebitCard(
+                context,
+                ref,
+                currentBalanceCents: currentBalanceCents,
+                momTrend: momTrend,
+              ),
+
+              const SizedBox(height: 14),
+
+              // Bank Quick Action Pills
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildActionPill(
+                      context,
+                      icon: Icons.add_rounded,
+                      label: tr('dashboard_money_in'),
+                      color: AppColors.successGreen,
+                      onTap: () => AddIncomeModal.show(context),
+                      isDark: isDark,
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          tr('dashboard_total_balance'),
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const Icon(Icons.shield_outlined, color: Colors.white70, size: 18),
-                      ],
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildActionPill(
+                      context,
+                      icon: Icons.remove_rounded,
+                      label: tr('dashboard_expense'),
+                      color: AppColors.expenseRed,
+                      onTap: () => AddExpenseModal.show(context),
+                      isDark: isDark,
                     ),
-                    const SizedBox(height: 8),
-                    Text(
-                      CurrencyFormatter.formatCents(currentBalanceCents),
-                      style: TextStyle(
-                        color: currentBalanceCents < 0 ? AppColors.expenseRed : Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: -0.5,
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildActionPill(
+                      context,
+                      icon: Icons.menu_book_rounded,
+                      label: 'Khata',
+                      color: AppColors.primaryBlue,
+                      onTap: () => ref.read(selectedMainTabProvider.notifier).state = 2,
+                      isDark: isDark,
                     ),
-                    if (momTrend.hasPreviousMonthData) ...[
-                      const SizedBox(height: 6),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            momTrend.isExpenseIncreased ? Icons.arrow_upward : Icons.arrow_downward,
-                            size: 13,
-                            color: momTrend.isExpenseIncreased ? AppColors.expenseRed : AppColors.successGreen,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${momTrend.percentageChange.abs().toStringAsFixed(0)}% ${tr(momTrend.isExpenseIncreased ? 'dashboard_trend_higher' : 'dashboard_trend_lower')}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: momTrend.isExpenseIncreased ? AppColors.expenseRed : AppColors.successGreen,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    const SizedBox(height: 18),
-                    // Quick Action Buttons Inside Balance Card
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.successGreen,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () => AddIncomeModal.show(context),
-                            icon: const Icon(Icons.add_circle, size: 18),
-                            label: Text(tr('dashboard_money_in'), style: const TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.expenseRed,
-                              foregroundColor: Colors.white,
-                              elevation: 0,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            onPressed: () => AddExpenseModal.show(context),
-                            icon: const Icon(Icons.remove_circle, size: 18),
-                            label: Text(tr('dashboard_expense'), style: const TextStyle(fontWeight: FontWeight.bold)),
-                          ),
-                        ),
-                      ],
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _buildActionPill(
+                      context,
+                      icon: Icons.bar_chart_rounded,
+                      label: 'Reports',
+                      color: AppColors.warningAmber,
+                      onTap: () => ref.read(selectedMainTabProvider.notifier).state = 3,
+                      isDark: isDark,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
 
               const SizedBox(height: 20),
@@ -688,7 +639,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
         subtitle: Text(
-          '${DateFormatters.formatDate(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
+          '${DateFormatters.formatDateTime(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
           style: TextStyle(
             fontSize: 12,
             color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
@@ -704,7 +655,8 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
           ),
         ),
-        onTap: () {
+        onTap: () => BankReceiptModal.show(context, item),
+        onLongPress: () {
           if (item.isIncome) {
             AddIncomeModal.show(context, existingEntry: item.rawEntity as IncomeEntryEntity);
           } else {
@@ -938,6 +890,390 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildVirtualDebitCard(
+    BuildContext context,
+    WidgetRef ref, {
+    required int currentBalanceCents,
+    required MomExpenseTrendData momTrend,
+  }) {
+    final activeBank = ref.watch(activeBankConfigProvider);
+    final isHidden = ref.watch(isBalanceHiddenProvider);
+    final cardholderName = ref.watch(cardholderNameProvider);
+    final tr = ref.watch(translationsProvider);
+
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: activeBank.cardGradient,
+        borderRadius: BorderRadius.circular(22),
+        boxShadow: [
+          BoxShadow(
+            color: activeBank.primaryColor.withOpacity(0.35),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            right: -20,
+            bottom: -20,
+            child: Icon(
+              activeBank.bankIcon,
+              size: 150,
+              color: Colors.white.withOpacity(0.08),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(activeBank.bankIcon, color: Colors.white, size: 16),
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              activeBank.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            Text(
+                              activeBank.subtitle,
+                              style: TextStyle(
+                                color: Colors.white.withOpacity(0.7),
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.contactless_rounded,
+                          color: Colors.white70,
+                          size: 24,
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          width: 36,
+                          height: 27,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: const Color(0xFFFFD54F), width: 0.8),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFFE082), Color(0xFFFFB300), Color(0xFFFFC107)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                                offset: const Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                          child: Stack(
+                            children: [
+                              Center(
+                                child: Container(
+                                  width: 16,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.black26, width: 0.8),
+                                    borderRadius: BorderRadius.circular(2),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                left: 6,
+                                top: 0,
+                                bottom: 0,
+                                child: Container(width: 0.8, color: Colors.black26),
+                              ),
+                              Positioned(
+                                right: 6,
+                                top: 0,
+                                bottom: 0,
+                                child: Container(width: 0.8, color: Colors.black26),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Text(
+                      tr('dashboard_total_balance').toUpperCase(),
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.75),
+                        fontSize: 10.5,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.1,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () => ref.read(isBalanceHiddenProvider.notifier).toggle(),
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              isHidden ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                              size: 13,
+                              color: Colors.white,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              isHidden ? 'Show' : 'Hide',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  isHidden
+                      ? 'Rs ••••••••'
+                      : CurrencyFormatter.formatCents(currentBalanceCents),
+                  style: TextStyle(
+                    color: !isHidden && currentBalanceCents < 0 ? const Color(0xFFFF8A80) : Colors.white,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                if (momTrend.hasPreviousMonthData && !isHidden) ...[
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        momTrend.isExpenseIncreased ? Icons.arrow_upward : Icons.arrow_downward,
+                        size: 12,
+                        color: momTrend.isExpenseIncreased ? const Color(0xFFFF8A80) : const Color(0xFF69F0AE),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${momTrend.percentageChange.abs().toStringAsFixed(0)}% ${tr(momTrend.isExpenseIncreased ? 'dashboard_trend_higher' : 'dashboard_trend_lower')}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: momTrend.isExpenseIncreased ? const Color(0xFFFF8A80) : const Color(0xFF69F0AE),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '••••  ••••  ••••  4921',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        letterSpacing: 2.2,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                    Text(
+                      'EXP 12/29',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    InkWell(
+                      onTap: () => _showEditCardholderDialog(context, ref, cardholderName),
+                      borderRadius: BorderRadius.circular(6),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            cardholderName.toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12.5,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(Icons.edit_outlined, size: 12, color: Colors.white.withOpacity(0.7)),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.18),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: const Text(
+                        'DEBIT',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionPill(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+    required bool isDark,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.cardDark : AppColors.cardLight,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: isDark ? AppColors.borderDark : AppColors.borderLight,
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(7),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 17),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showEditCardholderDialog(BuildContext context, WidgetRef ref, String currentName) {
+    final controller = TextEditingController(text: currentName);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Edit Cardholder Name'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Cardholder Name',
+            hintText: 'Enter your name',
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final newName = controller.text.trim();
+              if (newName.isNotEmpty) {
+                ref.read(cardholderNameProvider.notifier).setName(newName);
+              }
+              Navigator.pop(ctx);
+            },
+            child: const Text('Save'),
           ),
         ],
       ),

@@ -12,6 +12,8 @@ import '../../../../core/services/notification_service.dart';
 import '../../../budgets/presentation/providers/budget_providers.dart';
 import '../../../recurring/domain/entities/recurring_transaction.dart';
 import '../../../recurring/presentation/providers/recurring_providers.dart';
+import '../../../dashboard/presentation/providers/dashboard_providers.dart';
+import '../../../transactions/presentation/widgets/bank_receipt_modal.dart';
 
 class AddExpenseModal extends ConsumerStatefulWidget {
   final ExpenseEntryEntity? existingEntry;
@@ -70,7 +72,15 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      setState(() => _selectedDate = picked);
+      final now = DateTime.now();
+      setState(() => _selectedDate = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        now.hour,
+        now.minute,
+        now.second,
+      ));
     }
   }
 
@@ -103,6 +113,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
       );
       final now = DateTime.now();
 
+      ExpenseEntryEntity? createdEntry;
       if (widget.existingEntry == null) {
         final newEntry = ExpenseEntryEntity(
           id: IdGenerator.generate(),
@@ -116,6 +127,7 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
           updatedAt: now,
         );
         await repo.addExpense(newEntry);
+        createdEntry = newEntry;
 
         if (_isRecurring) {
           final recRepo = ref.read(recurringRepositoryProvider);
@@ -188,16 +200,28 @@ class _AddExpenseModalState extends ConsumerState<AddExpenseModal> {
 
       if (mounted) {
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              widget.existingEntry == null
-                  ? 'Expense added successfully!'
-                  : 'Expense updated successfully!',
+        if (createdEntry != null) {
+          BankReceiptModal.show(
+            context,
+            CombinedTransactionItem(
+              id: createdEntry.id,
+              amountCents: createdEntry.amountCents,
+              title: createdEntry.categoryName ?? 'Expense',
+              subtitle: createdEntry.note,
+              date: createdEntry.date,
+              createdAt: createdEntry.createdAt,
+              isIncome: false,
+              rawEntity: createdEntry,
             ),
-            backgroundColor: AppColors.successGreen,
-          ),
-        );
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Expense updated successfully!'),
+              backgroundColor: AppColors.successGreen,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
