@@ -34,6 +34,35 @@ class ApnaBatwaApp extends ConsumerWidget {
       darkTheme: AppTheme.buildTheme(Brightness.dark, bankConfig),
       themeMode: themeMode,
       home: const InitialFlowWrapper(),
+      builder: (context, child) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            if (constraints.maxWidth > 600) {
+              final isDark = Theme.of(context).brightness == Brightness.dark;
+              return Container(
+                color: isDark ? const Color(0xFF060B18) : const Color(0xFFEAEFF5),
+                alignment: Alignment.center,
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.45 : 0.12),
+                        blurRadius: 32,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: ClipRect(
+                    child: child ?? const SizedBox.shrink(),
+                  ),
+                ),
+              );
+            }
+            return child ?? const SizedBox.shrink();
+          },
+        );
+      },
     );
   }
 }
