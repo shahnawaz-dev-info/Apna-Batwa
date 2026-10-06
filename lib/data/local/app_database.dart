@@ -1,20 +1,9 @@
-import 'dart:io';
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import '../../core/constants/app_constants.dart';
+import 'connection/connection.dart';
 import 'tables.dart';
 
 part 'app_database.g.dart';
-
-LazyDatabase _openConnection() {
-  return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'apna_batwa.sqlite'));
-    return NativeDatabase.createInBackground(file);
-  });
-}
 
 @DriftDatabase(tables: [
   Categories,
@@ -32,7 +21,7 @@ LazyDatabase _openConnection() {
   RecurringTransactions,
 ])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(_openConnection());
+  AppDatabase() : super(openConnection());
 
   AppDatabase.forTesting(QueryExecutor executor) : super(executor);
 

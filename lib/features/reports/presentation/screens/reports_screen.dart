@@ -13,15 +13,15 @@ import '../providers/reports_providers.dart' hide DateTimeRange;
 class ReportsScreen extends ConsumerWidget {
   const ReportsScreen({super.key});
 
-  static const List<Color> _chartColors = [
+  static List<Color> get _chartColors => [
     AppColors.primaryBlue,
     AppColors.expenseRed,
     AppColors.successGreen,
     AppColors.warningAmber,
-    Color(0xFF8B5CF6), // Purple
-    Color(0xFFEC4899), // Pink
-    Color(0xFF06B6D4), // Cyan
-    Color(0xFFF97316), // Orange
+    const Color(0xFF8B5CF6), // Purple
+    const Color(0xFFEC4899), // Pink
+    const Color(0xFF06B6D4), // Cyan
+    const Color(0xFFF97316), // Orange
   ];
 
   @override
@@ -190,7 +190,7 @@ class ReportsScreen extends ConsumerWidget {
                       color: AppColors.primaryBlue.withOpacity(0.15),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.insights_outlined, color: AppColors.primaryBlue),
+                    child: Icon(Icons.insights_outlined, color: AppColors.primaryBlue),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -199,7 +199,7 @@ class ReportsScreen extends ConsumerWidget {
                       children: [
                         Text(
                           tr('reports_predictive_title'),
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
                             color: AppColors.primaryBlue,
@@ -407,12 +407,12 @@ class ReportsScreen extends ConsumerWidget {
                           ),
                           child: Row(
                             children: [
-                              const Icon(Icons.lightbulb_outline, color: AppColors.primaryBlue, size: 20),
+                              Icon(Icons.lightbulb_outline, color: AppColors.primaryBlue, size: 20),
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
                                   categoryInsight.insightSentence,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.primaryBlue,
@@ -703,7 +703,7 @@ class ReportsScreen extends ConsumerWidget {
                                     backgroundColor: AppColors.primaryBlue.withOpacity(0.2),
                                     child: Text(
                                       '${index + 1}',
-                                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                                     ),
                                   ),
                                   const SizedBox(width: 10),

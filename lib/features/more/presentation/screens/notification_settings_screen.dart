@@ -31,7 +31,7 @@ class NotificationSettingsScreen extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.shield_outlined, color: AppColors.primaryBlue),
+                  Icon(Icons.shield_outlined, color: AppColors.primaryBlue),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(

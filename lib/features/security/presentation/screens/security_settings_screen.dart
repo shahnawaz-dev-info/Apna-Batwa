@@ -118,7 +118,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: AppColors.primaryBlue,
                       shape: BoxShape.circle,
                     ),
@@ -173,7 +173,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
               children: [
                 if (!secState.isPinSet)
                   ListTile(
-                    leading: const Icon(Icons.pin_rounded, color: AppColors.primaryBlue),
+                    leading: Icon(Icons.pin_rounded, color: AppColors.primaryBlue),
                     title: Text(tr('sec_set_pin')),
                     subtitle: Text(tr('sec_create_pin_sub')),
                     trailing: const Icon(Icons.chevron_right_rounded),
@@ -181,7 +181,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                   )
                 else ...[
                   ListTile(
-                    leading: const Icon(Icons.edit_rounded, color: AppColors.primaryBlue),
+                    leading: Icon(Icons.edit_rounded, color: AppColors.primaryBlue),
                     title: Text(tr('sec_change_pin')),
                     trailing: const Icon(Icons.chevron_right_rounded),
                     onTap: _onChangePin,
@@ -220,7 +220,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
               child: Column(
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(Icons.fingerprint_rounded, color: AppColors.primaryBlue),
+                    secondary: Icon(Icons.fingerprint_rounded, color: AppColors.primaryBlue),
                     title: Text(tr('sec_biometrics')),
                     subtitle: Text(
                       secState.isBiometricSupported
@@ -236,7 +236,7 @@ class _SecuritySettingsScreenState extends ConsumerState<SecuritySettingsScreen>
                   ),
                   const Divider(height: 1),
                   ListTile(
-                    leading: const Icon(Icons.timer_outlined, color: AppColors.primaryBlue),
+                    leading: Icon(Icons.timer_outlined, color: AppColors.primaryBlue),
                     title: Text(tr('sec_auto_lock')),
                     subtitle: Text('Lock app after: ${secState.autoLockDuration}'),
                     trailing: DropdownButton<String>(

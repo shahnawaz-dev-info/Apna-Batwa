@@ -109,7 +109,7 @@ class _SetBudgetModalState extends ConsumerState<SetBudgetModal> {
                 children: [
                   Text(
                     widget.existingBudget != null ? tr('budget_modal_edit_title') : tr('budget_modal_set_title'),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),

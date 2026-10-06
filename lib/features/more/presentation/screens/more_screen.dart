@@ -7,6 +7,7 @@ import '../../../../core/localization/app_language.dart';
 import '../../../../core/localization/app_translations.dart';
 import '../../../../core/providers/theme_providers.dart';
 import '../../../../core/theme/colors.dart';
+import '../../../../core/widgets/fintech_bouncing_widget.dart';
 import '../../../budgets/presentation/screens/budget_management_screen.dart';
 import '../../../recurring/presentation/screens/recurring_management_screen.dart';
 import '../../../wishlist/presentation/screens/wishlist_screen.dart';
@@ -176,7 +177,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                         color: AppColors.primaryBlue.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.brightness_6_outlined, color: AppColors.primaryBlue, size: 18),
+                      child: Icon(Icons.brightness_6_outlined, color: AppColors.primaryBlue, size: 18),
                     ),
                     const SizedBox(width: 10),
                     Text(
@@ -226,7 +227,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                         color: AppColors.primaryBlue.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.language_outlined, color: AppColors.primaryBlue, size: 18),
+                      child: Icon(Icons.language_outlined, color: AppColors.primaryBlue, size: 18),
                     ),
                     const SizedBox(width: 10),
                     Text(
@@ -274,7 +275,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                             color: AppColors.primaryBlue.withOpacity(0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.credit_card_rounded, color: AppColors.primaryBlue, size: 18),
+                          child: Icon(Icons.credit_card_rounded, color: AppColors.primaryBlue, size: 18),
                         ),
                         const SizedBox(width: 10),
                         Text(
@@ -289,7 +290,7 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                     ),
                     Text(
                       ref.watch(activeBankConfigProvider).name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: AppColors.primaryBlue,
@@ -307,11 +308,11 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
                     itemBuilder: (context, idx) {
                       final bank = BankThemeConfig.allBanks[idx];
                       final isSelected = ref.watch(bankThemePresetProvider) == bank.preset;
-                      return InkWell(
+                      return FintechBounce(
+                        scaleFactor: 0.93,
                         onTap: () {
                           ref.read(bankThemePresetProvider.notifier).setPreset(bank.preset);
                         },
-                        borderRadius: BorderRadius.circular(12),
                         child: Container(
                           width: 130,
                           padding: const EdgeInsets.all(10),

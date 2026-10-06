@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -19,6 +20,7 @@ class NotificationService {
   static const String _keySavingsReminders = 'notif_savings_reminders';
 
   Future<void> init() async {
+    if (kIsWeb) return;
     if (_initialized) return;
 
     tz.initializeTimeZones();
@@ -90,11 +92,11 @@ class NotificationService {
         final shouldProceed = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Row(
+            title: Row(
               children: [
                 Icon(Icons.notifications_active, color: AppColors.primaryBlue),
-                SizedBox(width: 8),
-                Text('Enable Notifications'),
+                const SizedBox(width: 8),
+                const Text('Enable Notifications'),
               ],
             ),
             content: const Text(

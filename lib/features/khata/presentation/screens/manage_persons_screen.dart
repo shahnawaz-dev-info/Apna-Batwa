@@ -76,7 +76,7 @@ class ManagePersonsScreen extends ConsumerWidget {
                     backgroundColor: AppColors.primaryBlue.withValues(alpha: 0.12),
                     child: Text(
                       person.name.isNotEmpty ? person.name[0].toUpperCase() : '?',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: AppColors.primaryBlue,
                       ),

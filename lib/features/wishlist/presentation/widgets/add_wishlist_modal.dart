@@ -125,7 +125,7 @@ class _AddWishlistModalState extends ConsumerState<AddWishlistModal> {
                 children: [
                   Text(
                     isEditing ? tr('wishlist_edit_modal_title') : tr('wishlist_add_modal_title'),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),

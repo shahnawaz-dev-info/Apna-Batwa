@@ -270,7 +270,7 @@ class _WishlistScreenState extends ConsumerState<WishlistScreen> with SingleTick
               ),
               Text(
                 CurrencyFormatter.formatCents(item.priceCents),
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
               ),
             ],
           ),

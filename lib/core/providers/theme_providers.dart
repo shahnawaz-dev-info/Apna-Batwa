@@ -57,7 +57,7 @@ final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((r
 class BankPresetNotifier extends StateNotifier<BankThemePreset> {
   static const String _key = 'app_bank_preset';
 
-  BankPresetNotifier() : super(BankThemePreset.defaultBatwa) {
+  BankPresetNotifier() : super(BankThemePreset.sadapay) {
     _loadPreset();
   }
 
@@ -65,9 +65,7 @@ class BankPresetNotifier extends StateNotifier<BankThemePreset> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final id = prefs.getString(_key);
-      if (id != null) {
-        state = BankThemeConfig.fromId(id);
-      }
+      state = BankThemeConfig.fromId(id);
     } catch (_) {}
   }
 

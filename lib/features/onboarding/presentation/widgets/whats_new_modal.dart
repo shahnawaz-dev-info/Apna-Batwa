@@ -80,7 +80,7 @@ class WhatsNewModal extends ConsumerWidget {
                     color: AppColors.primaryBlue.withValues(alpha: 0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.stars, color: AppColors.primaryBlue, size: 24),
+                  child: Icon(Icons.stars, color: AppColors.primaryBlue, size: 24),
                 ),
                 const SizedBox(width: 12),
                 Expanded(

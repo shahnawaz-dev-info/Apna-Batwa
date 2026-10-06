@@ -159,7 +159,7 @@ final momExpenseTrendProvider = Provider<MomExpenseTrendData>((ref) {
   );
 });
 
-final financialTipIndexProvider = Provider<int>((ref) {
+final financialTipIndexProvider = StateProvider<int>((ref) {
   final now = DateTime.now();
   final startOfYear = DateTime(now.year, 1, 1);
   final dayOfYear = now.difference(startOfYear).inDays;

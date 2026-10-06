@@ -261,7 +261,7 @@ class _LentTab extends ConsumerWidget {
                       color: AppColors.primaryBlue.withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.arrow_upward, color: AppColors.primaryBlue),
+                    child: Icon(Icons.arrow_upward, color: AppColors.primaryBlue),
                   ),
                 ],
               ),

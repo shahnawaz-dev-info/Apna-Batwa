@@ -113,7 +113,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       children: [
                         Container(
                           padding: const EdgeInsets.all(12),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             color: AppColors.primaryBlue,
                             shape: BoxShape.circle,
                           ),

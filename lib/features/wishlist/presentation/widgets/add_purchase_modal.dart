@@ -144,7 +144,7 @@ class _AddPurchaseModalState extends ConsumerState<AddPurchaseModal> {
                 children: [
                   Text(
                     isEditing ? tr('purchase_modal_edit_title') : tr('purchase_modal_log_title'),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),

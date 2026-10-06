@@ -47,7 +47,7 @@ class BudgetManagementScreen extends ConsumerWidget {
                   ),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_month_outlined, color: AppColors.primaryBlue, size: 20),
+                      Icon(Icons.calendar_month_outlined, color: AppColors.primaryBlue, size: 20),
                       const SizedBox(width: 8),
                       Text(
                         DateFormat('MMMM yyyy').format(selectedMonthYear),

@@ -21,8 +21,10 @@ subprojects {
 
 subprojects {
     val configureAndroid = {
-        val android = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
-        android?.compileSdkVersion(36)
+        if (project.name != "app") {
+            val android = project.extensions.findByName("android") as? com.android.build.gradle.BaseExtension
+            android?.compileSdkVersion(36)
+        }
     }
     if (state.executed) {
         configureAndroid()

@@ -137,7 +137,7 @@ class _AddSavingsGoalModalState extends ConsumerState<AddSavingsGoalModal> {
                 children: [
                   Text(
                     isEditing ? tr('savings_modal_edit_title') : tr('savings_modal_add_title'),
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.primaryBlue),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),

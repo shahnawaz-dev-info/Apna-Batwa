@@ -113,7 +113,7 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
                   color: AppColors.primaryBlue.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.lock_rounded,
                   size: 38,
                   color: AppColors.primaryBlue,
@@ -198,7 +198,7 @@ class _PinLockScreenState extends ConsumerState<PinLockScreen> {
                     // Biometric / empty button
                     if (secState.isBiometricEnabled && secState.isBiometricSupported) {
                       return IconButton(
-                        icon: const Icon(Icons.fingerprint_rounded, size: 32, color: AppColors.primaryBlue),
+                        icon: Icon(Icons.fingerprint_rounded, size: 32, color: AppColors.primaryBlue),
                         onPressed: _tryBiometricUnlock,
                       );
                     }

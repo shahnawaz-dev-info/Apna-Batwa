@@ -85,7 +85,7 @@ class _AboutScreenState extends ConsumerState<AboutScreen> {
                 ),
                 child: Text(
                   '${tr('about_version')} $_version',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.bold,
                     color: AppColors.primaryBlue,

@@ -8,6 +8,7 @@ import '../../../../core/localization/app_translations.dart';
 import '../../../../core/providers/navigation_providers.dart';
 import '../../../../core/providers/theme_providers.dart';
 import '../../../../core/theme/colors.dart';
+import '../../../../core/widgets/fintech_bouncing_widget.dart';
 import '../../../../core/utils/formatters.dart';
 import '../../../expenses/domain/entities/expense_entry.dart';
 import '../../../expenses/presentation/providers/expense_providers.dart';
@@ -21,6 +22,8 @@ import '../../../recurring/presentation/providers/recurring_providers.dart';
 import '../../../savings/presentation/providers/savings_providers.dart';
 import '../../../savings/presentation/screens/savings_goals_screen.dart';
 import '../../../budgets/presentation/providers/budget_providers.dart';
+import '../../../budgets/presentation/screens/budget_management_screen.dart';
+import '../../../recurring/presentation/screens/recurring_management_screen.dart';
 import '../../../transactions/presentation/widgets/bank_receipt_modal.dart';
 import '../providers/dashboard_providers.dart';
 
@@ -84,10 +87,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               const SizedBox(height: 16),
               ListTile(
-                leading: const Icon(Icons.translate, color: AppColors.primaryBlue),
+                leading: Icon(Icons.translate, color: AppColors.primaryBlue),
                 title: Text(tr('more_lang_english'), style: const TextStyle(fontWeight: FontWeight.w600)),
                 trailing: currentLang == AppLanguage.english
-                    ? const Icon(Icons.check_circle, color: AppColors.primaryBlue)
+                    ? Icon(Icons.check_circle, color: AppColors.primaryBlue)
                     : null,
                 onTap: () {
                   ref.read(appLanguageProvider.notifier).setLanguage(AppLanguage.english);
@@ -96,10 +99,10 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
               ),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.text_fields, color: AppColors.primaryBlue),
+                leading: Icon(Icons.text_fields, color: AppColors.primaryBlue),
                 title: Text(tr('more_lang_roman_urdu'), style: const TextStyle(fontWeight: FontWeight.w600)),
                 trailing: currentLang == AppLanguage.romanUrdu
-                    ? const Icon(Icons.check_circle, color: AppColors.primaryBlue)
+                    ? Icon(Icons.check_circle, color: AppColors.primaryBlue)
                     : null,
                 onTap: () {
                   ref.read(appLanguageProvider.notifier).setLanguage(AppLanguage.romanUrdu);
@@ -441,7 +444,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       child: Text(
                         tr('common_show_all'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primaryBlue,
@@ -537,66 +540,72 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.cardDark : AppColors.cardLight,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: isDark ? AppColors.borderDark : AppColors.borderLight,
+    return FintechBounce(
+      onTap: onTap,
+      scaleFactor: 0.96,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.25 : 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(6),
-                    decoration: BoxDecoration(
-                      color: color.withOpacity(0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(icon, color: color, size: 16),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.14),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (onTap != null)
-                    Icon(
-                      Icons.chevron_right,
-                      size: 16,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-                    ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                amount,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: isPlaceholder
-                      ? (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)
-                      : (isDark ? AppColors.textMainDark : AppColors.textMainLight),
+                  child: Icon(icon, color: color, size: 17),
                 ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (onTap != null)
+                  Icon(
+                    Icons.chevron_right_rounded,
+                    size: 18,
+                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              amount,
+              style: TextStyle(
+                fontSize: 16.5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.2,
+                color: isPlaceholder
+                    ? (isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight)
+                    : (isDark ? AppColors.textMainDark : AppColors.textMainLight),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -608,61 +617,72 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     CombinedTransactionItem item,
     bool isDark,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isDark ? AppColors.borderDark : AppColors.borderLight,
-        ),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        leading: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: (item.isIncome ? AppColors.successGreen : AppColors.expenseRed).withOpacity(0.1),
-            shape: BoxShape.circle,
+    return FintechBounce(
+      scaleFactor: 0.97,
+      onTap: () => BankReceiptModal.show(context, item),
+      onLongPress: () {
+        if (item.isIncome) {
+          AddIncomeModal.show(context, existingEntry: item.rawEntity as IncomeEntryEntity);
+        } else {
+          AddExpenseModal.show(context, existingEntry: item.rawEntity as ExpenseEntryEntity);
+        }
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            width: 1.2,
           ),
-          child: Icon(
-            item.isIncome ? Icons.arrow_downward : Icons.arrow_upward,
-            color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
-            size: 20,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.15 : 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: (item.isIncome ? AppColors.successGreen : AppColors.expenseRed).withOpacity(0.14),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              item.isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
+              color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
+              size: 20,
+            ),
+          ),
+          title: Text(
+            item.title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+            ),
+          ),
+          subtitle: Text(
+            '${DateFormatters.formatDateTime(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
+            style: TextStyle(
+              fontSize: 12,
+              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          trailing: Text(
+            '${item.isIncome ? "+" : "-"}${CurrencyFormatter.formatCents(item.amountCents)}',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+              color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
+            ),
           ),
         ),
-        title: Text(
-          item.title,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
-          ),
-        ),
-        subtitle: Text(
-          '${DateFormatters.formatDateTime(item.date)}${item.subtitle != null ? " • ${item.subtitle}" : ""}',
-          style: TextStyle(
-            fontSize: 12,
-            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: Text(
-          '${item.isIncome ? "+" : "-"}${CurrencyFormatter.formatCents(item.amountCents)}',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 15,
-            color: item.isIncome ? AppColors.successGreen : AppColors.expenseRed,
-          ),
-        ),
-        onTap: () => BankReceiptModal.show(context, item),
-        onLongPress: () {
-          if (item.isIncome) {
-            AddIncomeModal.show(context, existingEntry: item.rawEntity as IncomeEntryEntity);
-          } else {
-            AddExpenseModal.show(context, existingEntry: item.rawEntity as ExpenseEntryEntity);
-          }
-        },
       ),
     );
   }
@@ -694,63 +714,73 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
       progressColor = AppColors.expenseRed;
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+    return FintechBounce(
+      scaleFactor: 0.98,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => BudgetManagementScreen()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            width: 1.2,
+          ),
         ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    Icon(Icons.pie_chart_outline, size: 16, color: progressColor),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        '${AppTranslations.tr('dashboard_top_budget', lang)}: $categoryName',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(Icons.pie_chart_outline, size: 16, color: progressColor),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '${AppTranslations.tr('dashboard_top_budget', lang)}: $categoryName',
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '${pct.toStringAsFixed(0)}% ${AppTranslations.tr('dashboard_budget_used', lang)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: progressColor,
+                const SizedBox(width: 8),
+                Text(
+                  '${pct.toStringAsFixed(0)}% ${AppTranslations.tr('dashboard_budget_used', lang)}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: progressColor,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: LinearProgressIndicator(
-              value: (pct / 100).clamp(0.0, 1.0),
-              minHeight: 6,
-              backgroundColor: progressColor.withOpacity(0.15),
-              valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: LinearProgressIndicator(
+                value: (pct / 100).clamp(0.0, 1.0),
+                minHeight: 6,
+                backgroundColor: progressColor.withOpacity(0.15),
+                valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -762,77 +792,87 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final now = DateTime.now();
     final todayStart = DateTime(now.year, now.month, now.day);
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.warningAmber.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: AppColors.warningAmber.withOpacity(0.4),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.notifications_active_outlined, size: 18, color: AppColors.warningAmber),
-              const SizedBox(width: 8),
-              Text(
-                AppTranslations.tr('recurring_banner_title', lang),
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.warningAmber,
-                ),
-              ),
-            ],
+    return FintechBounce(
+      scaleFactor: 0.98,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => RecurringManagementScreen()),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.warningAmber.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: AppColors.warningAmber.withOpacity(0.4),
+            width: 1.2,
           ),
-          const SizedBox(height: 8),
-          ...upcomingList.take(2).map((item) {
-            final itemDate = DateTime(item.nextDueDate.year, item.nextDueDate.month, item.nextDueDate.day);
-            final daysDiff = itemDate.difference(todayStart).inDays;
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.notifications_active_outlined, size: 18, color: AppColors.warningAmber),
+                const SizedBox(width: 8),
+                Text(
+                  AppTranslations.tr('recurring_banner_title', lang),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.warningAmber,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ...upcomingList.take(2).map((item) {
+              final itemDate = DateTime(item.nextDueDate.year, item.nextDueDate.month, item.nextDueDate.day);
+              final daysDiff = itemDate.difference(todayStart).inDays;
 
-            String dueText;
-            if (daysDiff <= 0) {
-              dueText = AppTranslations.tr('recurring_due_today', lang);
-            } else if (daysDiff == 1) {
-              dueText = AppTranslations.tr('recurring_due_tomorrow', lang);
-            } else {
-              dueText = lang == AppLanguage.romanUrdu ? '$daysDiff din mein due hai' : 'due in $daysDiff days';
-            }
+              String dueText;
+              if (daysDiff <= 0) {
+                dueText = AppTranslations.tr('recurring_due_today', lang);
+              } else if (daysDiff == 1) {
+                dueText = AppTranslations.tr('recurring_due_tomorrow', lang);
+              } else {
+                dueText = lang == AppLanguage.romanUrdu ? '$daysDiff din mein due hai' : 'due in $daysDiff days';
+              }
 
-            return Padding(
-              padding: const EdgeInsets.only(top: 4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      '${item.name} — ${CurrencyFormatter.formatCents(item.amountCents)}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+              return Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '${item.name} — ${CurrencyFormatter.formatCents(item.amountCents)}',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    dueText,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.warningAmber,
+                    const SizedBox(width: 8),
+                    Text(
+                      dueText,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.warningAmber,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
+                  ],
+                ),
+              );
+            }),
+          ],
+        ),
       ),
     );
   }
@@ -841,57 +881,64 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     final tipIndex = ref.watch(financialTipIndexProvider);
     final tipKey = 'tip_${tipIndex + 1}';
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cardDark : AppColors.cardLight,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? AppColors.borderDark : AppColors.borderLight,
+    return FintechBounce(
+      scaleFactor: 0.98,
+      onTap: () {
+        ref.read(financialTipIndexProvider.notifier).state = (tipIndex + 1) % 6;
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            width: 1.2,
+          ),
         ),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppColors.primaryBlue.withOpacity(0.12),
-              shape: BoxShape.circle,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.primaryBlue.withOpacity(0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.lightbulb_outlined,
+                size: 20,
+                color: AppColors.primaryBlue,
+              ),
             ),
-            child: const Icon(
-              Icons.lightbulb_outlined,
-              size: 20,
-              color: AppColors.primaryBlue,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppTranslations.tr('dashboard_tip_title', lang),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryBlue,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppTranslations.tr('dashboard_tip_title', lang),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryBlue,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  AppTranslations.tr(tipKey, lang),
-                  style: TextStyle(
-                    fontSize: 13,
-                    height: 1.3,
-                    color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                  const SizedBox(height: 4),
+                  Text(
+                    AppTranslations.tr(tipKey, lang),
+                    style: TextStyle(
+                      fontSize: 13,
+                      height: 1.3,
+                      color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -1194,52 +1241,49 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     required VoidCallback onTap,
     required bool isDark,
   }) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-          decoration: BoxDecoration(
-            color: isDark ? AppColors.cardDark : AppColors.cardLight,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: isDark ? AppColors.borderDark : AppColors.borderLight,
-              width: 1,
+    return FintechBounce(
+      onTap: onTap,
+      scaleFactor: 0.94,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.cardDark : AppColors.cardLight,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(isDark ? 0.08 : 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 6,
-                offset: const Offset(0, 2),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.14),
+                shape: BoxShape.circle,
               ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(7),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, color: color, size: 17),
+              child: Icon(icon, color: color, size: 20),
+            ),
+            const SizedBox(height: 7),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
               ),
-              const SizedBox(height: 5),
-              Text(
-                label,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                  color: isDark ? AppColors.textMainDark : AppColors.textMainLight,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-          ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );

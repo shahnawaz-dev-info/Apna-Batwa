@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/providers/theme_providers.dart';
 import 'core/services/notification_service.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/colors.dart';
 import 'features/onboarding/presentation/widgets/initial_flow_wrapper.dart';
 
 void main() async {
@@ -21,12 +22,16 @@ class ApnaBatwaApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
+    final bankConfig = ref.watch(activeBankConfigProvider);
+    
+    // Sync AppColors dynamic token state with active bank theme
+    AppColors.setBankConfig(bankConfig);
 
     return MaterialApp(
       title: 'Apna Batwa',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.buildTheme(Brightness.light, bankConfig),
+      darkTheme: AppTheme.buildTheme(Brightness.dark, bankConfig),
       themeMode: themeMode,
       home: const InitialFlowWrapper(),
     );
